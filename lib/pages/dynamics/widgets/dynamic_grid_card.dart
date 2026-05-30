@@ -18,7 +18,7 @@ class DynamicGridCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final video = _resolveVideo();
-    final major = item.modules.moduleDynamic?.major;
+    final stat = video?.stat;
 
     return Card(
       clipBehavior: Clip.hardEdge,
@@ -30,7 +30,7 @@ class DynamicGridCard extends StatelessWidget {
             // === 封面/占位区域 (16:10) ===
             AspectRatio(
               aspectRatio: Style.aspectRatio,
-              child: _buildCover(theme, video, major),
+              child: _buildCover(theme, video),
             ),
             // === 文字信息区 ===
             Expanded(
@@ -41,7 +41,7 @@ class DynamicGridCard extends StatelessWidget {
                   children: [
                     // UP主名
                     Text(
-                      item.modules.moduleAuthor?.user?.name ?? '',
+                      item.modules.moduleAuthor?.name ?? '',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
@@ -63,7 +63,7 @@ class DynamicGridCard extends StatelessWidget {
                     // 底部操作行
                     Row(
                       children: [
-                        if (video?.stat case final stat?)
+                        if (stat != null) ...[
                           Text(
                             '${NumUtils.numFormat(stat.play)}播放',
                             style: TextStyle(
@@ -71,16 +71,18 @@ class DynamicGridCard extends StatelessWidget {
                               color: theme.colorScheme.outline,
                             ),
                           ),
-                        if (video?.stat != null && item.type == 'DYNAMIC_TYPE_AV')
-                          const SizedBox(width: 4),
-                        if (item.type == 'DYNAMIC_TYPE_AV' && video?.stat case final stat?)
-                          Text(
-                            '${NumUtils.numFormat(stat.danmu)}弹幕',
-                            style: TextStyle(
-                              fontSize: theme.textTheme.labelSmall?.fontSize,
-                              color: theme.colorScheme.outline,
+                          if (item.type == 'DYNAMIC_TYPE_AV') ...[
+                            const SizedBox(width: 4),
+                            Text(
+                              '${NumUtils.numFormat(stat.danmu)}弹幕',
+                              style: TextStyle(
+                                fontSize:
+                                    theme.textTheme.labelSmall?.fontSize,
+                                color: theme.colorScheme.outline,
+                              ),
                             ),
-                          ),
+                          ],
+                        ],
                         const Spacer(),
                         Icon(
                           Icons.more_horiz,
@@ -114,11 +116,7 @@ class DynamicGridCard extends StatelessWidget {
   }
 
   /// 封面区域
-  Widget _buildCover(
-    ThemeData theme,
-    DynamicArchiveModel? video,
-    ModuleDynamicMajor? major,
-  ) {
+  Widget _buildCover(ThemeData theme, DynamicArchiveModel? video) {
     if (video?.cover case final cover?) {
       // 视频类型：显示封面
       return Stack(
