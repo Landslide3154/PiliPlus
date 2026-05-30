@@ -16,7 +16,6 @@ import 'package:PiliPlus/utils/waterfall.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:waterfall_flow/waterfall_flow.dart';
 
 class MyReply extends StatefulWidget {
   const MyReply({super.key});
@@ -78,16 +77,18 @@ class _MyReplyState extends State<MyReply> with DynMixin {
         physics: const AlwaysScrollableScrollPhysics(),
         slivers: [
           _replies.isNotEmpty
-              ? buildDynamicContent(
-                  context: context,
-                  itemCount: _replies.length,
-                  itemBuilder: (context, index) => ReplyItemGrpc(
-                    replyLevel: 0,
-                    needDivider: false,
-                    replyItem: _replies[index],
-                    replyReply: _replyReply,
-                    onDelete: (_, _) => _onDelete(index),
-                    onCheckReply: _onCheckReply,
+              ? ViewSliverSafeArea(
+                  sliver: buildDynamicContent(
+                    context: context,
+                    itemCount: _replies.length,
+                    itemBuilder: (context, index) => ReplyItemGrpc(
+                      replyLevel: 0,
+                      needDivider: false,
+                      replyItem: _replies[index],
+                      replyReply: _replyReply,
+                      onDelete: (_, _) => _onDelete(index),
+                      onCheckReply: _onCheckReply,
+                    ),
                   ),
                 )
               : const HttpError(),

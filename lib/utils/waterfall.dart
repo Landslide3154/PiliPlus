@@ -12,16 +12,7 @@ import 'package:waterfall_flow/waterfall_flow.dart'
 /// 1 = 网格对齐（等高，可调列数）
 /// 2 = 单列列表
 int _layoutMode() => GlobalData().dynamicLayoutMode;
-bool _isWaterfall() => _layoutMode() == 0;
 bool _isGrid() => _layoutMode() == 1;
-
-/// 计算网格模式的宽高比（卡片宽度/高度）
-/// 高度 = 封面区(cellWidth / 1.6) + 内容区(头像+标题+操作栏+间距≈114dp)
-double gridAspectRatio(double cellWidth) {
-  const contentHeight = 114.0;
-  final cellHeight = cellWidth / Style.aspectRatio + contentHeight;
-  return cellWidth / cellHeight;
-}
 
 mixin DynMixin {
   late final dynGridDelegate =
