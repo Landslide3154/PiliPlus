@@ -45,16 +45,47 @@ jobs:
         shell: pwsh
         run: lib/scripts/build.ps1
 
-      - name: Build Windows
+      - name: Check pili_release.json
+        shell: pwsh
         run: |
-          fastforge package --platform windows --targets exe --flutter-build-args="dart-define-from-file=pili_release.json"
+          if (Test-Path "pili_release.json") {
+            Write-Host "pili_release.json exists:"
+            Get-Content "pili_release.json"
+          } else {
+            Write-Host "pili_release.json NOT FOUND!"
+            exit 1
+          }
+
+      - name: Flutter Build Windows (verbose)
+        run: flutter build windows --release -v --pub --dart-define-from-file=pili_release.json
 
       - name: Prepare Upload
+        shell: pwsh
         run: |
-          mkdir -p Release/PiliPlus-Win
-          mkdir -p PiliPlus-Win-Setup
-          mv build/windows/x64/runner/Release/* Release/PiliPlus-Win/
-          mv dist/**/*.exe PiliPlus-Win-Setup/PiliPlus_windows_${{env.version}}_x64_setup.exe
+          Write-Host "=== Checking build output ==="
+          if (Test-Path "build/windows/x64/runner/Release") {
+            Get-ChildItem "build/windows/x64/runner/Release"
+            New-Item -ItemType Directory -Force -Path Release/PiliPlus-Win | Out-Null
+            Get-ChildItem "build/windows/x64/runner/Release/*" | Move-Item -Destination "Release/PiliPlus-Win/"
+            Write-Host "=== Build output prepared ==="
+          } else {
+            Write-Host "build/windows/x64/runner/Release NOT FOUND"
+            Write-Host "=== Listing build/ contents ==="
+            if (Test-Path "build") { Get-ChildItem -Recurse build | Select-Object -First 50 }
+            exit 1
+          }
+
+      - name: Package setup (fastforge, skip if fails)
+        continue-on-error: true
+        shell: pwsh
+        run: |
+          fastforge package --platform windows --targets exe --skip-build --flutter-build-args="dart-define-from-file=pili_release.json"
+          New-Item -ItemType Directory -Force -Path PiliPlus-Win-Setup | Out-Null
+          if (Test-Path "dist") {
+            Get-ChildItem -Recurse dist/*.exe | ForEach-Object {
+              Copy-Item $_ "PiliPlus-Win-Setup/PiliPlus_windows_${{env.version}}_x64_setup.exe"
+            }
+          }
 
       - name: Compress
         run: |
