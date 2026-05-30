@@ -65,9 +65,9 @@ mixin DynMixin {
       return SliverGrid(
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: columns,
-          mainAxisSpacing: 4,
-          crossAxisSpacing: 4,
-          childAspectRatio: 0.65,
+          mainAxisSpacing: Style.cardSpace,
+          crossAxisSpacing: Style.cardSpace,
+          childAspectRatio: 0.75,
         ),
         delegate: SliverChildBuilderDelegate(
           (_, _) => const DynamicCardSkeleton(),
@@ -94,6 +94,7 @@ mixin DynMixin {
     required BuildContext context,
     required int itemCount,
     required NullableIndexedWidgetBuilder itemBuilder,
+    NullableIndexedWidgetBuilder? gridItemBuilder,
     VoidCallback? onLoadMore,
   }) {
     final g = GlobalData();
@@ -112,9 +113,12 @@ mixin DynMixin {
       case 1: // 网格对齐
         final columns = g.dynamicsGridColumns.clamp(1, 6);
         final screenWidth = MediaQuery.sizeOf(context).width;
-        const spacing = 4.0;
+        const spacing = Style.cardSpace;
         final cellWidth = (screenWidth - (columns - 1) * spacing) / columns;
-        final aspectRatio = gridAspectRatio(cellWidth);
+        // 高度 = 16:10 封面 + 文字信息区 (~80dp)
+        const textAreaHeight = 80.0;
+        final cellHeight = cellWidth / Style.aspectRatio + textAreaHeight;
+        final aspectRatio = cellWidth / cellHeight;
         return SliverGrid(
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: columns,
@@ -125,7 +129,8 @@ mixin DynMixin {
           delegate: SliverChildBuilderDelegate(
             (context, index) {
               if (index == itemCount - 1) onLoadMore?.call();
-              return itemBuilder(context, index);
+              // 网格模式使用专用紧凑卡片
+              return (gridItemBuilder ?? itemBuilder)(context, index);
             },
             childCount: itemCount,
           ),

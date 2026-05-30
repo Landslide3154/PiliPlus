@@ -11,6 +11,7 @@ import 'package:PiliPlus/http/loading_state.dart';
 import 'package:PiliPlus/models/common/image_type.dart';
 import 'package:PiliPlus/models_new/dynamic/dyn_topic_feed/item.dart';
 import 'package:PiliPlus/models_new/dynamic/dyn_topic_top/top_details.dart';
+import 'package:PiliPlus/pages/dynamics/widgets/dynamic_grid_card.dart';
 import 'package:PiliPlus/pages/dynamics/widgets/dynamic_panel.dart';
 import 'package:PiliPlus/pages/dynamics_create/view.dart';
 import 'package:PiliPlus/pages/dynamics_topic/controller.dart';
@@ -344,6 +345,13 @@ class _DynTopicPageState extends State<DynTopicPage> with DynMixin {
                   final item = response[index];
                   if (item.dynamicCardItem != null) {
                     return DynamicPanel(item: item.dynamicCardItem!);
+                  }
+                  return Text(item.topicType ?? 'err');
+                },
+                gridItemBuilder: (context, index) {
+                  final item = response[index];
+                  if (item.dynamicCardItem != null) {
+                    return DynamicGridCard(item: item.dynamicCardItem!);
                   }
                   return Text(item.topicType ?? 'err');
                 },

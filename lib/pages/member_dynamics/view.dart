@@ -2,6 +2,7 @@ import 'package:PiliPlus/common/widgets/flutter/refresh_indicator.dart';
 import 'package:PiliPlus/common/widgets/loading_widget/http_error.dart';
 import 'package:PiliPlus/http/loading_state.dart';
 import 'package:PiliPlus/models/dynamics/result.dart';
+import 'package:PiliPlus/pages/dynamics/widgets/dynamic_grid_card.dart';
 import 'package:PiliPlus/pages/dynamics/widgets/dynamic_panel.dart';
 import 'package:PiliPlus/pages/member_dynamics/controller.dart';
 import 'package:PiliPlus/utils/utils.dart';
@@ -90,6 +91,8 @@ class _MemberDynamicsPageState extends State<MemberDynamicsPage>
                     onSetTop: _memberDynamicController.onSetTop,
                   );
                 },
+                gridItemBuilder: (context, index) =>
+                    DynamicGridCard(item: response[index]),
                 onLoadMore: () => _memberDynamicController.onLoadMore(),
               )
             : HttpError(onReload: _memberDynamicController.onReload),

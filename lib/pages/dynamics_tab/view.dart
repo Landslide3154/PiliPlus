@@ -6,6 +6,7 @@ import 'package:PiliPlus/http/loading_state.dart';
 import 'package:PiliPlus/models/common/dynamic/dynamics_type.dart';
 import 'package:PiliPlus/models/dynamics/result.dart';
 import 'package:PiliPlus/pages/dynamics/controller.dart';
+import 'package:PiliPlus/pages/dynamics/widgets/dynamic_grid_card.dart';
 import 'package:PiliPlus/pages/dynamics/widgets/dynamic_panel.dart';
 import 'package:PiliPlus/pages/dynamics_tab/controller.dart';
 import 'package:PiliPlus/utils/extension/get_ext.dart';
@@ -102,6 +103,8 @@ class _DynamicsTabPageState extends State<DynamicsTabPage>
                     onUnfold: () => controller.onUnfold(item, index),
                   );
                 },
+                gridItemBuilder: (context, index) =>
+                    DynamicGridCard(item: response[index]),
                 onLoadMore: () => controller.onLoadMore(),
               )
             : HttpError(onReload: controller.onReload),

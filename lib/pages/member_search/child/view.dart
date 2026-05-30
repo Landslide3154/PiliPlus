@@ -2,6 +2,7 @@ import 'package:PiliPlus/common/widgets/flutter/refresh_indicator.dart';
 import 'package:PiliPlus/common/widgets/loading_widget/http_error.dart';
 import 'package:PiliPlus/http/loading_state.dart';
 import 'package:PiliPlus/models/common/member/search_type.dart';
+import 'package:PiliPlus/pages/dynamics/widgets/dynamic_grid_card.dart';
 import 'package:PiliPlus/pages/dynamics/widgets/dynamic_panel.dart';
 import 'package:PiliPlus/pages/member_search/child/controller.dart';
 import 'package:PiliPlus/pages/member_search/child/widgets/search_archive_grpc.dart';
@@ -88,6 +89,8 @@ class _MemberSearchChildPageState extends State<MemberSearchChildPage>
                     itemBuilder: (context, index) {
                       return DynamicPanel(item: response[index]);
                     },
+                    gridItemBuilder: (context, index) =>
+                        DynamicGridCard(item: response[index]),
                     onLoadMore: () => _controller.onLoadMore(),
                   ),
               }
