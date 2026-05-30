@@ -5,7 +5,7 @@ import 'package:PiliPlus/utils/grid.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show SliverConstraints;
 import 'package:waterfall_flow/waterfall_flow.dart'
-    show SliverWaterfallFlowDelegate;
+    show SliverWaterfallFlowDelegate, SliverWaterfallFlow;
 
 /// 动态页布局模式
 /// 0 = 瀑布流（不等高，自动列数）
