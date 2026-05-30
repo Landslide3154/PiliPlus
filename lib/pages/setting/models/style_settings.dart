@@ -148,13 +148,21 @@ List<SettingsModel> get styleSettings => [
     setKey: SettingBoxKey.darkVideoPage,
     defaultVal: false,
   ),
-  SwitchModel(
-    title: '动态页启用瀑布流',
-    subtitle: '关闭会显示为单列',
+  NormalModel(
+    title: '动态页布局模式',
     leading: const Icon(Icons.view_array_outlined),
-    setKey: SettingBoxKey.dynamicsWaterfallFlow,
-    defaultVal: Pref.horizontalScreen,
-    needReboot: true,
+    getSubtitle: () {
+      final mode = Pref.dynamicLayoutMode;
+      final label = switch (mode) { 0 => '瀑布流', 1 => '网格对齐', _ => '单列列表' };
+      return '当前：$label';
+    },
+    onTap: _showDynLayoutDialog,
+  ),
+  NormalModel(
+    title: '网格对齐列数',
+    leading: const Icon(Icons.grid_view_outlined),
+    getSubtitle: () => '当前：${Pref.dynamicsGridColumns}列',
+    onTap: _showDynGridColumnsDialog,
   ),
   NormalModel(
     title: '动态页UP主显示位置',
@@ -923,6 +931,55 @@ Future<void> _showBarHideTypeDialog(
   );
   if (res != null) {
     await GStorage.setting.put(SettingBoxKey.barHideType, res.index);
+    SmartDialog.showToast('重启生效');
+    setState();
+  }
+}
+
+Future<void> _showDynLayoutDialog(
+  BuildContext context,
+  VoidCallback setState,
+) async {
+  final res = await showDialog<int>(
+    context: context,
+    builder: (context) => SelectDialog<int>(
+      title: '动态页布局模式',
+      value: Pref.dynamicLayoutMode,
+      values: const [
+        (0, '瀑布流（不等高，自动列数）'),
+        (1, '网格对齐（等高，可调列数）'),
+        (2, '单列列表'),
+      ],
+    ),
+  );
+  if (res != null) {
+    await GStorage.setting.putAll({
+      SettingBoxKey.dynamicLayoutMode: res,
+      SettingBoxKey.dynamicsWaterfallFlow: res == 0,
+    });
+    SmartDialog.showToast('重启生效');
+    setState();
+  }
+}
+
+Future<void> _showDynGridColumnsDialog(
+  BuildContext context,
+  VoidCallback setState,
+) async {
+  final res = await showDialog<double>(
+    context: context,
+    builder: (context) => SliderDialog(
+      title: '网格对齐列数',
+      value: Pref.dynamicsGridColumns.toDouble(),
+      min: 1,
+      max: 6,
+      divisions: 5,
+      suffix: '列',
+      precise: 0,
+    ),
+  );
+  if (res != null) {
+    await GStorage.setting.put(SettingBoxKey.dynamicsGridColumns, res.toInt());
     SmartDialog.showToast('重启生效');
     setState();
   }

@@ -669,6 +669,19 @@ abstract final class Pref {
     defaultValue: horizontalScreen,
   );
 
+  /// 动态页布局模式: 0=瀑布流 1=网格对齐 2=单列列表
+  /// 默认值从 dynamicsWaterfallFlow 派生，保证旧版本迁移兼容
+  static int get dynamicLayoutMode => _setting.get(
+    SettingBoxKey.dynamicLayoutMode,
+    defaultValue: Pref.dynamicsWaterfallFlow ? 0 : 2,
+  );
+
+  /// 网格对齐模式列数
+  static int get dynamicsGridColumns => _setting.get(
+    SettingBoxKey.dynamicsGridColumns,
+    defaultValue: 4,
+  );
+
   static bool get hideTopBar => _setting.get(
     SettingBoxKey.hideTopBar,
     defaultValue: PlatformUtils.isMobile,

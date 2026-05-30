@@ -7,6 +7,22 @@ import 'package:flutter/rendering.dart' show SliverConstraints;
 import 'package:waterfall_flow/waterfall_flow.dart'
     show SliverWaterfallFlowDelegate;
 
+/// 动态页布局模式
+/// 0 = 瀑布流（不等高，自动列数）
+/// 1 = 网格对齐（等高，可调列数）
+/// 2 = 单列列表
+int _layoutMode() => GlobalData().dynamicLayoutMode;
+bool _isWaterfall() => _layoutMode() == 0;
+bool _isGrid() => _layoutMode() == 1;
+
+/// 计算网格模式的宽高比（卡片宽度/高度）
+/// 高度 = 封面区(cellWidth / 1.6) + 内容区(头像+标题+操作栏+间距≈114dp)
+double gridAspectRatio(double cellWidth) {
+  const contentHeight = 114.0;
+  final cellHeight = cellWidth / Style.aspectRatio + contentHeight;
+  return cellWidth / cellHeight;
+}
+
 mixin DynMixin {
   late final dynGridDelegate =
       SliverWaterfallFlowDelegateWithMaxCrossAxisExtent(
@@ -15,9 +31,11 @@ mixin DynMixin {
       );
 
   Widget buildPage(Widget child) {
-    if (GlobalData().dynamicsWaterfallFlow) {
+    // 瀑布流和网格模式直接返回（自己处理布局）
+    if (_layoutMode() != 2) {
       return child;
     }
+    // 单列列表模式：居中
     return SliverLayoutBuilder(
       builder: (context, constraints) {
         final maxWidth = constraints.crossAxisExtent;
@@ -42,6 +60,21 @@ mixin DynMixin {
   );
 
   Widget get dynSkeleton {
+    if (_isGrid()) {
+      final columns = GlobalData().dynamicsGridColumns.clamp(1, 6);
+      return SliverGrid(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: columns,
+          mainAxisSpacing: 4,
+          crossAxisSpacing: 4,
+          childAspectRatio: 0.65,
+        ),
+        delegate: SliverChildBuilderDelegate(
+          (_, _) => const DynamicCardSkeleton(),
+          childCount: 10,
+        ),
+      );
+    }
     if (GlobalData().dynamicsWaterfallFlow) {
       return SliverGrid.builder(
         gridDelegate: skeDelegate,
@@ -54,6 +87,59 @@ mixin DynMixin {
       itemBuilder: (_, _) => const DynamicCardSkeleton(),
       itemCount: 10,
     );
+  }
+
+  /// 统一构建动态列表内容（瀑布流 / 网格对齐 / 单列）
+  Widget buildDynamicContent({
+    required BuildContext context,
+    required int itemCount,
+    required NullableIndexedWidgetBuilder itemBuilder,
+    VoidCallback? onLoadMore,
+  }) {
+    final g = GlobalData();
+    switch (g.dynamicLayoutMode) {
+      case 0: // 瀑布流
+        return SliverWaterfallFlow(
+          gridDelegate: dynGridDelegate,
+          delegate: SliverChildBuilderDelegate(
+            (context, index) {
+              if (index == itemCount - 1) onLoadMore?.call();
+              return itemBuilder(context, index);
+            },
+            childCount: itemCount,
+          ),
+        );
+      case 1: // 网格对齐
+        final columns = g.dynamicsGridColumns.clamp(1, 6);
+        final screenWidth = MediaQuery.sizeOf(context).width;
+        const spacing = 4.0;
+        final cellWidth = (screenWidth - (columns - 1) * spacing) / columns;
+        final aspectRatio = gridAspectRatio(cellWidth);
+        return SliverGrid(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: columns,
+            childAspectRatio: aspectRatio,
+            mainAxisSpacing: spacing,
+            crossAxisSpacing: spacing,
+          ),
+          delegate: SliverChildBuilderDelegate(
+            (context, index) {
+              if (index == itemCount - 1) onLoadMore?.call();
+              return itemBuilder(context, index);
+            },
+            childCount: itemCount,
+          ),
+        );
+      case 2: // 单列列表
+      default:
+        return SliverList.builder(
+          itemBuilder: (context, index) {
+            if (index == itemCount - 1) onLoadMore?.call();
+            return itemBuilder(context, index);
+          },
+          itemCount: itemCount,
+        );
+    }
   }
 }
 

@@ -5,7 +5,6 @@ import 'package:PiliPlus/models/common/member/search_type.dart';
 import 'package:PiliPlus/pages/dynamics/widgets/dynamic_panel.dart';
 import 'package:PiliPlus/pages/member_search/child/controller.dart';
 import 'package:PiliPlus/pages/member_search/child/widgets/search_archive_grpc.dart';
-import 'package:PiliPlus/utils/global_data.dart';
 import 'package:PiliPlus/utils/grid.dart';
 import 'package:PiliPlus/utils/waterfall.dart';
 import 'package:flutter/material.dart';
@@ -83,28 +82,14 @@ class _MemberSearchChildPageState extends State<MemberSearchChildPage>
                   itemCount: response.length,
                 ),
                 MemberSearchType.dynamic =>
-                  GlobalData().dynamicsWaterfallFlow
-                      ? SliverWaterfallFlow(
-                          gridDelegate: dynGridDelegate,
-                          delegate: SliverChildBuilderDelegate(
-                            (_, index) {
-                              if (index == response.length - 1) {
-                                _controller.onLoadMore();
-                              }
-                              return DynamicPanel(item: response[index]);
-                            },
-                            childCount: response.length,
-                          ),
-                        )
-                      : SliverList.builder(
-                          itemBuilder: (context, index) {
-                            if (index == response.length - 1) {
-                              _controller.onLoadMore();
-                            }
-                            return DynamicPanel(item: response[index]);
-                          },
-                          itemCount: response.length,
-                        ),
+                  buildDynamicContent(
+                    context: context,
+                    itemCount: response.length,
+                    itemBuilder: (context, index) {
+                      return DynamicPanel(item: response[index]);
+                    },
+                    onLoadMore: () => _controller.onLoadMore(),
+                  ),
               }
             : HttpError(onReload: _controller.onReload),
       Error(:final errMsg) => HttpError(

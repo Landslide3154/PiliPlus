@@ -78,20 +78,16 @@ class _MyReplyState extends State<MyReply> with DynMixin {
         physics: const AlwaysScrollableScrollPhysics(),
         slivers: [
           _replies.isNotEmpty
-              ? ViewSliverSafeArea(
-                  sliver: SliverWaterfallFlow(
-                    gridDelegate: dynGridDelegate,
-                    delegate: SliverChildBuilderDelegate(
-                      childCount: _replies.length,
-                      (context, index) => ReplyItemGrpc(
-                        replyLevel: 0,
-                        needDivider: false,
-                        replyItem: _replies[index],
-                        replyReply: _replyReply,
-                        onDelete: (_, _) => _onDelete(index),
-                        onCheckReply: _onCheckReply,
-                      ),
-                    ),
+              ? buildDynamicContent(
+                  context: context,
+                  itemCount: _replies.length,
+                  itemBuilder: (context, index) => ReplyItemGrpc(
+                    replyLevel: 0,
+                    needDivider: false,
+                    replyItem: _replies[index],
+                    replyReply: _replyReply,
+                    onDelete: (_, _) => _onDelete(index),
+                    onCheckReply: _onCheckReply,
                   ),
                 )
               : const HttpError(),

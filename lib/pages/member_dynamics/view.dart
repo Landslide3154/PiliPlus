@@ -4,7 +4,6 @@ import 'package:PiliPlus/http/loading_state.dart';
 import 'package:PiliPlus/models/dynamics/result.dart';
 import 'package:PiliPlus/pages/dynamics/widgets/dynamic_panel.dart';
 import 'package:PiliPlus/pages/member_dynamics/controller.dart';
-import 'package:PiliPlus/utils/global_data.dart';
 import 'package:PiliPlus/utils/utils.dart';
 import 'package:PiliPlus/utils/waterfall.dart';
 import 'package:flutter/material.dart';
@@ -81,36 +80,18 @@ class _MemberDynamicsPageState extends State<MemberDynamicsPage>
       Loading() => dynSkeleton,
       Success(:final response) =>
         response != null && response.isNotEmpty
-            ? GlobalData().dynamicsWaterfallFlow
-                  ? SliverWaterfallFlow(
-                      gridDelegate: dynGridDelegate,
-                      delegate: SliverChildBuilderDelegate(
-                        (_, index) {
-                          if (index == response.length - 1) {
-                            _memberDynamicController.onLoadMore();
-                          }
-                          return DynamicPanel(
-                            item: response[index],
-                            onRemove: _memberDynamicController.onRemove,
-                            onSetTop: _memberDynamicController.onSetTop,
-                          );
-                        },
-                        childCount: response.length,
-                      ),
-                    )
-                  : SliverList.builder(
-                      itemBuilder: (context, index) {
-                        if (index == response.length - 1) {
-                          _memberDynamicController.onLoadMore();
-                        }
-                        return DynamicPanel(
-                          item: response[index],
-                          onRemove: _memberDynamicController.onRemove,
-                          onSetTop: _memberDynamicController.onSetTop,
-                        );
-                      },
-                      itemCount: response.length,
-                    )
+            ? buildDynamicContent(
+                context: context,
+                itemCount: response.length,
+                itemBuilder: (context, index) {
+                  return DynamicPanel(
+                    item: response[index],
+                    onRemove: _memberDynamicController.onRemove,
+                    onSetTop: _memberDynamicController.onSetTop,
+                  );
+                },
+                onLoadMore: () => _memberDynamicController.onLoadMore(),
+              )
             : HttpError(onReload: _memberDynamicController.onReload),
       Error(:final errMsg) => HttpError(
         errMsg: errMsg,

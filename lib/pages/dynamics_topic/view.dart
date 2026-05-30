@@ -16,7 +16,6 @@ import 'package:PiliPlus/pages/dynamics_create/view.dart';
 import 'package:PiliPlus/pages/dynamics_topic/controller.dart';
 import 'package:PiliPlus/utils/extension/num_ext.dart';
 import 'package:PiliPlus/utils/extension/theme_ext.dart';
-import 'package:PiliPlus/utils/global_data.dart';
 import 'package:PiliPlus/utils/num_utils.dart';
 import 'package:PiliPlus/utils/page_utils.dart';
 import 'package:PiliPlus/utils/share_utils.dart';
@@ -338,39 +337,18 @@ class _DynTopicPageState extends State<DynTopicPage> with DynMixin {
       Loading() => dynSkeleton,
       Success(:final response) =>
         response != null && response.isNotEmpty
-            ? GlobalData().dynamicsWaterfallFlow
-                  ? SliverWaterfallFlow(
-                      gridDelegate: dynGridDelegate,
-                      delegate: SliverChildBuilderDelegate(
-                        (_, index) {
-                          if (index == response.length - 1) {
-                            _controller.onLoadMore();
-                          }
-
-                          final item = response[index];
-                          if (item.dynamicCardItem != null) {
-                            return DynamicPanel(item: item.dynamicCardItem!);
-                          }
-
-                          return Text(item.topicType ?? 'err');
-                        },
-                        childCount: response.length,
-                      ),
-                    )
-                  : SliverList.builder(
-                      itemBuilder: (context, index) {
-                        if (index == response.length - 1) {
-                          _controller.onLoadMore();
-                        }
-                        final item = response[index];
-                        if (item.dynamicCardItem != null) {
-                          return DynamicPanel(item: item.dynamicCardItem!);
-                        } else {
-                          return Text(item.topicType ?? 'err');
-                        }
-                      },
-                      itemCount: response.length,
-                    )
+            ? buildDynamicContent(
+                context: context,
+                itemCount: response.length,
+                itemBuilder: (context, index) {
+                  final item = response[index];
+                  if (item.dynamicCardItem != null) {
+                    return DynamicPanel(item: item.dynamicCardItem!);
+                  }
+                  return Text(item.topicType ?? 'err');
+                },
+                onLoadMore: () => _controller.onLoadMore(),
+              )
             : HttpError(onReload: _controller.onReload),
       Error(:final errMsg) => HttpError(
         errMsg: errMsg,
