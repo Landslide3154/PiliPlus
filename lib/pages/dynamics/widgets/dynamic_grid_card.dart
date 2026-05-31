@@ -21,8 +21,6 @@ class DynamicGridCard extends StatelessWidget {
     // 尝试从转发内容或图文内容中提取封面
     final coverUrl = video?.cover ?? _extractCover();
     final stat = video?.stat;
-    final pubTs = item.modules.moduleAuthor?.pubTs;
-
     return Card(
       clipBehavior: Clip.hardEdge,
       child: InkWell(
@@ -120,6 +118,7 @@ class DynamicGridCard extends StatelessWidget {
     DynamicArchiveModel? video,
     Stat? stat,
   ) {
+    final pubTs = item.modules.moduleAuthor?.pubTs;
     return LayoutBuilder(
       builder: (context, constraints) {
         final coverWidth = constraints.maxWidth;
