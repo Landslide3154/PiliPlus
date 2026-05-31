@@ -104,8 +104,9 @@ class DynamicGridCard extends StatelessWidget {
     }
     // 图文动态 — 取第一张图片
     final opus = item.modules.moduleDynamic?.major?.opus;
-    if (opus?.pics != null && opus!.pics.isNotEmpty) {
-      return opus.pics.first.url ?? opus.pics.first.src;
+    final pics = opus?.pics;
+    if (pics != null && pics.isNotEmpty) {
+      return pics.first.url ?? pics.first.src;
     }
     return null;
   }
