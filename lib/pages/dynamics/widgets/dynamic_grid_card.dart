@@ -61,14 +61,24 @@ class DynamicGridCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 2),
-                    // 底部操作图标
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Icon(
-                        Icons.more_horiz,
-                        size: 16,
-                        color: theme.colorScheme.outline,
-                      ),
+                    // 底部：发布时间（左）+ 操作图标（右）
+                    Row(
+                      children: [
+                        if (item.modules.moduleAuthor?.pubTs case final ts?)
+                          Text(
+                            DateFormatUtils.dateFormat(ts),
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: theme.colorScheme.outline,
+                            ),
+                          ),
+                        const Spacer(),
+                        Icon(
+                          Icons.more_horiz,
+                          size: 16,
+                          color: theme.colorScheme.outline,
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -118,7 +128,6 @@ class DynamicGridCard extends StatelessWidget {
     DynamicArchiveModel? video,
     Stat? stat,
   ) {
-    final pubTs = item.modules.moduleAuthor?.pubTs;
     return LayoutBuilder(
       builder: (context, constraints) {
         final coverWidth = constraints.maxWidth;
@@ -167,16 +176,6 @@ class DynamicGridCard extends StatelessWidget {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        if (pubTs != null && pubTs > 0)
-                          Text(
-                            DateFormatUtils.dateFormat(pubTs),
-                            style: const TextStyle(
-                              fontSize: 10,
-                              color: Colors.white70,
-                            ),
-                          ),
-                        if (pubTs != null && pubTs > 0 && stat != null)
-                          const SizedBox(width: 6),
                         if (stat != null) ...[
                           Text(
                             '${NumUtils.numFormat(stat.play)}播放',
