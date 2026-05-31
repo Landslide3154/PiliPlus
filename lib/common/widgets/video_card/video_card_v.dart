@@ -136,17 +136,29 @@ class VideoCardV extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
                                     if (videoItem.stat.view != null) ...[
+                                      Icon(
+                                        Icons.play_circle_outlined,
+                                        size: 10,
+                                        color: Colors.white,
+                                      ),
+                                      const SizedBox(width: 2),
                                       Text(
-                                        '${NumUtils.numFormat(videoItem.stat.view)}播放',
+                                        NumUtils.numFormat(videoItem.stat.view),
                                         style: const TextStyle(
                                           fontSize: 10,
                                           color: Colors.white,
                                         ),
                                       ),
                                       if (videoItem.stat.danmu != null) ...[
-                                        const SizedBox(width: 4),
+                                        const SizedBox(width: 6),
+                                        Icon(
+                                          Icons.subtitles_outlined,
+                                          size: 10,
+                                          color: Colors.white,
+                                        ),
+                                        const SizedBox(width: 2),
                                         Text(
-                                          '${NumUtils.numFormat(videoItem.stat.danmu)}弹幕',
+                                          NumUtils.numFormat(videoItem.stat.danmu),
                                           style: const TextStyle(
                                             fontSize: 10,
                                             color: Colors.white,
@@ -222,7 +234,6 @@ class VideoCardV extends StatelessWidget {
                 style: const TextStyle(height: 1.38),
               ),
             ),
-            const SizedBox(height: 2),
             // 底部：作者名（左）
             Text(
               videoItem.owner.name.toString(),
