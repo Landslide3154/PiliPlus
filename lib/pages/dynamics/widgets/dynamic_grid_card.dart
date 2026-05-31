@@ -44,7 +44,7 @@ class DynamicGridCard extends StatelessWidget {
                     Expanded(
                       child: Text(
                         video?.title ?? _contentPreview(),
-                        maxLines: 5,
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(height: 1.38),
                       ),
@@ -170,31 +170,61 @@ class DynamicGridCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         if (stat != null) ...[
-                          Icon(
-                            Icons.play_circle_outlined,
-                            size: 10,
-                            color: Colors.white,
-                          ),
-                          const SizedBox(width: 2),
-                          Text(
-                            NumUtils.numFormat(stat.play),
-                            style: const TextStyle(
-                              fontSize: 10,
-                              color: Colors.white,
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 4,
+                              vertical: 1,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.black45,
+                              borderRadius: BorderRadius.circular(3),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.play_circle_outlined,
+                                  size: 10,
+                                  color: Colors.white,
+                                ),
+                                const SizedBox(width: 2),
+                                Text(
+                                  NumUtils.numFormat(stat.play),
+                                  style: const TextStyle(
+                                    fontSize: 10,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          const SizedBox(width: 6),
-                          Icon(
-                            Icons.subtitles_outlined,
-                            size: 10,
-                            color: Colors.white,
-                          ),
-                          const SizedBox(width: 2),
-                          Text(
-                            NumUtils.numFormat(stat.danmu),
-                            style: const TextStyle(
-                              fontSize: 10,
-                              color: Colors.white,
+                          const SizedBox(width: 4),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 4,
+                              vertical: 1,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.black45,
+                              borderRadius: BorderRadius.circular(3),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.subtitles_outlined,
+                                  size: 10,
+                                  color: Colors.white,
+                                ),
+                                const SizedBox(width: 2),
+                                Text(
+                                  NumUtils.numFormat(stat.danmu),
+                                  style: const TextStyle(
+                                    fontSize: 10,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
