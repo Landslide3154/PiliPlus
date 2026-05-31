@@ -40,18 +40,7 @@ class DynamicGridCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // UP主名
-                    Text(
-                      item.modules.moduleAuthor?.name ?? '',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: theme.textTheme.labelSmall?.fontSize,
-                        color: theme.colorScheme.outline,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    // 标题 — Expanded 撑满剩余空间
+                    // 标题 — Expanded 撑满
                     Expanded(
                       child: Text(
                         video?.title ?? _contentPreview(),
@@ -61,9 +50,20 @@ class DynamicGridCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 2),
-                    // 底部：发布时间（左）+ 操作图标（右）
+                    // 底部：作者名（左）+ 发布时间（右）
                     Row(
                       children: [
+                        Expanded(
+                          child: Text(
+                            item.modules.moduleAuthor?.name ?? '',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: theme.colorScheme.outline,
+                            ),
+                          ),
+                        ),
                         if (item.modules.moduleAuthor?.pubTs case final ts?)
                           Text(
                             DateFormatUtils.dateFormat(ts),
@@ -72,12 +72,6 @@ class DynamicGridCard extends StatelessWidget {
                               color: theme.colorScheme.outline,
                             ),
                           ),
-                        const Spacer(),
-                        Icon(
-                          Icons.more_horiz,
-                          size: 16,
-                          color: theme.colorScheme.outline,
-                        ),
                       ],
                     ),
                   ],
