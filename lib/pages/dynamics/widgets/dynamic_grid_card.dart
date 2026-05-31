@@ -3,6 +3,7 @@ import 'package:PiliPlus/common/widgets/badge.dart';
 import 'package:PiliPlus/common/widgets/image/network_img_layer.dart';
 import 'package:PiliPlus/models/common/badge_type.dart';
 import 'package:PiliPlus/models/dynamics/result.dart';
+import 'package:PiliPlus/utils/date_utils.dart';
 import 'package:PiliPlus/utils/num_utils.dart';
 import 'package:PiliPlus/utils/page_utils.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +21,7 @@ class DynamicGridCard extends StatelessWidget {
     // 尝试从转发内容或图文内容中提取封面
     final coverUrl = video?.cover ?? _extractCover();
     final stat = video?.stat;
+    final pubTs = item.modules.moduleAuthor?.pubTs;
 
     return Card(
       clipBehavior: Clip.hardEdge,
@@ -166,6 +168,16 @@ class DynamicGridCard extends StatelessWidget {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
+                        if (pubTs != null && pubTs > 0)
+                          Text(
+                            DateFormatUtils.dateFormat(pubTs),
+                            style: const TextStyle(
+                              fontSize: 10,
+                              color: Colors.white70,
+                            ),
+                          ),
+                        if (pubTs != null && pubTs > 0 && stat != null)
+                          const SizedBox(width: 6),
                         if (stat != null) ...[
                           Text(
                             '${NumUtils.numFormat(stat.play)}播放',
