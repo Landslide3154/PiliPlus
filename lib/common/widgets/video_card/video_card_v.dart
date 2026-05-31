@@ -16,6 +16,7 @@ import 'package:PiliPlus/utils/page_utils.dart';
 import 'package:PiliPlus/utils/platform_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
+import 'package:intl/intl.dart' show DateFormat;
 
 // 视频卡片 - 垂直布局
 class VideoCardV extends StatelessWidget {
@@ -254,6 +255,9 @@ class VideoCardV extends StatelessWidget {
       ],
     );
   }
+
+  static final shortFormat = DateFormat('M-d');
+  static final longFormat = DateFormat('yy-M-d');
 
   Widget _contentCompact(BuildContext context) {
     final theme = Theme.of(context);
