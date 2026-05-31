@@ -40,15 +40,14 @@ class DynamicGridCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // 标题 — Expanded 撑满
-                    Expanded(
-                      child: Text(
-                        video?.title ?? _contentPreview(),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(height: 1.38),
-                      ),
+                    // 标题 — 自然高度
+                    Text(
+                      video?.title ?? _contentPreview(),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(height: 1.38),
                     ),
+                    const SizedBox(height: 4),
                     // 底部：作者名（左）+ 发布时间（右）
                     Row(
                       children: [

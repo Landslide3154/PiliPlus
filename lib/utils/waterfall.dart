@@ -107,7 +107,7 @@ mixin DynMixin {
         const spacing = Style.cardSpace;
         final cellWidth = (screenWidth - (columns - 1) * spacing) / columns;
         // 高度 = 16:10 封面 + 文字信息区 (~80dp)
-        const textAreaHeight = 90.0;
+        const textAreaHeight = 78.0;
         final cellHeight = cellWidth / Style.aspectRatio + textAreaHeight;
         final aspectRatio = cellWidth / cellHeight;
         return SliverGrid(

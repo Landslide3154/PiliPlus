@@ -267,14 +267,13 @@ class VideoCardV extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: Text(
-                "${videoItem.title}\n",
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(height: 1.38),
-              ),
+            Text(
+              "${videoItem.title}\n",
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(height: 1.38),
             ),
+            const SizedBox(height: 4),
             // 底部：作者名（左）
             Text(
               videoItem.owner.name.toString(),
