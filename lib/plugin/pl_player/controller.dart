@@ -210,8 +210,16 @@ class PlPlayerController with BlockConfigMixin {
 
   late final bool autoPiP = Pref.autoPiP;
   bool get isPipMode =>
-      (Platform.isAndroid && Floating().isPipMode) ||
+      (Platform.isAndroid && _androidPipMode) ||
       (PlatformUtils.isDesktop && isDesktopPip);
+  bool _androidPipMode = false;
+  Future<void> _initPipMode() async {
+    if (Platform.isAndroid) {
+      try {
+        _androidPipMode = await Floating().pipStatus == PiPStatus.enabled;
+      } catch (_) {}
+    }
+  }
   late bool isDesktopPip = false;
   late Rect _lastWindowBounds;
 
@@ -291,6 +299,7 @@ class PlPlayerController with BlockConfigMixin {
   }
 
   void enterPip({bool isAuto = false}) {
+    _androidPipMode = true;
     if (videoPlayerController != null) {
       controls = false;
       final state = videoPlayerController!.state;
@@ -905,6 +914,7 @@ class PlPlayerController with BlockConfigMixin {
 
   // 开始播放
   Future<void> _initializePlayer() async {
+    _initPipMode();
     if (_instance == null) return;
     // 设置倍速
     if (isLive) {
