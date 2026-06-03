@@ -1,0 +1,790 @@
+$ git log --oneline --format="%h %ad %s" --date=short
+[exit 0]
+6deced8ec 2026-06-03 fix(desktop): 返回主页改用 Get.offAllNamed 绕过 PopScope 拦截
+287628a29 2026-05-31 fix: 推荐页卡片文字区高度从90降到75，减少标题和作者间多余空间
+6372037fb 2026-05-31 fix: 标题用 Expanded 将底栏（作者左+时间右）固定到卡片底部
+43f138538 2026-05-31 fix: 标题去掉 Expanded 让作者行紧贴标题，减少多余间距
+73fa4e446 2026-05-31 fix: 恢复 VideoCardV.shortFormat/longFormat 静态字段供其他模块引用
+cd83f194d 2026-05-31 fix: 标题改回最多两行，播放/弹幕添加黑底圆角背景
+ced90f588 2026-05-31 refactor: 统计改为图标+数字格式，移除多余间距，优化空间分配
+e4d89e0f4 2026-05-31 refactor: 首页推荐卡片改用与动态网格一致的紧凑布局（统计移到封面上，文字区只留标题+作者）
+712dc1030 2026-05-31 fix: 发布时间移到卡片文字区底部（标题下面），而非缩略图 overlay
+c974a0f00 2026-05-31 fix: pubTs 移入 _buildCover 方法内引用
+76499fcd8 2026-05-31 feat: 卡片缩略图左下角添加发布时间（X分钟前/X小时前/昨天/MM-DD）
+483352b3d 2026-05-31 fix: opus.pics 级联空安全修复
+68249612b 2026-05-31 fix: DynamicGridCard 封面用 LayoutBuilder 修复不显示，统计移至缩略图左下角，转发图文提取封面
+cbc48e338 2026-05-31 chore: 清理死代码和未使用的导入
+1c9e8995d 2026-05-31 fix: 修复 DynamicGridCard 中错误的模型字段名和 pattern match 语法
+8d7e8f302 2026-05-31 fix: 动态页网格模式改用 DynamicGridCard 紧凑卡片，解决重叠错乱问题
+015fa579b 2026-05-31 fix(ci): 锁定 Windows 构建使用 windows-2022 避免 VS2026 废弃 coroutine 导致的编译失败
+91746404d 2026-05-31 fix: 修复 SliverWaterfallFlow 未导入的编译错误
+afbbce957 2026-05-31 fix(ci): 拆分 Windows 构建步骤，直接运行 flutter build 暴露编译错误
+b01a2baf2 2026-05-31 Create 1780160654744-02ec7176-github_list_commits.txt
+0102ce137 2026-05-31 fix: 移除 CI 中的仓库名校验，使 fork 能正常构建
+15846baa7 2026-05-31 feat: 动态页支持网格对齐布局 + 视频卡片缩略图重排
+d4d9fc340 2026-05-30 refa: jni (#2244)
+6a75061db 2026-05-30 fix dev build
+2e7c80422 2026-05-30 upgrade deps
+60f800b67 2026-05-30 gitignore
+1ba6983f3 2026-05-29 fix #2233
+6c61ff59f 2026-05-28 opt publish page
+646498743 2026-05-27 upgrade deps
+41027f701 2026-05-28 fix #2226
+41c8e1a53 2026-05-26 refa: log (#2216)
+56756c5c8 2026-05-26 fix #2209
+3b68fe467 2026-05-25 opt rcmd
+f14aacd66 2026-05-24 handle msg type `EN_MSG_TYPE_CUSTOM_FACE`
+c2ceb9ec7 2026-05-24 improve pay coin
+99a950b04 2026-05-24 fix #2192
+87914a267 2026-05-24 fix fav favFolder toast
+dd85aba8a 2026-05-24 upgrade deps
+8309be9ca 2026-05-21 fix #2171
+5fbc86afa 2026-05-21 fix #2171
+be5889ee3 2026-05-20 upgrade deps
+7c342032d 2026-05-20 improve handle opus nullType
+46baad899 2026-05-20 upgrade deps
+66f15f532 2026-05-19 add publish throttle
+89522e205 2026-05-19 layoutbuilder patch
+0cac46ee2 2026-05-19 fix setEnabledSystemUIMode
+1fcc26464 2026-05-16 flutter 3.44.0
+ad1583706 2026-05-19 upgrade deps
+cc169db12 2026-05-18 upgrade deps
+6a1db5d26 2026-05-17 opt handle brightness/volume
+b04c3d878 2026-05-18 custom angle degree
+68e302b5d 2026-05-18 fix #2143
+ed3962447 2026-05-16 opt member header
+868365804 2026-05-16 opt update page transition
+0c308a700 2026-05-16 fix text selection patch
+cd8266843 2026-05-16 fix #2112
+e142cb680 2026-05-16 add patch link
+200329df4 2026-05-16 remove image anim check
+859f14423 2026-05-15 image anim patch
+9d21be104 2026-05-15 improve text selection patch
+d5293fbc7 2026-05-15 feat: handle vote uri (#2105)
+ad6c0e0d1 2026-05-15 upgrade deps
+ce706d473 2026-05-15 improve horizontal touch slop
+2c511d1a2 2026-05-14 tweaks
+3ac21d95f 2026-05-14 improve player gesture
+b33fdf14a 2026-05-15 tweaks (#2100)
+24769e144 2026-05-13 fix #2087
+50875421a 2026-05-12 tweaks
+0581d8f7d 2026-05-12 upgrade deps
+be9f39d04 2026-05-12 remove longpress threshold on main
+034482362 2026-05-11 fix(dynamics): disable shadow ban check for scheduled posts (#2059)
+1a45b5cb4 2026-05-10 upgrade deps
+fab34df97 2026-05-09 tweaks
+dbb865d72 2026-05-09 fix #2002
+23db48518 2026-05-09 improve player gesture
+d63116542 2026-05-08 tweaks
+f5dbfcec7 2026-05-08 tweaks (#2032)
+b7b40c557 2026-05-05 Release 2.0.7
+d0373da5c 2026-05-05 fix get video part dimension
+31aeab351 2026-05-04 fix ios build
+4228f918d 2026-05-04 fix: html numeric character (#1972)
+0f07dccc4 2026-05-04 upgrade deps
+9b0c9e927 2026-05-04 navigator patch
+ac9631462 2026-05-04 flutter 3.41.9
+d5bf3487f 2026-05-03 add audio volume button & slider on desktop
+9259e84d5 2026-05-03 upgrade deps
+583092735 2026-05-03 opt android orientation
+d41f69e95 2026-05-02 improve gesture patch
+c4847caa2 2026-05-02 opt icons
+cdd9289e6 2026-05-02 opt reply cardLabels
+cd1fdd42d 2026-05-02 transparent live dm panel barrier
+74ed06157 2026-05-02 opt icons
+293f046b3 2026-05-02 fix orientation
+b00b9e281 2026-05-02 opt view opus images
+68e9afd72 2026-05-02 fixes
+09c73d3c8 2026-05-02 improve slide gesture patch
+a91a90b7d 2026-05-02 tweak
+d434f54dd 2026-05-01 fix #1929
+dbbdb61e3 2026-05-01 fix decrease system brightness on android
+d85dd864f 2026-05-01 opt sc endTime
+84bbbd19f 2026-05-01 update gitignore
+3f34d1a25 2026-05-01 fix: orientation (#1935)
+7b6d8bef9 2026-04-30 Release 2.0.6
+a2b54e50d 2026-04-30 tweak
+887c3525a 2026-04-30 fix #1917
+3a46ce242 2026-04-30 upgrade deps
+c0b5876d5 2026-04-30 fix #1917
+74c389be8 2026-04-30 custom fullscreen sc width
+5d8736169 2026-04-30 do not exit onDestroy
+9752ae2f3 2026-04-30 refresh live msg if needed
+3a9cafaf2 2026-04-30 handle foldable screen size
+5937d83aa 2026-04-29 ios bottom sheet patch
+6feb1c15e 2026-04-29 tweak
+57c683d5d 2026-04-29 upgrade deps
+cd26cf6d9 2026-04-29 tweaks
+c7864ff4a 2026-04-29 Reapply "hide systembar when preview"
+7b51b6900 2026-04-29 improve handling android window mode
+11b6f241b 2026-04-28 opt reorder
+88c01ffca 2026-04-28 improve handling video pop
+9ed8b14d1 2026-04-28 feat: add to filter (#1903)
+f7a2be192 2026-04-28 fix #1904
+47e3a47e0 2026-04-27 fix fav sort
+524b6bca1 2026-04-28 unify horizontal video models
+80ecd3578 2026-04-27 sort follow tag
+89fdc2815 2026-04-27 auto add to created fav/follow
+b406a00c8 2026-04-27 opt audio normalization
+6755b7fae 2026-04-27 get real-time video duration in post panel
+60801f984 2026-04-26 disable auto reset brightness on iOS
+fae0cfe80 2026-04-27 disable blank issue
+dccb5d4bf 2026-04-26 create fav tag from fav panel
+b9ce4bad6 2026-04-26 opt follow item
+baef1655d 2026-04-25 Release 2.0.5
+8fd5f353e 2026-04-25 replace errorWidget with errorBuilder in CachedNetworkSVGImage
+326291de2 2026-04-25 upgrade deps
+1761a9abc 2026-04-24 fix image gesture
+d372142d6 2026-04-24 view vote image
+91f00173b 2026-04-24 fix(player): suppress volume indicator during audio duck events (#1899)
+73484f1f7 2026-04-24 opt ui
+490a08fa7 2026-04-24 grpc search archive
+5b5983ed5 2026-04-23 precheck video dimension
+efc202c10 2026-04-23 upgrade deps
+24ab7505e 2026-04-23 opt onOrientationChanged
+d6bce6aa6 2026-04-23 Revert "hide systembar when preview"
+354282930 2026-04-23 fix(article): fix Opus article body font size too small (#1897)
+79c9849c8 2026-04-22 Sync progress if needed before exit (#1896)
+d7b4ceabb 2026-04-21 improve Dyn/Topic DraggableScrollableSheet
+dd5ccd11b 2026-04-21 text selection patch
+26a5d0071 2026-04-21 opt image gesture
+d32456fae 2026-04-20 opt ui
+bffdfae1f 2026-04-20 scroll view patch
+44b7cced0 2026-04-20 Revert "opt scroll view"
+91936a9f4 2026-04-20 update pref default value
+0fb394cc3 2026-04-20 hide systembar when preview
+4229024ad 2026-04-20 tweaks
+add633bc6 2026-04-19 upgrade deps
+54a88fa2f 2026-04-19 fix initial isDyAllowed
+9543f3b45 2026-04-19 bring back remove player safearea
+e88769308 2026-04-19 fix retry
+bac076993 2026-04-18 add split settings model
+24f2cfa4e 2026-04-18 tweaks
+970ee679f 2026-04-18 fix: reset Dio adapters on iOS network switch (#1885)
+db7ad269b 2026-04-17 fix RichTextField affinity on desktop
+2232bc009 2026-04-16 use linux_webview_window to support linux geetest (#1889)
+e778f2b46 2026-04-16 correct reply field names
+7e9618d71 2026-04-16 fix ios build
+62880a376 2026-04-16 increase dm proto extra field number
+e566a358d 2026-04-15 tweaks
+1b0b966e7 2026-04-15 upgrade deps
+dd2492e04 2026-04-16 Add translation support to reply items (#1894)
+0b4ed2589 2026-04-14 Release 2.0.4
+372c677e8 2026-04-14 opt android orientation
+9a6f335e4 2026-04-14 upgrade deps
+f9441db23 2026-04-14 opt scroll view
+4de43faa2 2026-04-12 tweaks
+ba372a101 2026-04-12 opt avatar
+a2ff54af7 2026-04-11 opt player progress bar behavior (#1887)
+cbc4f5832 2026-04-09 upgrade deps
+b553e7554 2026-04-10 opt video statusbar
+68724c8a9 2026-04-10 opt sc background image
+85baf8e0e 2026-04-09 opt android orientation
+222c9d01a 2026-04-09 bubble page
+db30aa804 2026-04-08 tweaks
+6f95456d2 2026-04-08 fix vipStatus check
+de6e402d9 2026-04-08 fix return button not working (#1883)
+634166078 2026-04-08 Release 2.0.3
+a1dbcae93 2026-04-07 upgrade deps
+1526137a6 2026-04-07 fix AppSign
+3097b5681 2026-04-06 refactor device orientation
+db74eccf7 2026-04-06 android shortcut
+14890d342 2026-04-05 tweaks
+51163dd98 2026-04-05 create user shorcut on Android
+f0d9b3a9a 2026-04-05 upgrade dep
+8f3707fbf 2026-04-05 opt reserve btn
+f52bbe980 2026-04-05 upgrade dep
+3ec54868d 2026-04-05 show reserve btn in space page
+c0b55f9af 2026-04-05 show member guard
+279f21857 2026-04-05 clean up models
+b897103af 2026-04-02 Upgrade deps
+353664fbd 2026-04-03 Open offline dir on desktop
+de3505ce0 2026-04-02 Floating NavBar
+cdc172035 2026-04-02 Reformat
+904d210ba 2026-04-01 build
+db8dd85b6 2026-04-02 fix: revert commit 7ee6d1e element.weight (#1879)
+8ad130567 2026-03-31 Release 2.0.2
+7eb21bc5a 2026-03-31 build
+ea4316a84 2026-03-31 opt ui
+2bbc97a95 2026-03-31 fix macOS build
+0178d105b 2026-03-31 add Local Network permissions for iOS & macOS
+771fa75f4 2026-03-30 upgrade deps
+82483b33f 2026-03-29 opt live emote
+886c53c7d 2026-03-29 opt: m3e loading (#1877)
+f0050dd6e 2026-03-29 fix pendent offset
+e6a2f65b4 2026-03-29 fix reply `up` badge
+2fc3f9864 2026-03-28 opt ui
+64c05a1b0 2026-03-28 upgrade deps
+7c4e20f96 2026-03-29 safely parse up list (#1876)
+ace286753 2026-03-27 flutter 3.41.6
+f0430eba9 2026-03-26 opt player bar
+bbcceb72a 2026-03-26 upgrade deps
+be4fa6ad2 2026-03-25 build
+50e1f77e1 2026-03-25 log player error instead of toast
+ba56b4503 2026-03-25 clamp archive page
+b4b3764e5 2026-03-23 web archive
+2220372e4 2026-03-23 tweaks
+0957dfc66 2026-03-23 fix ios build
+9578f948b 2026-03-23 tweaks
+1724f0d20 2026-03-23 upgrade deps
+2bebf200d 2026-03-22 show user medal
+fc7fc18b1 2026-03-22 tweaks
+8f00ca568 2026-03-22 fix: macOS Media Control not activated & remove Background Play switch on desktop  (#1872)
+236b52444 2026-03-20 opt image viewer gesture
+ae59d257c 2026-03-20 show medal wall
+662ccfcf0 2026-03-19 upgrade deps
+b7ab3655c 2026-03-19 flutter 3.41.5
+eda04b32a 2026-03-19 fix(player): clamp loudnorm measured_thresh parameters to valid range (#1871)
+9b1ae3992 2026-03-17 m3e loading indicator
+d1497115d 2026-03-17 tweaks
+7f2682bb7 2026-03-17 opt(download): force cache downloads to use http/1.1 (#1870)
+d6579b29a 2026-03-17 reduce rebuild
+8a8aa6c1e 2026-03-16 unique image tag
+ed66a4655 2026-03-16 opt fab location
+e04affd0f 2026-03-15 opt: hive ce (#1868)
+e29308349 2026-03-15 opt set shader
+7f39f36c7 2026-03-14 fix auto fullscreen
+565819feb 2026-03-14 remove unused param
+af150118a 2026-03-14 opt load saved reply
+470e519a2 2026-03-14 opt save panel
+d73588f1f 2026-03-15 fix(player): disable audio normalization on missing audio input (#1865)
+ffbbd8e70 2026-03-14 Release 2.0.1
+a1815c4cc 2026-03-14 unify platform file name
+b9e543f26 2026-03-14 improve export/import
+0788a4de2 2026-03-14 upgrade deps
+b0c6e2f5c 2026-03-14 fix dyn folded link
+9489d8a7c 2026-03-13 opt handle dyn additional
+aee4424db 2026-03-13 opt: escape performReassemble (#1864)
+96f997289 2026-03-13 upgrade deps
+6ddf28255 2026-03-13 fix header progress
+e98b2b69b 2026-03-12 tweaks
+448192b63 2026-03-12 DynamicFlexibleSpaceBar: provide height
+6cda3a188 2026-03-12 tweaks (#1862)
+99128b264 2026-03-12 stateless `DynamicSliverAppBar`
+b8098fe06 2026-03-10 show member collection top
+9fef3284d 2026-03-11 opt ui
+f2b0a3a5e 2026-03-10 link up to launcher
+3090cfc6f 2026-03-10 live first frame
+98ce99202 2026-03-10 decrease image max ratio
+fddf46a90 2026-03-10 upgrade dep
+a5231a55b 2026-03-09 fix dyn with title only
+b8cae015d 2026-03-09 upgrade dep
+3b0953432 2026-03-09 upgrade dep
+702cf988d 2026-03-09 tweaks
+5586d12b1 2026-03-09 opt live chat list
+468393936 2026-03-08 upgrade deps
+f825f87dc 2026-03-08 opt: save reply (#1860)
+4ad422c3e 2026-03-08 suppress build annotation
+c01318c06 2026-03-08 feat: sliver wrap (#1858)
+01a74e191 2026-03-08 redirect ugc to pgc
+a1f15b5da 2026-03-08 feat: record reply
+1e83a23c5 2026-03-08 feat: "Selected Comments" status displayed (#1857)
+2d69c05f3 2026-03-08 tweak
+7a2dbe68c 2026-03-08 build
+db08af6ca 2026-03-07 correct scrollable position when hiding top bar
+fefb5c837 2026-03-07 build
+a88429d6d 2026-03-07 upgrade deps
+cbe99a32e 2026-03-06 fix player interactive viewer recognizer
+b65d10ac5 2026-03-06 flutter 3.41.4
+868f7f505 2026-03-06 increase image max ratio
+e84368410 2026-03-06 upgrade deps
+631197e3b 2026-03-06 opt perf
+381c38572 2026-03-05 refactor image grid
+077255e77 2026-03-06 opt member profile
+0bcc1a7f1 2026-03-05 build
+9b145b525 2026-03-05 opt floating header
+b61a54bf9 2026-03-04 fix auto fullscreen
+cf103a09c 2026-03-04 fix typo
+a802bc1cd 2026-03-04 opt auto fullscreen
+8d312d8cf 2026-03-04 build
+6738142ac 2026-03-04 opt player listener
+3d99e6c76 2026-03-03 fetch dyn type `onlyfansQaCard`
+f9f52e918 2026-03-03 resize image placeholder
+6108290b4 2026-03-03 remove unused property
+8bae27512 2026-03-03 fix trackpad not respecting `enableSlideVolumeBrightness` property
+0504011ba 2026-03-03 Release 2.0.0
+dc9d4f9ee 2026-03-03 upgrade deps
+187c92d69 2026-03-03 flutter 3.41.3
+9c7b18710 2026-03-02 refa persistent header & dynamic sliver appbar
+1dbc54f06 2026-02-28 opt ui
+348bc8b92 2026-03-01 opt: set repeat ui (#1854)
+a375d8525 2026-02-28 upgrade deps
+e3e423f9b 2026-02-28 fix app scheme
+62048992b 2026-02-28 chore(ci): upgrade upload-artifact to v7 and set archive options (#1852)
+ec9498a2c 2026-02-28 fix profile actions constraints
+1d35abef6 2026-02-27 fixes
+889f6d01c 2026-02-27 upgrade deps
+d9c47be2a 2026-02-27 opt chat list
+cf4403658 2026-02-27 tweaks
+7276cde48 2026-02-27 refa player (#1848)
+6782bee11 2026-02-27 opt: HeaderLayout with SlottedMultiChild (#1850)
+b55e102dc 2026-02-27 feat(whisper): add uploader message attachment display (#1849)
+65ad8a0fd 2026-02-26 opt anim
+fdb3bf3ed 2026-02-26 opt member profile
+95506ad89 2026-02-26 tweak
+348b2533d 2026-02-26 opt image gesture
+2bdab7113 2026-02-25 opt ui
+e707764f8 2026-02-25 tweaks (#1846)
+4a3d827f7 2026-02-24 opt ui
+e88cd12df 2026-02-23 opt refresh
+ee04978e0 2026-02-23 opt scrollPhysics
+d15ad4911 2026-02-23 upgrade deps
+14b6c115b 2026-02-23 opt refresh
+ee188da6b 2026-02-22 opt scrollPhysics
+998b70cd8 2026-02-22 tweaks
+7563a52be 2026-02-22 opt refresh
+7e81fae2b 2026-02-22 fix jump to item
+639dfac8a 2026-02-21 build
+d8950adb6 2026-02-21 opt player bottom bar
+9092db86c 2026-02-21 upgrade deps
+d7d9655f8 2026-02-20 opt: RepaintBoundary (#1840)
+a63ca9376 2026-02-20 flutter 3.41.2
+243178c11 2026-02-20 format
+dcb3a02da 2026-02-20 allow user to configure window decorations(CSD/SSD) (#1839)
+b1c0eca32 2026-02-19 fix(player): clamp loudnorm parameters to valid FFmpeg ranges (#1838)
+e3a1eb5c8 2026-02-19 opt ui
+736478b1c 2026-02-19 fix patch
+12919804d 2026-02-19 mouse cursor patch
+888b3d817 2026-02-19 remove unused val
+1e6b0f0b5 2026-02-19 opt hide bottom bar
+aa3e5a473 2026-02-18 tweaks
+3f3d54fd2 2026-02-18 add bar hide type
+a142b1534 2026-02-18 fix hide bottom bar
+651e79ce2 2026-02-18 opt handle scroll
+9b93ce84a 2026-02-18 upgrade deps
+dfa258b9e 2026-02-18 opt hide top/bottom bar
+a5efca4e1 2026-02-17 upgrade dep
+1fe84d1d3 2026-02-16 Revert "disable windows thread merging"
+b978ff564 2026-02-16 tweaks
+fa85ae47a 2026-02-16 gitignore
+3209ecd0b 2026-02-15 opt image recognizer
+807de41ff 2026-02-15 opt gesture
+d273e72a4 2026-02-15 opt image viewer
+2c0597175 2026-02-15 opt gesture
+85292a3df 2026-02-15 opt: image viewer (#1837)
+9c7c6f9e4 2026-02-14 tweaks
+511ff71f5 2026-02-14 opt share video link (#1835)
+e10498224 2026-02-14 handle Cmd+Q on macOS (#1834)
+e7e79eb62 2026-02-14 opt image preview
+352e314ee 2026-02-14 upgrade deps
+e9dafbc22 2026-02-14 upgrade deps
+96727469a 2026-02-14 build
+c70c9829c 2026-02-14 tweaks
+beb7eb1ae 2026-02-14 refa image preview
+8e726f49b 2026-02-13 Revert "opt: audio uri" (#1833)
+007375371 2026-02-12 revert new overscrollindicator
+6d7955156 2026-02-12 fix updateTicker
+483953cf5 2026-02-12 sync flutter widgets
+fbf7116ed 2026-02-12 fix modal barrier patch
+6c164d81e 2026-02-12 use TickerMode.getValuesNotifier
+d0789734e 2026-02-12 fix get icon assets
+f3bd30533 2026-02-12 use findItemIndexCallback
+5ab700071 2026-02-12 platform assets
+dc1c33f08 2026-02-12 adapt RadioClient
+920c51100 2026-02-12 flutter 3.41.0
+05a385d69 2026-02-10 tweaks
+9411785d2 2026-02-10 opt: PlPlayerController (#1832)
+ed2bd069e 2026-02-10 opt: segment (#1831)
+0460030a2 2026-02-09 feat: tempPlayerConf add playRepeat (#1830)
+7e570d11d 2026-02-09 fix: live dm
+32cd3209d 2026-02-09 opt init recognizer
+0cb07aef1 2026-02-08 audio block
+0c65605ac 2026-02-08 audio sschedule shutdown
+8234b7ac9 2026-02-08 opt: matrix anim (#1829)
+4ac855d39 2026-02-07 Release 1.1.6
+7381939c0 2026-02-07 upgrade deps
+a380bcd96 2026-02-07 tweaks
+d253ef468 2026-02-07 tweaks
+e8145ef65 2026-02-07 fix: initialize controller before super (#1827)
+0c175abc0 2026-02-07 opt image physics
+946a5a1e4 2026-02-07 opt image gesture
+29e7e0e55 2026-02-06 feat: vertical tabbar
+cc1704a02 2026-02-06 tweaks
+7ab2cf973 2026-02-06 tweaks (#1826)
+32386bf14 2026-02-06 fix check bottom bar
+40269da39 2026-02-06 tweaks
+42e082bbc 2026-02-06 scroll to current rank
+1ad710c1c 2026-02-05 opt settings
+cfa925549 2026-02-05 tweaks
+ca387787b 2026-02-05 opt handle reply note
+29a9b22c2 2026-02-05 upgrade deps
+672375b92 2026-02-04 tweaks
+c09973880 2026-02-04 fix: respect title bar setting after exiting PiP (#1825)
+50561b8dc 2026-02-03 opt persist header
+259685977 2026-02-01 custom dyn text menu
+3d453bafd 2026-02-02 modal barrier patch
+18e0b93ca 2026-02-03 feat: add copy/move support to fav/later search results (#1822)
+7260a387f 2026-02-02 tweaks (#1821)
+37fa165f5 2026-02-01 opt pip
+8f08104f3 2026-02-01 upgrade dep
+6ee4deab0 2026-02-01 Fix duplicate items in Up list when showAllUp is enabled. (#1819)
+77fff9293 2026-02-01 opt: binary search fontsize (#1818)
+8964197b7 2026-01-31 tweaks
+dbc7bcd0d 2026-01-31 upgrade deps
+207ad2753 2026-01-30 opt ui
+d6e6e52df 2026-01-30 tweaks (#1816)
+9442b17d6 2026-01-29 opt select account (#1815)
+058ff44e3 2026-01-29 opt autosync
+48c7dc0ee 2026-01-29 custom autosync
+99634a66a 2026-01-29 tweaks
+21fad89cd 2026-01-29 Add autosync property with value '30' (#1813)
+5979ddb60 2026-01-29 tweaks
+bcbfe5c84 2026-01-29 SpringDescription with duration
+1640732f5 2026-01-29 opt ui
+956791061 2026-01-29 upgrade deps
+d1713504a 2026-01-28 opt gesture
+bce73d9f1 2026-01-28 upgrade deps
+6f30d2e33 2026-01-28 opt reply
+556bda0d6 2026-01-28 opt video intro
+9d5eb55e2 2026-01-28 upgrade dep
+110469961 2026-01-27 opt video scheme
+fa348db7c 2026-01-27 tweaks
+3eac565b5 2026-01-26 fix slide
+af40e489b 2026-01-26 opt ao
+361eb4c61 2026-01-25 opt ui
+7ace981f2 2026-01-26 upgrade dep
+bfb2becb2 2026-01-26 opt: ao (#1811)
+038f03a4e 2026-01-25 tweaks (#1810)
+219228f8b 2026-01-24 upgrade deps
+1f64de595 2026-01-24 opt gesture
+e9b5cffa9 2026-01-24 tweaks
+68872f7b1 2026-01-24 opt gesture
+bd158619a 2026-01-23 opt gesture
+310f497c3 2026-01-24 opt slide
+30ee41385 2026-01-23 fix web rcmd
+0ab07a713 2026-01-23 tweaks
+7eaf05839 2026-01-24 fixes (#1809)
+777c3c227 2026-01-24 fix typo (#1808)
+b9b54ce4f 2026-01-22 tweaks
+92e5fae29 2026-01-22 opt pop
+05e8ded86 2026-01-21 upgrade deps
+7a65b777c 2026-01-21 tweaks
+0b1f6c4d0 2026-01-20 tweaks
+923af32c9 2026-01-21 tweaks (#1806)
+4eae7e698 2026-01-19 opt live border indicator
+5a61dbe30 2026-01-19 opt emoji tooltip
+036dbcaf2 2026-01-19 opt image grid
+bd97f9a50 2026-01-20 opt gesture
+33278a74b 2026-01-19 tweaks
+397f887b9 2026-01-19 fix video progress indicator
+ebe793ccf 2026-01-19 fix progress behavior
+68464e4e3 2026-01-18 refa: segment progressbar
+395893fc7 2026-01-18 refa: video progress indicator
+f5657d2d4 2026-01-18 refa custom painter
+a3ddc8343 2026-01-16 upgrade deps
+d2f8aff42 2026-01-15 opt ui
+25148509d 2026-01-18 opt: aaudio (#1805)
+2879d0dc0 2026-01-14 upgrade deps
+90349189e 2026-01-15 fix image grid
+bdc524e48 2026-01-15 tweaks
+cb5882200 2026-01-13 feat: edit dyn
+4a2679a58 2026-01-11 opt scale
+09bd1edeb 2026-01-11 tweaks
+00da3c4a0 2026-01-11 fix: ipa can't be installed by altstore/sidestore (#1803)
+c40d79418 2026-01-11 tweaks (#1802)
+34a839d9e 2026-01-10 fix menu position
+f06d0605c 2026-01-10 fix chat panel container
+ef975de62 2026-01-10 mark deleted sc
+d10c737a3 2026-01-09 show img menu
+28b69a06f 2026-01-10 feat: Add desktop scaling and fix linux postinst (#1800)
+069cf555e 2026-01-09 bump flutter
+836ab311d 2026-01-09 feat: add option to turn off dynamic interactions (#1798)
+dbc11c36d 2026-01-09 fix: permission dialog (#1799)
+fffce10b3 2026-01-08 update sponsor block api (#1797)
+de85e82bf 2026-01-07 Update build.yml
+9855b35b6 2026-01-07 opt ui
+5a0b045a1 2026-01-05 opt ui
+c226f8f6d 2026-01-03 upgrade deps
+fd06fa9cc 2026-01-03 report sc
+2b5f111fb 2026-01-03 fix: resolve Linux window close handler to prevent app hang (#1795)
+9f5ce5ae3 2026-01-03 fix find sc index
+3d95165d4 2026-01-03 feat: support more dolby id (#1794)
+cfb72f27a 2026-01-03 tweaks
+bcacc41db 2026-01-03 live dm action
+b2da99e33 2026-01-02 fix dm
+041af37bb 2026-01-02 tweaks
+80e007bac 2026-01-01 add static2Scroll option
+87c769932 2025-12-31 fix dm
+11912c5f6 2025-12-31 fix level
+236a8b302 2025-12-31 fix dm
+63e4bac20 2025-12-31 tweaks
+2e11247af 2025-12-30 fix: font size
+13f377f68 2025-12-30 fix: font size
+b9d594bc8 2025-12-29 tweaks
+2a52157c3 2025-12-28 show live rank
+a037d8e79 2025-12-28 opt dyn publish
+49b7ea14c 2025-12-29 refa: danmaku & feat: scroll fixed velocity (#1791)
+0a40d1113 2025-12-27 opt SpringDescription
+dff6b6486 2025-12-27 do not check `uploadPictureIconState`
+b51c64641 2025-12-27 tweaks
+25acf3a9b 2025-12-27 fix: dynamic openInBrowser (#1790)
+7ec90e9a2 2025-12-27 opt dyn more text
+645ce0b7b 2025-12-27 opt ui
+864fef588 2025-12-27 fix check `uploadPictureIconState`
+eea232c6d 2025-12-26 show dyn interaction
+25fca498f 2025-12-26 opt ui
+c9a02f9c7 2025-12-26 fix retry
+99602eea9 2025-12-25 tweaks
+b5fe0faee 2025-12-26 Revert "opt view dyn reply"
+20a36e8f9 2025-12-25 tweaks
+161bf2eed 2025-12-24 opt view dyn reply
+fcf4e72d8 2025-12-24 fix vote card
+b46cb69df 2025-12-24 opt reload reply
+43c7620b4 2025-12-24 fix: cacheIndex
+1a8f65b07 2025-12-23 opt bar set
+259e7080f 2025-12-23 opt ui
+7da6f05a5 2025-12-23 tweak
+521ca3ad1 2025-12-23 tweaks (#1788)
+31e5692df 2025-12-22 upgrade deps
+191bcbc52 2025-12-21 fix parse dyn emoji
+a0f3b3e44 2025-12-19 tweaks
+5bcd82225 2025-12-19 opt live follow list
+d80324655 2025-12-22 opt: cache image (#1787)
+952d16802 2025-12-19 fix grpc contentType
+af723e161 2025-12-19 tweaks
+3ff521e10 2025-12-18 Update build.yml
+b4a5d985f 2025-12-18 opt: isolate parse danmaku & feat: grpc account (#1785)
+1e0e2d2d6 2025-12-18 tweaks
+d7f7611af 2025-12-18 opt: color (#1782)
+11cdb6705 2025-12-17 feat: show network type (#1781)
+53cf9d54c 2025-12-17 opt ui
+2e7368868 2025-12-17 add superChatType
+ce5e85e64 2025-12-17 tweaks (#1780)
+02e0d3412 2025-12-17 increase desktop max volume
+830f3b60e 2025-12-17 opt theme
+b4fb7d14d 2025-12-17 tweaks
+ab1e5cb62 2025-12-17 Add multi-select support to pmshare panel (#1779)
+348a9e014 2025-12-16 opt ui
+0baf3fcd3 2025-12-16 tweaks
+13818533a 2025-12-16 opt ui
+0dd3689d6 2025-12-16 opt opus text
+23b685077 2025-12-15 opt dyn
+d8ca89ac8 2025-12-15 upgrade deps
+ae06d5f7f 2025-12-14 opt live header
+62506d3eb 2025-12-14 disable alwaysOnTop on dispose
+f7c61d63a 2025-12-14 remove deprecated pref keys
+f46437f89 2025-12-14 fix get block color
+1cd949c36 2025-12-14 use `ValueGetter`
+bc5ce1144 2025-12-14 fix PopupMenuText
+cef4beaa0 2025-12-14 feat: sync segment type with upstream (#1777)
+02bd68f69 2025-12-14 opt desktop pip
+2bc3275c1 2025-12-14 opt reply
+ec107063c 2025-12-13 opt pay coin
+4c2fd38d6 2025-12-13 upgrade deps
+1a6653ba9 2025-12-12 opt reply
+74d5e03a3 2025-12-11 show followee votes
+2b4b1debe 2025-12-13 tweak
+17883eb77 2025-12-13 opt: LoadingState (#1776)
+3741fe54f 2025-12-10 upgrade dep
+ec11af382 2025-12-10 opt ui
+890dc58dc 2025-12-10 refa: settings model (#1773)
+b12bdf2eb 2025-12-10 opt log page
+59c7f8a03 2025-12-10 opt onChangeAccount
+50cf74ccf 2025-12-10 fix play next audio
+15b5c0a87 2025-12-10 feat: modify recommend page's card width separately (#1771)
+244ef22f5 2025-12-09 feat: load config from text (#1772)
+b4daf5fbd 2025-12-08 reduce log snackbar duration
+0519ec0e4 2025-12-08 build
+ff4f97de1 2025-12-08 opt: parse sys msg (#1770)
+773bdafec 2025-12-07 opt: more linter (#1765)
+3787f99d3 2025-12-07 opt download next
+2cb833152 2025-12-07 cache follow order type
+5b6443cfa 2025-12-07 opt ui
+6fd8212d8 2025-12-06 upgrade `actions/checkout`
+0d273f690 2025-12-06 refa: logfile (#1764)
+255e39b70 2025-12-05 bump flutter
+ea52dd448 2025-12-05 fix typos
+b4a46133b 2025-12-04 opt set pageTransition
+7c1644efc 2025-12-04 upgrade dep
+775e1aa97 2025-12-04 do not show others rank
+2a55d4390 2025-12-04 opt list
+d57a34a4e 2025-12-03 fix member list jump
+278524861 2025-12-03 opt up panel
+c42468e2c 2025-12-03 opt update down progress
+196ddf3f5 2025-12-03 opt ui
+27302435b 2025-12-03 specify window class name
+2b3ec77e9 2025-12-03 opt: unnecessary_non_null_assertion (#1762)
+b7a277a57 2025-12-03 refa: member fav
+9c8e5b53e 2025-12-03 opt ui
+001b746f6 2025-12-02 change dynamicColor def value
+a78214de3 2025-12-02 sort video language
+d88ffb112 2025-12-02 tweak
+f05b90100 2025-12-02 fix & opt appsign (#1761)
+430837eef 2025-12-02 opt live
+fa583ebd0 2025-12-02 tweaks
+d2dcba5a5 2025-12-02 upgrade dep
+fb5116d52 2025-12-01 opt ui
+a48f6b1ca 2025-11-30 opt update block type
+fc0af3f28 2025-11-30 remove seek announce
+2288e1139 2025-11-30 fix dm block type
+d95283c4a 2025-11-28 upgrade deps
+4b56bd5a8 2025-11-28 fix download status
+62bb605ee 2025-11-28 tweak: danmaku (#1756)
+0f8da1999 2025-11-28 opt multi select
+21a2373a5 2025-11-28 update dm
+2ca531082 2025-11-28 reduce fullscreen sc duration
+9ccaa3072 2025-11-27 opt download (#1755)
+ded78e534 2025-11-26 upgrade protobuf
+9b0a43efc 2025-11-26 upgrade dep
+10808c2a8 2025-11-26 show live online count
+38a7afd63 2025-11-26 opt: player controller (#1753)
+54b26d20f 2025-11-23 upgrade dep
+ad2bc78eb 2025-11-23 opt ui
+c4aca389a 2025-11-22 fixes
+cb8333d4c 2025-11-22 show vote status
+2f5eed699 2025-11-22 bump flutter
+935c53e45 2025-11-22 upgrade deps
+dd0ccb327 2025-11-21 show battery level
+919134759 2025-11-21 tweak
+c1d42b498 2025-11-21 opt ui
+a7e67796f 2025-11-21 fix theme type
+6692c9e85 2025-11-21 set dm for live
+ace949aaa 2025-11-21 upgrade deps
+fbd968743 2025-11-20 upgrade kgp
+460a8262c 2025-11-20 tweaks
+c8de503fa 2025-11-20 fix dyn showmore
+a60cd51ff 2025-11-20 bump flutter
+aad980ce2 2025-11-20 tweaks
+e7cda7b9f 2025-11-19 upgrade deps
+1d368b7a8 2025-11-19 update richtextfield
+725d7055b 2025-11-19 update flutter widgets
+1fb798db4 2025-11-19 opt ui
+8e1d5e0dd 2025-11-18 opt live back btn
+2d9a1310b 2025-11-18 tweak
+588ec7bab 2025-11-18 upgrade deps
+2be13e728 2025-11-19 refa: sb & feat: sb portVideo (WIP) (#1751)
+d5d95671f 2025-11-18 ios uiscene migration
+a0eccda6f 2025-11-18 set player proxy
+ec82c8621 2025-11-17 upgrade deps
+de03bef22 2025-11-17 show video restore btn if translated
+0f8166620 2025-11-17 opt: notify-debugger-on-exception (#1750)
+76c2de439 2025-11-17 fix `THREE_DOT_ITEM_TYPE_UP_HELPER` action
+0d38ded98 2025-11-17 show lock btn for live
+646888c06 2025-11-17 fix import
+332f6f1bb 2025-11-17 upgrade deps
+aaab5371b 2025-11-17 tweaks
+ad931d7ea 2025-11-17 add media notification handling for offline videos (#1748)
+377e430d7 2025-11-17 refa: report error (#1747)
+a79746760 2025-11-16 upgrade dep (#1746)
+5ee83d902 2025-11-16 opt: exclude analysis flutter widget (#1745)
+27ae296b2 2025-11-15 refa: cdn (#1743)
+e589f2719 2025-11-15 fix; set subtitle before init (#1742)
+c89d6a5a5 2025-11-15 fix wakelock
+861365930 2025-11-14 reformat
+0d4d92a20 2025-11-14 bump flutter
+4c6ad0e38 2025-11-14 increase webdav timeout
+ad45e995e 2025-11-14 fix preferred cdn & Add more PCDN url patterns (#1739)
+50a035a47 2025-11-13 opt get season status
+c0dbd6cbb 2025-11-13 migration
+686af4a33 2025-11-13 bump flutter
+46aad06e3 2025-11-13 tweaks
+3921b2304 2025-11-12 opt download task
+bca5b0419 2025-11-13 tweaks (#1738)
+9754b061d 2025-11-12 check dm state
+407b31c5c 2025-11-12 refa: download video (#1737)
+37b122855 2025-11-12 feat: dlna
+0acd9ca76 2025-11-12 upgrade dep
+8f3c9f029 2025-11-12 opt: const page (#1736)
+931073234 2025-11-11 Mark offline cache as completed in README (#1735)
+e767e506f 2025-11-11 tweaks
+ef3a61233 2025-11-11 upgrade deps
+d66a42a0a 2025-11-11 opt ui
+0f06de004 2025-11-10 fix save subtitle on win
+963181fef 2025-11-10 feat: load file sub
+ffd4f9ee7 2025-11-06 feat: video download
+976622df8 2025-11-09 fix pm send btn
+13c220338 2025-11-09 set system brightness
+1291dc77c 2025-11-09 stop audio service
+08e5477e7 2025-11-08 enable audio cdn by def
+c4c6a2243 2025-11-07 disable win single alt key event
+58791e3e9 2025-11-07 show vote option pic
+d5bb4bc14 2025-11-07 fix fan/follow params
+3d1199363 2025-11-07 Release 1.1.5
+f225fa33e 2025-11-03 update proto
+e85c8b3dd 2025-11-02 tweaks
+737be8dca 2025-11-01 del cache
+77dd93917 2025-11-01 opt ui
+0a5965a42 2025-10-31 fix parse dyn
+a53be6814 2025-10-31 opt tooltip style
+415b8e9da 2025-10-31 fix audio action
+f034c24d1 2025-10-30 tweaks
+1ac93d626 2025-10-29 upgrade deps
+906c8f799 2025-10-29 tweaks
+c904a5ded 2025-10-29 del
+0c9486f6b 2025-10-28 build
+576740a50 2025-10-28 opt ui
+b3f9f43b5 2025-10-28 fix #1729
+e7424bcc6 2025-10-28 fix buvidActive
+209ec70ea 2025-10-28 opt icon
+3b4e25103 2025-10-28 opt desktop pip
+86beb879a 2025-10-28 tweaks
+321d43414 2025-10-28 build
+b9d17e27b 2025-10-28 fix #1718 (#1723)
+2f6f6da6c 2025-10-27 opt: tap (#1719)
+c3d3fa67f 2025-10-27 fix #1716
+032dfd69b 2025-10-26 fix #1712
+e9dc15464 2025-10-25 tweaks
+b43840b63 2025-10-25 mod: save panel (#1706)
+1a9d8e35b 2025-10-25 feat: show aiConclusion (#1698)
+ccb61415f 2025-10-25 tweaks (#1697)
+08944241b 2025-10-25 fix: danmaku (#1696)
+63030147e 2025-10-25 bump flutter
+8ff71c44c 2025-10-25 opt dyn
+4eaf16f50 2025-10-24 disable search default by def
+1a9c8a62f 2025-10-24 package linux appimage (#1688)
+4256c2b02 2025-10-24 opt ui
+bbcf0dec1 2025-10-21 upgrade deps
+da52cac2c 2025-10-23 tweaks
+e8a32a614 2025-10-21 custom audio order
+a71a7b66f 2025-10-21 opt req
+9808f5081 2025-10-21 show audio playlist parts
+cf86bb7e1 2025-10-21 add match entrance
+ff065254a 2025-10-21 fix get window pos
+39b4c1a59 2025-10-21 show rank fold items
+28f10e0a4 2025-10-20 check `uploadPictureIconState`
+12c0ed5ba 2025-10-20 fix #1616
+23272d285 2025-10-20 tweak
+67b4ed65a 2025-10-20 opt audio playlist
+7524b3d16 2025-10-20 fix: hide danmaku (#1654)
+340a933e7 2025-10-20 fix #1648
+488ca29fc 2025-10-19 opt dyn
+cc00b2cc3 2025-10-19 feat: dyn show more
+287cea4d6 2025-10-19 tweak
+39e556891 2025-10-19 upgrade deps
+0ae415738 2025-10-19 create release
+6e1ceb127 2025-10-19 feat: like count (#1640)
+71a170deb 2025-10-19 audio notification
+9482a706d 2025-10-18 fix #1613
+0804484a4 2025-10-18 check cmd key
+cdb9bb3db 2025-10-18 check cmd key
+6ca0de96f 2025-10-18 opt pip
+d908f5852 2025-10-18 opt pip
+1368733a2 2025-10-18 fix check pip
+32e71dbf6 2025-10-18 fix #1625
+c9ce1af2c 2025-10-18 Update build
+416f9e6a8 2025-10-18 upgrade dm dep
+3ae3955f5 2025-10-18 rename release files
+464f00802 2025-10-18 fix #1615
+52498b3e3 2025-10-17 tweaks
+57c57b02a 2025-10-17 build linux arm64 (#1610)
+b8c686804 2025-10-17 fix: cross import
+8200fbf51 2025-10-17 tweak
+8650c96b7 2025-10-17 feat: danmaku seekTo (#1603)
+15fe7787b 2025-10-17 pause
+d83076cb0 2025-10-17 Update android.yml
+8b3b4c28a 2025-10-17 upgrade deps
+740c001e2 2025-10-17 bump flutter
+096b057f8 2025-10-17 fix #1598
+a161fa5e5 2025-10-16 tweaks
+bebf34db2 2025-10-16 disable windows thread merging
+b95061434 2025-10-16 upgrade danmaku dep
+f2a05bb97 2025-10-16 fix #1593
+6c361a047 2025-10-16 live dm action
+3fb9e2237 2025-10-16 upgrade deps
+b2fb4c9af 2025-10-16 opt dm action
+0862c0fc8 2025-10-15 show backbtn on mine page if needed
+77ec78e3f 2025-10-15 opt: singleton FollowTypeController (#1578)
+fb59c208e 2025-10-15 package linux rpm (#1575)
+112a06f92 2025-10-15 custom show tray i
+
+[… truncated 178780 chars …]
