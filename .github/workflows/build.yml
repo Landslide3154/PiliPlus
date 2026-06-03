@@ -99,9 +99,6 @@ jobs:
               shell: pwsh
               run: lib/scripts/build.ps1 android
 
-            - name: Configure git HTTPS auth
-              run: git config --global url."https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/".insteadOf "https://github.com/"
-
             - name: Flutter Build Release Apk
               if: ${{ github.event_name == 'workflow_dispatch' }}
               run: flutter build apk --release --split-per-abi --dart-define-from-file=pili_release.json --pub

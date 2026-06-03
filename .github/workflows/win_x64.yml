@@ -56,9 +56,6 @@ jobs:
             exit 1
           }
 
-      - name: Configure git HTTPS auth
-        run: git config --global url."https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/".insteadOf "https://github.com/"
-
       - name: Flutter Build Windows (verbose)
         run: flutter build windows --release -v --pub --dart-define-from-file=pili_release.json
 
