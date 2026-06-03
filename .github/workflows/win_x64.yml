@@ -56,10 +56,18 @@ jobs:
             exit 1
           }
 
-      - name: Configure git authentication & pub get
+      - name: Check GH_PAT
         run: |
-          git config --global url."https://${{ secrets.GH_PAT }}@github.com/bggRGjQaUbCoE/".insteadOf "https://github.com/bggRGjQaUbCoE/"
-          flutter pub get
+          if "${{ secrets.GH_PAT }}" == "" (
+            echo "GH_PAT is EMPTY"
+          ) else (
+            echo "GH_PAT has value (length: ${{ env.GH_PAT_LEN }})"
+          )
+          git config --global url."https://notused:${{ secrets.GH_PAT }}@github.com/bggRGjQaUbCoE/".insteadOf "https://github.com/bggRGjQaUbCoE/"
+        shell: pwsh
+
+      - name: Fetch dependencies
+        run: flutter pub get
 
       - name: Flutter Build Windows (verbose)
         run: flutter build windows --release -v --dart-define-from-file=pili_release.json
