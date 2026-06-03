@@ -57,6 +57,9 @@ jobs:
         continue-on-error: true
 
         #TODO: deb and rpm packages need to be build
+      - name: Configure git authentication
+        run: git config --global url."https://x-access-token:${{ secrets.GH_PAT }}@github.com/bggRGjQaUbCoE/".insteadOf "https://github.com/bggRGjQaUbCoE/"
+
       - name: Build Linux
         run: flutter build linux --release -v --pub --dart-define-from-file=pili_release.json
 
