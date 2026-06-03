@@ -57,7 +57,7 @@ jobs:
           }
 
       - name: Configure git authentication
-        run: git config --global url."https://x-access-token:${{ secrets.GH_PAT }}@github.com/bggRGjQaUbCoE/".insteadOf "https://github.com/bggRGjQaUbCoE/"
+        run: git config --global url."https://oauth2:${{ secrets.GH_PAT }}@github.com/bggRGjQaUbCoE/".insteadOf "https://github.com/bggRGjQaUbCoE/"
 
       - name: Flutter Build Windows (verbose)
         run: flutter build windows --release -v --pub --dart-define-from-file=pili_release.json
