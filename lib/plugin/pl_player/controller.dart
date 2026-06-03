@@ -1606,8 +1606,8 @@ class PlPlayerController with BlockConfigMixin {
 
   void onCloseAll() {
     _isCloseAll = true;
-    dispose();
     Get.until((route) => route.isFirst);
+    dispose();
   }
 
   void dispose() {
