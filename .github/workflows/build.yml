@@ -99,9 +99,6 @@ jobs:
               shell: pwsh
               run: lib/scripts/build.ps1 android
 
-            - name: Configure git authentication
-              run: git config --global url."https://oauth2:${{ secrets.GH_PAT }}@github.com/bggRGjQaUbCoE/".insteadOf "https://github.com/bggRGjQaUbCoE/"
-
             - name: Flutter Build Release Apk
               if: ${{ github.event_name == 'workflow_dispatch' }}
               run: flutter build apk --release --split-per-abi --dart-define-from-file=pili_release.json --pub
