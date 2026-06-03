@@ -1616,9 +1616,10 @@ class PlPlayerController with BlockConfigMixin {
 
   void onCloseAll() {
     _isCloseAll = true;
-    exitDesktopFullScreen();
-    Get.until((route) => route.isFirst);
-    dispose();
+    triggerFullScreen(status: false).then((_) {
+      Get.until((route) => route.isFirst);
+      dispose();
+    });
   }
 
   void dispose() {
