@@ -197,11 +197,11 @@ abstract final class PageUtils {
           : const Rational.landscape();
       Floating().enable(
         isAuto
-            ? AutoEnable(aspectRatio: aspectRatio)
-            : EnableManual(aspectRatio: aspectRatio),
+            ? OnLeavePiP(aspectRatio: aspectRatio)
+            : ImmediatePiP(aspectRatio: aspectRatio),
       );
     } else {
-      Floating().enable(isAuto ? const AutoEnable() : const EnableManual());
+      Floating().enable(isAuto ? const OnLeavePiP() : const ImmediatePiP());
     }
   }
 
