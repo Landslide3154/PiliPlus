@@ -32,6 +32,7 @@ import 'package:PiliPlus/pages/member_pgc/view.dart';
 import 'package:PiliPlus/pages/member_shop/view.dart';
 import 'package:PiliPlus/pages/member_video_web/archive/view.dart';
 import 'package:PiliPlus/pages/member_video_web/season_series/view.dart';
+import 'package:PiliPlus/pages/history/view.dart';
 import 'package:PiliPlus/utils/android/android_helper.dart';
 import 'package:PiliPlus/utils/cache_manager.dart';
 import 'package:PiliPlus/utils/date_utils.dart';
@@ -588,6 +589,7 @@ class _MemberPageState extends State<MemberPage> {
           heroTag: _heroTag,
           mid: _mid,
         ),
+        'history' => HistoryPage(type: _mid == account.mid ? null : 'all'),
         'cheese' => MemberCheese(
           heroTag: _heroTag,
           mid: _mid,

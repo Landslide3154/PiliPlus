@@ -48,7 +48,7 @@ class DynamicsDataModel {
 
   DynamicsDataModel.fromJson(
     Map<String, dynamic> json, {
-    DynamicsTabType type = DynamicsTabType.all,
+    DynamicsTabType type = DynamicsTabType.video,
     Set<int>? tempBannedList,
   }) {
     hasMore = json['has_more'];

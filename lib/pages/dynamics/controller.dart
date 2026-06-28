@@ -57,7 +57,7 @@ class DynamicsController
   }
 
   void _jumpToTab(int mid) {
-    tabController.index = mid == -1 ? 0 : 4;
+    tabController.index = mid == -1 ? 0 : DynamicsTabType.values.length - 1;
   }
 
   void onSelectUp(int mid) {
@@ -179,6 +179,8 @@ class DynamicsController
         _offset = '';
         _cacheUpList = res.upList?.toSet();
       }
+      // UP列表按最新发布时间从新到旧排序
+      res.upList?.sort((a, b) => (b.pubTs ?? 0).compareTo(a.pubTs ?? 0));
       loadingState.value = response;
     } else {
       if (_showAllUp) {
