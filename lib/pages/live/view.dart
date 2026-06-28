@@ -176,8 +176,8 @@ class _LivePageState extends State<LivePage>
   }
 
   late final gridDelegate = SliverGridDelegateWithExtentAndRatio(
-    mainAxisSpacing: Style.cardSpace,
-    crossAxisSpacing: Style.cardSpace,
+    mainAxisSpacing: 20.0,
+    crossAxisSpacing: 20.0,
     maxCrossAxisExtent: Grid.smallCardWidth,
     childAspectRatio: Style.aspectRatio,
     mainAxisExtent: textScaler.scale(90),

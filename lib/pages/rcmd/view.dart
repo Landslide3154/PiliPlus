@@ -51,8 +51,8 @@ class _RcmdPageState extends State<RcmdPage>
   }
 
   late final gridDelegate = SliverGridDelegateWithExtentAndRatio(
-    mainAxisSpacing: Style.cardSpace,
-    crossAxisSpacing: Style.cardSpace,
+    mainAxisSpacing: 20.0,
+    crossAxisSpacing: 20.0,
     maxCrossAxisExtent: Pref.recommendCardWidth,
     childAspectRatio: Style.aspectRatio,
     mainAxisExtent: MediaQuery.textScalerOf(context).scale(75),
