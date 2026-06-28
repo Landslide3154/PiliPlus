@@ -30,7 +30,7 @@ class DynamicsTabController
 
   @override
   Future<void> onRefresh() {
-    if (dynamicsType == .all) {
+    if (dynamicsType == .video) {
       mainController.setDynCount();
     }
     offset = null;

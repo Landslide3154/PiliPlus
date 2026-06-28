@@ -593,7 +593,7 @@ class _MemberPageState extends State<MemberPage> {
         ),
         'subscribe' => SubPage(),
         'later' => LaterPage(),
-        'history' => HistoryPage(type: _mid == account.mid ? null : 'all'),
+        'history' => HistoryPage(type: _mid == _userController.account.mid ? null : 'all'),
         'cheese' => MemberCheese(
           heroTag: _heroTag,
           mid: _mid,
