@@ -104,19 +104,26 @@ class MemberController extends CommonDataController<SpaceData, SpaceData?>
       hasSeasonOrSeries = true;
     }
     tab2?.retainWhere((item) => MemberTabType.contains(item.param!));
-    // 注入「观看记录」标签作为第一个标签页（默认）
+    // 自己的页面：固定 4 个标签页
     if (mid == account.mid) {
-      tab2?.insert(0, const SpaceTab2(title: '观看记录', param: 'history'));
+      tab2 = const [
+        SpaceTab2(title: '观看记录', param: 'history'),
+        SpaceTab2(title: '我的收藏', param: 'favorite'),
+        SpaceTab2(title: '我的订阅', param: 'subscribe'),
+        SpaceTab2(title: '稍后再看', param: 'later'),
+      ];
     }
     if (tab2?.isNotEmpty == true) {
-      if (data.hasItem != true && tab2!.first.param == 'home') {
-        // remove empty home tab
-        tab2!.removeAt(0);
+      if (mid != account.mid) {
+        tab2!.retainWhere((item) => MemberTabType.contains(item.param!));
+        if (data.hasItem != true && tab2!.first.param == 'home') {
+          tab2!.removeAt(0);
+        }
       }
       if (tab2!.isNotEmpty) {
         int initialIndex = -1;
         MemberTabType memberTab = Pref.memberTab;
-        if (memberTab != MemberTabType.def) {
+        if (mid != account.mid && memberTab != MemberTabType.def) {
           initialIndex = tab2!.indexWhere((item) {
             return item.param == memberTab.name;
           });
