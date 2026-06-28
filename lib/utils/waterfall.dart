@@ -22,9 +22,12 @@ mixin DynMixin {
       );
 
   Widget buildPage(Widget child) {
-    // 瀑布流和网格模式直接返回（自己处理布局）
+    // 瀑布流和网格模式：加左右 12px 内边距
     if (_layoutMode() != 2) {
-      return child;
+      return SliverPadding(
+        padding: const EdgeInsets.symmetric(horizontal: Style.safeSpace),
+        sliver: child,
+      );
     }
     // 单列列表模式：居中
     return SliverLayoutBuilder(
@@ -34,7 +37,7 @@ mixin DynMixin {
         final flag = cardWidth < maxWidth;
         return SliverPadding(
           padding: EdgeInsets.symmetric(
-            horizontal: flag ? (maxWidth - cardWidth) / 2 : 0,
+            horizontal: flag ? (maxWidth - cardWidth) / 2 : Style.safeSpace,
           ),
           sliver: child,
         );
