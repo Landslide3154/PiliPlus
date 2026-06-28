@@ -967,7 +967,7 @@ Future<void> _showDynGridColumnsDialog(
   final res = await showDialog<double>(
     context: context,
     builder: (context) => SliderDialog(
-      title: '网格对齐列数',
+      title: const Text('网格对齐列数'),
       value: Pref.dynamicsGridColumns.toDouble(),
       min: 1,
       max: 6,

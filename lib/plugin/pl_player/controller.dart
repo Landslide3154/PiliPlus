@@ -193,14 +193,6 @@ class PlPlayerController with BlockConfigMixin {
   bool get isPipMode =>
       (Platform.isAndroid && AndroidHelper.isPipMode) ||
       (PlatformUtils.isDesktop && isDesktopPip);
-  bool _androidPipMode = false;
-  Future<void> _initPipMode() async {
-    if (Platform.isAndroid) {
-      try {
-        _androidPipMode = await Floating().pipStatus == PiPStatus.enabled;
-      } catch (_) {}
-    }
-  }
   late bool isDesktopPip = false;
   late Rect _lastWindowBounds;
 
@@ -874,7 +866,7 @@ class PlPlayerController with BlockConfigMixin {
 
   // 开始播放
   Future<void> _initializePlayer() async {
-    _initPipMode();
+    // PiP mode is queried via AndroidHelper.isPipMode native JNI field
     if (_instance == null) return;
     // 设置倍速
     if (isLive) {
