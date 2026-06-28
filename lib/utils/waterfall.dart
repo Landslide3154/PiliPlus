@@ -104,7 +104,7 @@ mixin DynMixin {
       case 1: // 网格对齐
         final columns = g.dynamicsGridColumns.clamp(1, 6);
         final screenWidth = MediaQuery.sizeOf(context).width;
-        const spacing = Style.cardSpace;
+        const spacing = 20.0; // 网格对齐模式卡片间距
         final cellWidth = (screenWidth - (columns - 1) * spacing) / columns;
         // 高度 = 16:10 封面 + 文字信息区 (~80dp)
         const textAreaHeight = 78.0;
