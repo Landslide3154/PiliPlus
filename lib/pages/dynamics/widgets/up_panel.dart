@@ -94,13 +94,14 @@ class _UpPanelState extends State<UpPanel> {
             ),
           ),
         ),
-        if (controller.showLiveUp && liveList != null && liveList.isNotEmpty)
-          SliverList.builder(
-            itemCount: liveList.length,
-            itemBuilder: (context, index) {
-              return upItemBuild(theme, liveList[index]);
-            },
-          ),
+        // 隐藏「正在直播」UP主列表
+        // if (controller.showLiveUp && liveList != null && liveList.isNotEmpty)
+        //   SliverList.builder(
+        //     itemCount: liveList.length,
+        //     itemBuilder: (context, index) {
+        //       return upItemBuild(theme, liveList[index]);
+        //     },
+        //   ),
         SliverToBoxAdapter(
           child: upItemBuild(theme, UpItem(face: '', uname: '全部动态', mid: -1)),
         ),
@@ -202,9 +203,56 @@ class _UpPanelState extends State<UpPanel> {
       }
     }
 
+    if (isTop) {
+      // 顶部模式：图标在上、名字在下（不变）
+      return SizedBox(
+        height: 76,
+        width: 70,
+        child: InkWell(
+          onTap: () {
+            feedBack();
+            if (isLive) {
+              PageUtils.toLiveRoom(item.roomId);
+            } else {
+              _onSelect(item);
+            }
+          },
+          onLongPress: !isAll ? toMemberPage : null,
+          onSecondaryTap: !isAll && !PlatformUtils.isMobile
+              ? toMemberPage
+              : null,
+          child: Opacity(
+            opacity: isCurrent ? 1 : 0.6,
+            child: Column(
+              spacing: 4,
+              mainAxisSize: .min,
+              mainAxisAlignment: .center,
+              children: [
+                avatar,
+                Padding(
+                  padding: const .symmetric(horizontal: 4),
+                  child: Text(
+                    '${item.uname}\n',
+                    maxLines: 2,
+                    textAlign: .center,
+                    style: TextStyle(
+                      color: currentMid == item.mid
+                          ? theme.colorScheme.primary
+                          : theme.colorScheme.outline,
+                      height: 1.1,
+                      fontSize: 12.5,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+    // 抽屉/侧边常驻：图标在左、名字在右
     return SizedBox(
-      height: 76,
-      width: isTop ? 70 : null,
+      height: 80,
       child: InkWell(
         onTap: () {
           feedBack();
@@ -214,33 +262,33 @@ class _UpPanelState extends State<UpPanel> {
             _onSelect(item);
           }
         },
-        // onDoubleTap: isLive ? () => _onSelect(data) : null,
         onLongPress: !isAll ? toMemberPage : null,
-        onSecondaryTap: !isAll && !PlatformUtils.isMobile ? toMemberPage : null,
-        child: Opacity(
-          opacity: isCurrent ? 1 : 0.6,
-          child: Column(
-            spacing: 4,
-            mainAxisSize: .min,
-            mainAxisAlignment: .center,
-            children: [
-              avatar,
-              Padding(
-                padding: const .symmetric(horizontal: 4),
-                child: Text(
-                  isTop ? '${item.uname}\n' : item.uname!,
-                  maxLines: 2,
-                  textAlign: .center,
-                  style: TextStyle(
-                    color: currentMid == item.mid
-                        ? theme.colorScheme.primary
-                        : theme.colorScheme.outline,
-                    height: 1.1,
-                    fontSize: 12.5,
+        onSecondaryTap: !isAll && !PlatformUtils.isMobile
+            ? toMemberPage
+            : null,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Opacity(
+            opacity: isCurrent ? 1 : 0.6,
+            child: Row(
+              spacing: 10,
+              children: [
+                avatar,
+                Flexible(
+                  child: Text(
+                    item.uname!,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: currentMid == item.mid
+                          ? theme.colorScheme.primary
+                          : theme.colorScheme.outline,
+                      fontSize: 14,
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
