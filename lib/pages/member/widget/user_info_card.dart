@@ -35,7 +35,7 @@ import 'package:PiliPlus/utils/num_utils.dart';
 import 'package:PiliPlus/utils/page_utils.dart';
 import 'package:PiliPlus/utils/platform_utils.dart';
 import 'package:PiliPlus/utils/utils.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cached_network_image_ce/cached_network_image.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
@@ -217,14 +217,10 @@ class UserInfoCard extends StatelessWidget {
               ),
             ),
           ),
-          Image.asset(
-            BiliUtils.levelName(
-              card.levelInfo!.currentLevel!,
-              isSeniorMember: card.levelInfo?.identity == 2,
-            ),
+          BiliUtils.levelPicture(
+            card.levelInfo!.currentLevel!,
+            isSeniorMember: card.levelInfo?.identity == 2,
             height: 11,
-            cacheHeight: 11.cacheSize(context),
-            semanticLabel: '等级${card.levelInfo?.currentLevel}',
           ),
           if (card.vip?.status == 1)
             Container(
