@@ -59,7 +59,7 @@ class _DynamicsPageState extends CommonPageState<DynamicsPage>
       type: needBg ? .canvas : .transparency,
       color: needBg ? theme.colorScheme.surface : null,
       child: SizedBox(
-        width: isTop ? null : 64,
+        width: isTop ? null : 210,
         height: isTop ? 76 : null,
         child: NotificationListener<ScrollEndNotification>(
           onNotification: (notification) {
