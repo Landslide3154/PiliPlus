@@ -176,7 +176,7 @@ class _UpPanelState extends State<UpPanel> {
     }
     // 抽屉/侧边常驻：图标在左、名字在右
     return SizedBox(
-      height: 80,
+      height: 56,
       width: 210,
       child: InkWell(
         onTap: () {
