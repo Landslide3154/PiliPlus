@@ -44,65 +44,6 @@ class _UpPanelState extends State<UpPanel> {
       controller: controller.scrollController,
       slivers: [
         SliverToBoxAdapter(
-          child: InkWell(
-            onTap: () => setState(() {
-              controller.showLiveUp = !controller.showLiveUp;
-            }),
-            onLongPress: toFollowPage,
-            onSecondaryTap: PlatformUtils.isMobile ? null : toFollowPage,
-            child: Container(
-              alignment: .center,
-              height: isTop ? 76 : 60,
-              padding: isTop ? const .only(left: 12, right: 6) : null,
-              child: Text.rich(
-                textAlign: .center,
-                style: TextStyle(
-                  fontSize: 13,
-                  color: theme.colorScheme.primary,
-                ),
-                TextSpan(
-                  children: [
-                    TextSpan(
-                      text: 'Live(${upData.liveUsers?.count ?? 0})',
-                    ),
-                    if (!isTop) ...[
-                      const TextSpan(text: '\n'),
-                      WidgetSpan(
-                        alignment: .middle,
-                        child: Icon(
-                          controller.showLiveUp
-                              ? Icons.expand_less
-                              : Icons.expand_more,
-                          size: 12,
-                          color: theme.colorScheme.primary,
-                        ),
-                      ),
-                    ] else
-                      WidgetSpan(
-                        alignment: .middle,
-                        child: Icon(
-                          controller.showLiveUp
-                              ? Icons.keyboard_arrow_right
-                              : Icons.keyboard_arrow_left,
-                          color: theme.colorScheme.primary,
-                          size: 14,
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-        // 隐藏「正在直播」UP主列表
-        // if (controller.showLiveUp && liveList != null && liveList.isNotEmpty)
-        //   SliverList.builder(
-        //     itemCount: liveList.length,
-        //     itemBuilder: (context, index) {
-        //       return upItemBuild(theme, liveList[index]);
-        //     },
-        //   ),
-        SliverToBoxAdapter(
           child: upItemBuild(theme, UpItem(face: '', uname: '全部动态', mid: -1)),
         ),
         SliverToBoxAdapter(
@@ -168,24 +109,7 @@ class _UpPanelState extends State<UpPanel> {
           type: .avatar,
         ),
       );
-      if (isLive) {
-        avatar = Stack(
-          clipBehavior: .none,
-          children: [
-            avatar,
-            Positioned(
-              top: isLive && !isTop ? -5 : 0,
-              right: -6,
-              child: Badge(
-                label: const Text(' Live '),
-                textColor: theme.colorScheme.onSecondaryContainer,
-                backgroundColor: theme.colorScheme.secondaryContainer
-                    .withValues(alpha: 0.75),
-              ),
-            ),
-          ],
-        );
-      } else if (item.hasUpdate ?? false) {
+      if (item.hasUpdate ?? false) {
         avatar = Stack(
           clipBehavior: .none,
           children: [
@@ -253,6 +177,7 @@ class _UpPanelState extends State<UpPanel> {
     // 抽屉/侧边常驻：图标在左、名字在右
     return SizedBox(
       height: 80,
+      width: 210,
       child: InkWell(
         onTap: () {
           feedBack();
