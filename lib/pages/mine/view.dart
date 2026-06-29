@@ -278,7 +278,6 @@ class _MediaPageState extends CommonPageState<MinePage>
     return Obx(() {
       final userInfo = controller.userInfo.value;
       final levelInfo = userInfo.levelInfo;
-      final hasLevel = levelInfo != null;
       final isVip = userInfo.vipStatus != null && userInfo.vipStatus! > 0;
       final userStat = controller.userStat.value;
       return Column(
@@ -386,54 +385,40 @@ class _MediaPageState extends CommonPageState<MinePage>
                           ],
                         ),
                       ),
-                      const SizedBox(height: 4),
-                      ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 225),
-                        child: LinearProgressIndicator(
-                          minHeight: 2.25,
-                          value: hasLevel
-                              ? levelInfo.currentExp! / levelInfo.nextExp!
-                              : 0,
-                          backgroundColor: theme.colorScheme.outline.withValues(
-                            alpha: 0.4,
-                          ),
-                          valueColor: AlwaysStoppedAnimation<Color>(secondary),
-                          stopIndicatorColor: Colors.transparent,
-                        ),
-                      ),
                     ],
                   ),
+                ),
+                const SizedBox(width: 12),
+                // 动态 关注 粉丝 — 与用户名同行
+                Column(
+                  mainAxisSize: .min,
+                  children: [
+                    _btn(
+                      count: userStat.dynamicCount,
+                      countStyle: style,
+                      name: '动态',
+                      labelStyle: labelStyle,
+                      onTap: () => controller.push('memberDynamics'),
+                    ),
+                    _btn(
+                      count: userStat.following,
+                      countStyle: style,
+                      name: '关注',
+                      labelStyle: labelStyle,
+                      onTap: () => controller.push('follow'),
+                    ),
+                    _btn(
+                      count: userStat.follower,
+                      countStyle: style,
+                      name: '粉丝',
+                      labelStyle: labelStyle,
+                      onTap: () => controller.push('fan'),
+                    ),
+                  ],
                 ),
                 const SizedBox(width: 20),
               ],
             ),
-          ),
-          const SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: .spaceEvenly,
-            children: [
-              _btn(
-                count: userStat.dynamicCount,
-                countStyle: style,
-                name: '动态',
-                labelStyle: labelStyle,
-                onTap: () => controller.push('memberDynamics'),
-              ),
-              _btn(
-                count: userStat.following,
-                countStyle: style,
-                name: '关注',
-                labelStyle: labelStyle,
-                onTap: () => controller.push('follow'),
-              ),
-              _btn(
-                count: userStat.follower,
-                countStyle: style,
-                name: '粉丝',
-                labelStyle: labelStyle,
-                onTap: () => controller.push('fan'),
-              ),
-            ],
           ),
         ],
       );
