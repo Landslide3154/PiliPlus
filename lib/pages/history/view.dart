@@ -79,7 +79,7 @@ class _HistoryPageState extends State<HistoryPage>
         ],
       ),
     );
-    if (widget.type != null) {
+    if (widget.type != null || widget.hideSubTabs) {
       return child;
     }
     return Obx(
@@ -106,9 +106,6 @@ class _HistoryPageState extends State<HistoryPage>
                 right: padding.right,
               ),
               child: Obx(() {
-                if (widget.hideSubTabs) {
-                  return child;
-                }
                 final tabs = _historyController.tabs;
                 if (tabs.isEmpty) {
                   return child;
