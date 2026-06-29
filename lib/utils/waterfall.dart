@@ -110,7 +110,7 @@ mixin DynMixin {
         const spacing = 20.0; // 网格对齐模式卡片间距
         final cellWidth = (screenWidth - (columns - 1) * spacing) / columns;
         // 高度 = 16:10 封面 + 文字信息区 (~80dp)
-        const textAreaHeight = 78.0;
+        final textAreaHeight = MediaQuery.textScalerOf(context).scale(78.0);
         final cellHeight = cellWidth / Style.aspectRatio + textAreaHeight;
         final aspectRatio = cellWidth / cellHeight;
         return SliverGrid(
