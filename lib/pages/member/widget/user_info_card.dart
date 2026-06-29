@@ -106,8 +106,8 @@ class UserInfoCard extends StatelessWidget {
           mid: card.mid,
           name: card.name,
         );
-      case UserInfoType.like:
-        count = card.likes?.likeNum;
+      case UserInfoType.dyn:
+        count = card.article;
     }
     void onShowCount() => SmartDialog.showToast(
       '${type.title}: $count',
@@ -147,9 +147,10 @@ class UserInfoCard extends StatelessWidget {
     ColorScheme colorScheme,
     bool isLight,
     bool isPortrait,
+    {bool showName = true},
   ) {
     return [
-      _buildName(context, colorScheme),
+      if (showName) _buildName(context, colorScheme),
       if (card.officialVerify?.desc?.isNotEmpty ?? false)
         _buildVerify(colorScheme),
       if (card.sign?.isNotEmpty ?? false) _buildSign(),
@@ -393,7 +394,6 @@ class UserInfoCard extends StatelessWidget {
     children: [
       Row(
         children: UserInfoType.values
-            .map(
               (e) => Expanded(
                 child: _countWidget(
                   colorScheme: colorScheme,
@@ -556,7 +556,18 @@ class UserInfoCard extends StatelessWidget {
           actions: _buildRight(scheme),
         ),
         const SizedBox(height: 5),
-        ..._buildLeft(context, scheme, isLight, true),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Row(
+            crossAxisAlignment: .start,
+            children: [
+              Expanded(
+                child: _buildName(context, scheme),
+              ),
+            ],
+          ),
+        ),
+        ..._buildLeft(context, scheme, isLight, true, showName: false),
         if (card.prInfo?.content?.isNotEmpty ?? false)
           buildPrInfo(context, scheme, isLight, card.prInfo!),
         const SizedBox(height: 5),
@@ -786,7 +797,7 @@ class UserInfoCard extends StatelessWidget {
                   crossAxisAlignment: .start,
                   children: [
                     const SizedBox(height: 10),
-                    ..._buildLeft(context, scheme, isLight, false),
+                    ..._buildLeft(context, scheme, isLight, false, showName: true),
                     const SizedBox(height: 5),
                   ],
                 ),
