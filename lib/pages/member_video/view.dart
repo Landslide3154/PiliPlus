@@ -92,7 +92,10 @@ class _MemberVideoState extends State<MemberVideo>
     super.build(context);
     final theme = Theme.of(context);
     final padding = MediaQuery.viewPaddingOf(context);
-    final child = refreshIndicator(
+    // DEBUG: 红色背景验证是否能占据空间
+    final child = Container(
+      color: Colors.red.withAlpha(30),
+      child: refreshIndicator(
       onRefresh: () async {
         final count = _controller.loadingState.value.dataOrNull?.length;
         await _controller.onRefresh();
@@ -116,7 +119,7 @@ class _MemberVideoState extends State<MemberVideo>
           ),
         ],
       ),
-    );
+    ));
     if (_controller.isVideo && _controller.fromViewAid?.isNotEmpty == true) {
       if (_index == null) {
         _scrollController =
@@ -194,13 +197,27 @@ class _MemberVideoState extends State<MemberVideo>
     ThemeData theme,
     LoadingState<List<SpaceArchiveItem>?> loadingState,
   ) {
+    // DEBUG: 暂时替换为简单内容验证布局
     return switch (loadingState) {
-      Loading() => gridSkeleton,
+      Loading() => const SliverFillRemaining(
+        child: Center(child: Text('加载中...')),
+      ),
       Success(:final response) =>
         response != null && response.isNotEmpty
             ? SliverMainAxisGroup(
                 slivers: [
-                  _buildHeader(theme),
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(14, 2.5, 8, 2.5),
+                      child: Row(
+                        children: [
+                          Text('共${response.length}视频', style: const TextStyle(fontSize: 13)),
+                          const Spacer(),
+                          _buildSortBtn(theme),
+                        ],
+                      ),
+                    ),
+                  ),
                   SliverGrid.builder(
                     gridDelegate: gridDelegate,
                     itemBuilder: (context, index) {
@@ -217,10 +234,24 @@ class _MemberVideoState extends State<MemberVideo>
                   ),
                 ],
               )
-            : HttpError(onReload: _controller.onReload),
-      Error(:final errMsg) => HttpError(
-        errMsg: errMsg,
-        onReload: _controller.onReload,
+            : const SliverFillRemaining(
+                hasScrollBody: false,
+                child: Center(child: Text('暂无视频')),
+              ),
+      Error(:final errMsg) => SliverFillRemaining(
+        hasScrollBody: false,
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(errMsg ?? '加载失败'),
+              TextButton(
+                onPressed: _controller.onReload,
+                child: const Text('重试'),
+              ),
+            ],
+          ),
+        ),
       ),
     };
   }
