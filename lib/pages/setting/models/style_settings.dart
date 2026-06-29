@@ -159,10 +159,10 @@ List<SettingsModel> get styleSettings => [
     onTap: _showDynLayoutDialog,
   ),
   NormalModel(
-    title: '网格对齐列数',
+    title: '动态页卡片宽度',
     leading: const Icon(Icons.grid_view_outlined),
-    getSubtitle: () => '当前：${Pref.dynamicsGridColumns}列',
-    onTap: _showDynGridColumnsDialog,
+    getSubtitle: () => '当前：${Pref.recommendCardWidth.toInt()}dp',
+    onTap: _showDynGridCardWidthDialog,
   ),
   NormalModel(
     title: '动态页UP主显示位置',
@@ -960,24 +960,24 @@ Future<void> _showDynLayoutDialog(
   }
 }
 
-Future<void> _showDynGridColumnsDialog(
+Future<void> _showDynGridCardWidthDialog(
   BuildContext context,
   VoidCallback setState,
 ) async {
   final res = await showDialog<double>(
     context: context,
     builder: (context) => SliderDialog(
-      title: const Text('网格对齐列数'),
-      value: Pref.dynamicsGridColumns.toDouble(),
-      min: 1,
-      max: 6,
-      divisions: 5,
-      suffix: '列',
+      title: const Text('动态页卡片宽度'),
+      value: Pref.recommendCardWidth,
+      min: 140,
+      max: 320,
+      divisions: 18,
+      suffix: 'dp',
       precise: 0,
     ),
   );
   if (res != null) {
-    await GStorage.setting.put(SettingBoxKey.dynamicsGridColumns, res.toInt());
+    await GStorage.setting.put(SettingBoxKey.recommendCardWidth, res.toDouble());
     SmartDialog.showToast('重启生效');
     setState();
   }

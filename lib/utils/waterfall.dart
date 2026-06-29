@@ -2,6 +2,7 @@ import 'package:PiliPlus/common/skeleton/dynamic_card.dart';
 import 'package:PiliPlus/common/style.dart';
 import 'package:PiliPlus/utils/global_data.dart';
 import 'package:PiliPlus/utils/grid.dart';
+import 'package:PiliPlus/utils/storage_pref.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show SliverConstraints;
 import 'package:waterfall_flow/waterfall_flow.dart'
@@ -55,13 +56,13 @@ mixin DynMixin {
 
   Widget get dynSkeleton {
     if (_isGrid()) {
-      final columns = GlobalData().dynamicsGridColumns.clamp(1, 6);
       return SliverGrid(
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: columns,
+        gridDelegate: SliverGridDelegateWithExtentAndRatio(
+          maxCrossAxisExtent: Pref.recommendCardWidth,
           mainAxisSpacing: Style.cardSpace,
           crossAxisSpacing: Style.cardSpace,
-          childAspectRatio: 0.75,
+          childAspectRatio: Style.aspectRatio,
+          mainAxisExtent: 78,
         ),
         delegate: SliverChildBuilderDelegate(
           (_, _) => const DynamicCardSkeleton(),
@@ -105,20 +106,16 @@ mixin DynMixin {
           ),
         );
       case 1: // 网格对齐
-        final columns = g.dynamicsGridColumns.clamp(1, 6);
-        final screenWidth = MediaQuery.sizeOf(context).width;
-        const spacing = 20.0; // 网格对齐模式卡片间距
-        final cellWidth = (screenWidth - (columns - 1) * spacing) / columns;
-        // 高度 = 16:10 封面 + 文字信息区 (~80dp)
+        // 高度 = 16:10 封面 + 文字信息区
+        const spacing = 20.0;
         final textAreaHeight = MediaQuery.textScalerOf(context).scale(78.0);
-        final cellHeight = cellWidth / Style.aspectRatio + textAreaHeight;
-        final aspectRatio = cellWidth / cellHeight;
         return SliverGrid(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: columns,
-            childAspectRatio: aspectRatio,
+          gridDelegate: SliverGridDelegateWithExtentAndRatio(
+            maxCrossAxisExtent: Pref.recommendCardWidth,
             mainAxisSpacing: spacing,
             crossAxisSpacing: spacing,
+            childAspectRatio: Style.aspectRatio,
+            mainAxisExtent: textAreaHeight,
           ),
           delegate: SliverChildBuilderDelegate(
             (context, index) {
