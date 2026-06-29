@@ -41,6 +41,7 @@ class MinePage extends StatefulWidget {
 }
 
 class _MediaPageState extends CommonPageState<MinePage>
+    with SingleTickerProviderStateMixin {
     with AutomaticKeepAliveClientMixin {
   final MineController controller = Get.putOrFind(MineController.new);
   late final MainController _mainController = Get.find<MainController>();
