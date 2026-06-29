@@ -147,7 +147,7 @@ class UserInfoCard extends StatelessWidget {
     ColorScheme colorScheme,
     bool isLight,
     bool isPortrait,
-    {bool showName = true},
+    bool showName,
   ) {
     return [
       if (showName) _buildName(context, colorScheme),
@@ -568,7 +568,7 @@ class UserInfoCard extends StatelessWidget {
             ],
           ),
         ),
-        ..._buildLeft(context, scheme, isLight, true, showName: false),
+        ..._buildLeft(context, scheme, isLight, true, false),
         if (card.prInfo?.content?.isNotEmpty ?? false)
           buildPrInfo(context, scheme, isLight, card.prInfo!),
         const SizedBox(height: 5),
@@ -798,7 +798,7 @@ class UserInfoCard extends StatelessWidget {
                   crossAxisAlignment: .start,
                   children: [
                     const SizedBox(height: 10),
-                    ..._buildLeft(context, scheme, isLight, false, showName: true),
+                    ..._buildLeft(context, scheme, isLight, false, true),
                     const SizedBox(height: 5),
                   ],
                 ),
