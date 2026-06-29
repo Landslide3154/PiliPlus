@@ -19,14 +19,14 @@ mixin DynMixin {
   late final dynGridDelegate =
       SliverWaterfallFlowDelegateWithMaxCrossAxisExtent(
         maxCrossAxisExtent: Grid.smallCardWidth * 2,
-        crossAxisSpacing: 4,
+        crossAxisSpacing: Pref.cardSpacing,
       );
 
   Widget buildPage(Widget child) {
-    // 瀑布流和网格模式：加左右 12px 内边距
+    // 瀑布流和网格模式：加左右 edgePadding 内边距
     if (_layoutMode() != 2) {
       return SliverPadding(
-        padding: const EdgeInsets.symmetric(horizontal: Style.safeSpace),
+        padding: EdgeInsets.symmetric(horizontal: Pref.edgePadding),
         sliver: child,
       );
     }
@@ -38,7 +38,7 @@ mixin DynMixin {
         final flag = cardWidth < maxWidth;
         return SliverPadding(
           padding: EdgeInsets.symmetric(
-            horizontal: flag ? (maxWidth - cardWidth) / 2 : Style.safeSpace,
+            horizontal: flag ? (maxWidth - cardWidth) / 2 : Pref.edgePadding,
           ),
           sliver: child,
         );
@@ -47,8 +47,8 @@ mixin DynMixin {
   }
 
   late final skeDelegate = SliverGridDelegateWithExtentAndRatio(
-    crossAxisSpacing: 4,
-    mainAxisSpacing: 4,
+        crossAxisSpacing: Pref.cardSpacing,
+    mainAxisSpacing: Pref.cardSpacing,
     maxCrossAxisExtent: Grid.smallCardWidth * 2,
     childAspectRatio: Style.aspectRatio,
     mainAxisExtent: 50,
@@ -59,8 +59,8 @@ mixin DynMixin {
       return SliverGrid(
         gridDelegate: SliverGridDelegateWithExtentAndRatio(
           maxCrossAxisExtent: Pref.recommendCardWidth,
-          mainAxisSpacing: Style.cardSpace,
-          crossAxisSpacing: Style.cardSpace,
+          mainAxisSpacing: Pref.cardSpacing,
+          crossAxisSpacing: Pref.cardSpacing,
           childAspectRatio: Style.aspectRatio,
           mainAxisExtent: 78,
         ),
@@ -107,7 +107,7 @@ mixin DynMixin {
         );
       case 1: // 网格对齐
         // 高度 = 16:10 封面 + 文字信息区
-        const spacing = 20.0;
+        final spacing = Pref.cardSpacing;
         final textAreaHeight = MediaQuery.textScalerOf(context).scale(78.0);
         return SliverGrid(
           gridDelegate: SliverGridDelegateWithExtentAndRatio(

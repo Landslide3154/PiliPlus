@@ -709,6 +709,18 @@ abstract final class Pref {
     defaultValue: 4,
   );
 
+  /// 卡片间距（首页和动态页的 mainAxisSpacing / crossAxisSpacing）
+  static double get cardSpacing => _setting.get(
+    SettingBoxKey.cardSpacing,
+    defaultValue: 20.0,
+  );
+
+  /// 卡片与边缘间距（首页和动态页的 horizontal padding）
+  static double get edgePadding => _setting.get(
+    SettingBoxKey.edgePadding,
+    defaultValue: 12.0,
+  );
+
   static bool get hideTopBar => _setting.get(
     SettingBoxKey.hideTopBar,
     defaultValue: PlatformUtils.isMobile,

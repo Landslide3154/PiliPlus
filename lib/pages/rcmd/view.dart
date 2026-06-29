@@ -30,7 +30,7 @@ class _RcmdPageState extends State<RcmdPage>
     final colorScheme = ColorScheme.of(context);
     return Container(
       clipBehavior: .hardEdge,
-      margin: const .symmetric(horizontal: Style.safeSpace),
+      margin: EdgeInsets.symmetric(horizontal: Pref.edgePadding),
       decoration: const BoxDecoration(borderRadius: Style.mdRadius),
       child: refreshIndicator(
         onRefresh: controller.onRefresh,
@@ -39,7 +39,7 @@ class _RcmdPageState extends State<RcmdPage>
           physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
             SliverPadding(
-              padding: const .only(top: Style.cardSpace, bottom: 100),
+              padding: EdgeInsets.only(top: Pref.cardSpacing, bottom: 100),
               sliver: Obx(
                 () => _buildBody(colorScheme, controller.loadingState.value),
               ),
@@ -51,8 +51,8 @@ class _RcmdPageState extends State<RcmdPage>
   }
 
   late final gridDelegate = SliverGridDelegateWithExtentAndRatio(
-    mainAxisSpacing: 20.0,
-    crossAxisSpacing: 20.0,
+    mainAxisSpacing: Pref.cardSpacing,
+    crossAxisSpacing: Pref.cardSpacing,
     maxCrossAxisExtent: Pref.recommendCardWidth,
     childAspectRatio: Style.aspectRatio,
     mainAxisExtent: MediaQuery.textScalerOf(context).scale(75),

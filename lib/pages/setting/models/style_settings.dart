@@ -136,6 +136,18 @@ List<SettingsModel> get styleSettings => [
         '当前: 主页${Pref.recommendCardWidth.toInt()}dp 其他${Pref.smallCardWidth.toInt()}dp，屏幕宽度:${MediaQuery.widthOf(Get.context!).toPrecision(2)}dp。宽度越小列数越多。',
     onTap: _showCardWidthDialog,
   ),
+  NormalModel(
+    leading: const Icon(Icons.space_bar_outlined),
+    title: '首页/动态页卡片间距',
+    getSubtitle: () => '当前：${Pref.cardSpacing.toInt()}px',
+    onTap: _showCardSpacingDialog,
+  ),
+  NormalModel(
+    leading: const Icon(Icons.straighten_outlined),
+    title: '首页/动态页卡片边缘距离',
+    getSubtitle: () => '当前：${Pref.edgePadding.toInt()}px',
+    onTap: _showEdgePaddingDialog,
+  ),
   const SwitchModel(
     title: '播放页移除安全边距',
     leading: Icon(Icons.fit_screen_outlined),
@@ -699,6 +711,50 @@ Future<void> _showCardWidthDialog(
       SettingBoxKey.smallCardWidth: res.$2,
     });
     SmartDialog.showToast('重启生效');
+    setState();
+  }
+}
+
+Future<void> _showCardSpacingDialog(
+  BuildContext context,
+  VoidCallback setState,
+) async {
+  final res = await showDialog<double>(
+    context: context,
+    builder: (context) => SliderDialog(
+      title: const Text('首页/动态页卡片间距'),
+      value: Pref.cardSpacing,
+      min: 0,
+      max: 30,
+      divisions: 30,
+      suffix: 'px',
+      precise: 0,
+    ),
+  );
+  if (res != null) {
+    await GStorage.setting.put(SettingBoxKey.cardSpacing, res.toDouble());
+    setState();
+  }
+}
+
+Future<void> _showEdgePaddingDialog(
+  BuildContext context,
+  VoidCallback setState,
+) async {
+  final res = await showDialog<double>(
+    context: context,
+    builder: (context) => SliderDialog(
+      title: const Text('首页/动态页卡片与边缘距离'),
+      value: Pref.edgePadding,
+      min: 0,
+      max: 30,
+      divisions: 30,
+      suffix: 'px',
+      precise: 0,
+    ),
+  );
+  if (res != null) {
+    await GStorage.setting.put(SettingBoxKey.edgePadding, res.toDouble());
     setState();
   }
 }
