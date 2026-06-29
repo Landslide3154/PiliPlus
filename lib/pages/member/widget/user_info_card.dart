@@ -394,6 +394,7 @@ class UserInfoCard extends StatelessWidget {
     children: [
       Row(
         children: UserInfoType.values
+            .map(
               (e) => Expanded(
                 child: _countWidget(
                   colorScheme: colorScheme,
