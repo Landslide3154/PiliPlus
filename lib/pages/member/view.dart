@@ -137,6 +137,7 @@ class _MemberPageState extends State<MemberPage> {
               ] else
                 Expanded(child: scrollableError),
             ],
+          ),
           Error(:final errMsg) => scrollErrorWidget(
             errMsg: errMsg,
             onReload: _userController.onReload,
