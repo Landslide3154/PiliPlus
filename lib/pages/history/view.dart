@@ -17,9 +17,10 @@ import 'package:flutter/material.dart' hide TabBarView;
 import 'package:get/get.dart';
 
 class HistoryPage extends StatefulWidget {
-  const HistoryPage({super.key, this.type});
+  const HistoryPage({super.key, this.type, this.hideSubTabs = false});
 
   final String? type;
+  final bool hideSubTabs;
 
   @override
   State<HistoryPage> createState() => _HistoryPageState();
@@ -105,6 +106,9 @@ class _HistoryPageState extends State<HistoryPage>
                 right: padding.right,
               ),
               child: Obx(() {
+                if (widget.hideSubTabs) {
+                  return child;
+                }
                 final tabs = _historyController.tabs;
                 if (tabs.isEmpty) {
                   return child;
