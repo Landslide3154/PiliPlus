@@ -10,15 +10,10 @@ import 'package:PiliPlus/models/common/nav_bar_config.dart';
 import 'package:PiliPlus/models_new/fav/fav_folder/list.dart';
 import 'package:PiliPlus/pages/common/common_page.dart';
 import 'package:PiliPlus/pages/history/view.dart';
-import 'package:PiliPlus/pages/home/view.dart';
-import 'package:PiliPlus/pages/later/view.dart';
 import 'package:PiliPlus/pages/login/controller.dart';
 import 'package:PiliPlus/pages/main/controller.dart';
-import 'package:PiliPlus/pages/member_favorite/view.dart';
 import 'package:PiliPlus/pages/mine/controller.dart';
 import 'package:PiliPlus/pages/mine/widgets/item.dart';
-import 'package:PiliPlus/pages/subscription/view.dart';
-import 'package:PiliPlus/utils/accounts.dart';
 import 'package:PiliPlus/utils/bili_utils.dart';
 import 'package:PiliPlus/utils/extension/get_ext.dart';
 import 'package:PiliPlus/utils/extension/num_ext.dart';
@@ -86,55 +81,11 @@ class _MediaPageState extends CommonPageState<MinePage>
         ),
         // 用户信息精简行
         _buildUserInfo(theme, secondary),
-        // TabBar
-        _buildTabBar(theme),
-        // TabBarView 内容
+        // 观看记录（全屏）
         Expanded(
-          child: TabBarView(
-            controller: _tabController,
-            children: _tabPages,
-          ),
+          child: HistoryPage(),
         ),
       ],
-    );
-  }
-
-  late final TabController _tabController = TabController(
-    length: _tabPages.length,
-    vsync: this,
-  );
-
-  late final List<_TabItem> _tabItems = const [
-    _TabItem('观看记录', 'history'),
-    _TabItem('我的收藏', 'favorite'),
-    _TabItem('我的订阅', 'subscribe'),
-    _TabItem('稍后再看', 'later'),
-  ];
-
-  late final List<Widget> _tabPages = _tabItems.map((t) {
-    final heroTag = Utils.makeHeroTag(0);
-    return switch (t.param) {
-      'history' => const HistoryPage(),
-      'favorite' => MemberFavorite(heroTag: heroTag, mid: _userMid),
-      'subscribe' => const SubPage(),
-      'later' => const LaterPage(),
-      _ => const SizedBox.shrink(),
-    };
-  }).toList();
-
-  int get _userMid => Accounts.main.mid;
-
-  Widget _buildTabBar(ThemeData theme) {
-    return SizedBox(
-      height: 44,
-      child: TabBar(
-        controller: _tabController,
-        tabs: _tabItems.map((t) => Tab(text: t.label)).toList(),
-        labelStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-        unselectedLabelColor: theme.colorScheme.outline,
-        indicatorColor: theme.colorScheme.primary,
-        dividerColor: theme.dividerColor.withValues(alpha: 0.2),
-      ),
     );
   }
 
@@ -389,8 +340,8 @@ class _MediaPageState extends CommonPageState<MinePage>
                   ),
                 ),
                 const SizedBox(width: 12),
-                // 动态 关注 粉丝 — 与用户名同行
-                Column(
+                // 动态 关注 粉丝 — 水平紧凑排列
+                Row(
                   mainAxisSize: .min,
                   children: [
                     _btn(
@@ -588,10 +539,4 @@ class _MediaPageState extends CommonPageState<MinePage>
       ),
     };
   }
-}
-
-class _TabItem {
-  final String label;
-  final String param;
-  const _TabItem(this.label, this.param);
 }
