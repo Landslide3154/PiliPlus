@@ -40,6 +40,7 @@ class HistoryController
   @override
   void onInit() {
     super.onInit();
+    debugPrint('[HistoryController] onInit, type: $type');
     historyStatus();
     queryData();
   }

@@ -61,6 +61,26 @@ class _HistoryPageState extends State<HistoryPage>
   Widget build(BuildContext context) {
     super.build(context);
     final padding = MediaQuery.viewPaddingOf(context);
+    
+    // hideSubTabs: 直接返回滚动内容，不走 Scaffold/AppBar
+    if (widget.hideSubTabs) {
+      return refreshIndicator(
+        onRefresh: _historyController.onRefresh,
+        child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          controller: _historyController.scrollController,
+          slivers: [
+            SliverPadding(
+              padding: EdgeInsets.only(top: 7, bottom: padding.bottom + 100),
+              sliver: Obx(
+                () => _buildBody(_historyController.loadingState.value),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+    
     Widget child = refreshIndicator(
       onRefresh: _historyController.onRefresh,
       child: CustomScrollView(
@@ -106,9 +126,6 @@ class _HistoryPageState extends State<HistoryPage>
                 right: padding.right,
               ),
               child: Obx(() {
-                if (widget.hideSubTabs) {
-                  return child;
-                }
                 final tabs = _historyController.tabs;
                 if (tabs.isEmpty) {
                   return child;
@@ -161,7 +178,7 @@ class _HistoryPageState extends State<HistoryPage>
   }
 
   AppBar get _buildAppBar => AppBar(
-    title: widget.hideSubTabs ? null : const Text('观看记录'),
+    title: const Text('观看记录'),
     bottom: _buildPauseTip,
     actions: [
       IconButton(
@@ -210,6 +227,14 @@ class _HistoryPageState extends State<HistoryPage>
   );
 
   Widget _buildBody(LoadingState<List<HistoryItemModel>?> loadingState) {
+    // DEBUG: log loadingState
+    debugPrint('[HistoryPage] _buildBody loadingState: ${loadingState.runtimeType}');
+    if (loadingState is Success) {
+      final resp = (loadingState as Success).response;
+      debugPrint('[HistoryPage] Success response: ${resp?.length ?? 'null'} items');
+    } else if (loadingState is Error) {
+      debugPrint('[HistoryPage] Error: ${(loadingState as Error).errMsg}');
+    }
     return switch (loadingState) {
       Loading() => gridSkeleton,
       Success(:final response) =>
