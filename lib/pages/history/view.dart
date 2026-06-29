@@ -79,7 +79,7 @@ class _HistoryPageState extends State<HistoryPage>
         ],
       ),
     );
-    if (widget.type != null || widget.hideSubTabs) {
+    if (widget.type != null) {
       return child;
     }
     return Obx(
@@ -106,6 +106,9 @@ class _HistoryPageState extends State<HistoryPage>
                 right: padding.right,
               ),
               child: Obx(() {
+                if (widget.hideSubTabs) {
+                  return child;
+                }
                 final tabs = _historyController.tabs;
                 if (tabs.isEmpty) {
                   return child;
@@ -158,7 +161,7 @@ class _HistoryPageState extends State<HistoryPage>
   }
 
   AppBar get _buildAppBar => AppBar(
-    title: const Text('观看记录'),
+    title: widget.hideSubTabs ? null : const Text('观看记录'),
     bottom: _buildPauseTip,
     actions: [
       IconButton(
