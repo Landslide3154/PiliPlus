@@ -969,9 +969,9 @@ Future<void> _showDynGridCardWidthDialog(
     builder: (context) => SliderDialog(
       title: const Text('动态页卡片宽度'),
       value: Pref.recommendCardWidth,
-      min: 140,
-      max: 320,
-      divisions: 18,
+      min: 150,
+      max: 500,
+      divisions: 35,
       suffix: 'dp',
       precise: 0,
     ),

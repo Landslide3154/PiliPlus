@@ -44,7 +44,6 @@ import 'package:PiliPlus/utils/num_utils.dart';
 import 'package:PiliPlus/utils/page_utils.dart';
 import 'package:PiliPlus/utils/platform_utils.dart';
 import 'package:PiliPlus/utils/utils.dart';
-import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -95,73 +94,49 @@ class _MemberPageState extends State<MemberPage> {
       child: Obx(
         () => switch (_userController.loadingState.value) {
           Loading() => m3eLoading,
-          Success(:final response) => ExtendedNestedScrollView(
-            key: _userController.key,
-            onlyOneScrollInBody: true,
-            pinnedHeaderSliverHeightBuilder: () =>
-                kToolbarHeight + MediaQuery.viewPaddingOf(context).top,
-            headerSliverBuilder: (context, innerBoxIsScrolled) {
-              if (response != null) {
-                return [
-                  DynamicSliverAppBar.medium(
-                    actions: _actions(theme),
-                    title: Text(_userController.username ?? ''),
-                    flexibleSpace: Obx(
-                      () => UserInfoCard(
-                        isOwner:
-                            _userController.mid == _userController.account.mid,
-                        relation: _userController.relation.value,
-                        card: response.card!,
-                        images: response.images!,
-                        onFollow: () => _userController.onFollow(context),
-                        live: _userController.live,
-                        silence: _userController.silence,
-                        headerControllerBuilder: getHeaderController,
-                        showLiveMedalWall: _showLiveMedalWall,
-                        charges: _userController.charges,
-                        chargeCount: _userController.chargeCount,
-                        guards: _userController.guards,
-                        guardCount: _userController.guardCount,
-                      ),
-                    ),
+          Success(:final response) => Column(
+            children: [
+              // 用户信息精简行
+              if (response != null)
+                Padding(
+                  padding: .only(
+                    left: padding.left,
+                    right: padding.right,
+                    top: padding.top + 8,
                   ),
-                ];
-              }
-              return [
-                SliverAppBar(
-                  pinned: true,
-                  actions: _actions(theme),
-                  title: GestureDetector(
-                    onTap: _userController.onReload,
-                    behavior: HitTestBehavior.opaque,
-                    child: Text(_userController.username ?? ''),
+                  child: UserInfoCard(
+                    isOwner:
+                        _userController.mid == _userController.account.mid,
+                    relation: _userController.relation.value,
+                    card: response.card!,
+                    images: response.images!,
+                    onFollow: () => _userController.onFollow(context),
+                    live: _userController.live,
+                    silence: _userController.silence,
+                    headerControllerBuilder: getHeaderController,
+                    showLiveMedalWall: _showLiveMedalWall,
+                    charges: _userController.charges,
+                    chargeCount: _userController.chargeCount,
+                    guards: _userController.guards,
+                    guardCount: _userController.guardCount,
                   ),
                 ),
-              ];
-            },
-            body: _userController.tab2?.isNotEmpty == true
-                ? Padding(
-                    padding: .only(left: padding.left, right: padding.right),
-                    child: Column(
-                      children: [
-                        if ((_userController.tab2?.length ?? 0) > 1)
-                          SizedBox(
-                            height: 45,
-                            child: TabBar(
-                              controller: _userController.tabController,
-                              tabs: _userController.tabs,
-                              onTap: _userController.onTapTab,
-                              dividerColor: theme.outline.withValues(
-                                alpha: 0.2,
-                              ),
-                            ),
-                          ),
-                        Expanded(child: _buildBody),
-                      ],
-                    ),
-                  )
-                : scrollableError,
-          ),
+              // TabBar — 固定高度，不滚动
+              if (_userController.tab2?.isNotEmpty == true) ...[
+                const SizedBox(height: 4),
+                SizedBox(
+                  height: 45,
+                  child: TabBar(
+                    controller: _userController.tabController,
+                    tabs: _userController.tabs,
+                    onTap: _userController.onTapTab,
+                    dividerColor: theme.outline.withValues(alpha: 0.2),
+                  ),
+                ),
+                Expanded(child: _buildBody),
+              ] else
+                Expanded(child: scrollableError),
+            ],
           Error(:final errMsg) => scrollErrorWidget(
             errMsg: errMsg,
             onReload: _userController.onReload,
