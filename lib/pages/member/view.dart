@@ -74,6 +74,7 @@ class _MemberPageState extends State<MemberPage> {
       MemberController(mid: _mid),
       tag: _heroTag,
     );
+    if (_mid < 0) _mid = _userController.mid;
   }
 
   @override
@@ -593,7 +594,7 @@ class _MemberPageState extends State<MemberPage> {
         ),
         'subscribe' => SubPage(),
         'later' => LaterPage(),
-        'history' => HistoryPage(type: _mid == _userController.account.mid ? null : 'all'),
+        'history' => HistoryPage(type: _userController.mid == _userController.account.mid ? null : 'all'),
         'cheese' => MemberCheese(
           heroTag: _heroTag,
           mid: _mid,

@@ -64,6 +64,7 @@ class MemberController extends CommonDataController<SpaceData, SpaceData?>
   @override
   void onInit() {
     super.onInit();
+    if (mid < 0) mid = account.mid;
     queryData();
   }
 
