@@ -51,7 +51,7 @@ class DynamicsController
     tabController = TabController(
       vsync: this,
       length: DynamicsTabType.values.length,
-      initialIndex: Pref.defaultDynamicTypeIndex,
+      initialIndex: Pref.migratedDefaultDynamicTypeIndex,
     );
     queryData();
   }

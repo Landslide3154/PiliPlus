@@ -320,6 +320,14 @@ abstract final class Pref {
     SettingBoxKey.defaultDynamicType,
     defaultValue: DynamicsTabType.video.index,
   );
+  // 迁移：旧枚举删了 all/article，所有索引左移并截断
+  static int get migratedDefaultDynamicTypeIndex {
+    final idx = defaultDynamicTypeIndex;
+    if (idx == 0) return 0; // all → video（不变）
+    // video(1)→video(0), pgc(2)→pgc(1), article/up(3+)→up(2)
+    final migrated = idx - 1;
+    return migrated.clamp(0, DynamicsTabType.values.length - 1);
+  }
 
   static bool get showDynInteraction =>
       _setting.get(SettingBoxKey.showDynInteraction, defaultValue: true);
