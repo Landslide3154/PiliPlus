@@ -11,6 +11,7 @@ import 'package:PiliPlus/common/widgets/route_aware_mixin.dart';
 import 'package:PiliPlus/models/common/nav_bar_config.dart';
 import 'package:PiliPlus/pages/home/view.dart';
 import 'package:PiliPlus/pages/main/controller.dart';
+import 'package:PiliPlus/pages/mine/controller.dart';
 import 'package:PiliPlus/plugin/pl_player/controller.dart';
 import 'package:PiliPlus/plugin/pl_player/models/play_status.dart';
 import 'package:PiliPlus/utils/android/android_helper.dart';
@@ -408,6 +409,29 @@ class _MainAppState extends PopScopeState<MainApp>
                         ),
                       ),
                     ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Obx(
+                            () => IconButton(
+                              iconSize: 22,
+                              icon: Get.find<MineController>().themeType.value.icon,
+                              tooltip: '切换主题',
+                              onPressed: Get.find<MineController>().onChangeTheme,
+                            ),
+                          ),
+                          IconButton(
+                            iconSize: 22,
+                            icon: const Icon(Icons.settings_outlined),
+                            tooltip: '设置',
+                            onPressed: () =>
+                                Get.toNamed('/setting', preventDuplicates: false),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 )
               : Obx(
@@ -426,6 +450,29 @@ class _MainAppState extends PopScopeState<MainApp>
                           ),
                         )
                         .toList(),
+                    trailing: Padding(
+                      padding: EdgeInsets.only(bottom: _padding.bottom + 8),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            iconSize: 22,
+                            icon: Obx(
+                              () => Get.find<MineController>().themeType.value.icon,
+                            ),
+                            tooltip: '切换主题',
+                            onPressed: Get.find<MineController>().onChangeTheme,
+                          ),
+                          IconButton(
+                            iconSize: 22,
+                            icon: const Icon(Icons.settings_outlined),
+                            tooltip: '设置',
+                            onPressed: () =>
+                                Get.toNamed('/setting', preventDuplicates: false),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 )
         : Container(

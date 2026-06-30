@@ -16,6 +16,7 @@ import 'package:PiliPlus/pages/login/controller.dart';
 import 'package:PiliPlus/pages/main/controller.dart';
 import 'package:PiliPlus/pages/member_favorite/view.dart';
 import 'package:PiliPlus/pages/mine/controller.dart';
+import 'package:PiliPlus/pages/mine/controller.dart';
 import 'package:PiliPlus/pages/mine/widgets/item.dart';
 import 'package:PiliPlus/pages/subscription/view.dart';
 import 'package:PiliPlus/utils/accounts.dart';
@@ -86,6 +87,31 @@ class _MediaPageState extends CommonPageState<MinePage>
         ),
         // 用户信息精简行
         _buildUserInfo(theme, secondary),
+        // 快捷操作：切换主题、设置
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          child: Row(
+            children: [
+              TextButton.icon(
+                style: TextButton.styleFrom(
+                  foregroundColor: theme.colorScheme.secondary,
+                ),
+                onPressed: controller.onChangeTheme,
+                icon: controller.themeType.value.icon,
+                label: const Text('切换主题'),
+              ),
+              const SizedBox(width: 8),
+              TextButton.icon(
+                style: TextButton.styleFrom(
+                  foregroundColor: theme.colorScheme.secondary,
+                ),
+                onPressed: () => Get.toNamed('/setting', preventDuplicates: false),
+                icon: const Icon(Icons.settings_outlined),
+                label: const Text('设置'),
+              ),
+            ],
+          ),
+        ),
         // TabBar（观看记录、我的收藏等）
         _buildTabBar(theme),
         // TabBarView 内容
