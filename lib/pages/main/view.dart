@@ -45,6 +45,7 @@ class _MainAppState extends PopScopeState<MainApp>
         WindowListener,
         TrayListener {
   final _mainController = Get.put(MainController());
+  MineController get _mineCtr => Get.putOrFind(MineController.new);
   late final _setting = GStorage.setting;
   late EdgeInsets _padding;
   late ThemeData theme;
@@ -417,9 +418,9 @@ class _MainAppState extends PopScopeState<MainApp>
                           Obx(
                             () => IconButton(
                               iconSize: 22,
-                              icon: Get.find<MineController>().themeType.value.icon,
+                              icon: _mineCtr.themeType.value.icon,
                               tooltip: '切换主题',
-                              onPressed: Get.find<MineController>().onChangeTheme,
+                              onPressed: _mineCtr.onChangeTheme,
                             ),
                           ),
                           IconButton(
@@ -458,10 +459,10 @@ class _MainAppState extends PopScopeState<MainApp>
                           IconButton(
                             iconSize: 22,
                             icon: Obx(
-                              () => Get.find<MineController>().themeType.value.icon,
+                              () => _mineCtr.themeType.value.icon,
                             ),
                             tooltip: '切换主题',
-                            onPressed: Get.find<MineController>().onChangeTheme,
+                            onPressed: _mineCtr.onChangeTheme,
                           ),
                           IconButton(
                             iconSize: 22,
