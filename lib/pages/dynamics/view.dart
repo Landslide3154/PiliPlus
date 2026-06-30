@@ -136,7 +136,11 @@ class _DynamicsPageState extends CommonPageState<DynamicsPage>
         child = Column(
           children: [
             upPanelPart(theme),
-            const Divider(height: 1, thickness: 1),
+            Divider(
+              height: 1,
+              thickness: 1,
+              color: theme.dividerColor.withValues(alpha: 0.1),
+            ),
             Expanded(child: child),
           ],
         );
@@ -145,7 +149,11 @@ class _DynamicsPageState extends CommonPageState<DynamicsPage>
         child = Row(
           children: [
             upPanelPart(theme),
-            const VerticalDivider(width: 1, thickness: 1),
+            VerticalDivider(
+              width: 1,
+              thickness: 1,
+              color: theme.dividerColor.withValues(alpha: 0.1),
+            ),
             Expanded(child: child),
           ],
         );
@@ -154,7 +162,11 @@ class _DynamicsPageState extends CommonPageState<DynamicsPage>
         child = Row(
           children: [
             Expanded(child: child),
-            const VerticalDivider(width: 1, thickness: 1),
+            VerticalDivider(
+              width: 1,
+              thickness: 1,
+              color: theme.dividerColor.withValues(alpha: 0.1),
+            ),
             upPanelPart(theme),
           ],
         );
