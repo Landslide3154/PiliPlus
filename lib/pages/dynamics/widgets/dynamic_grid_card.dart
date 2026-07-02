@@ -128,13 +128,16 @@ class DynamicGridCard extends StatelessWidget {
 
         if (coverUrl != null) {
           // 有封面图
-          return Stack(
+          return ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Style.imgRadius),
+            child: Stack(
             children: [
               NetworkImgLayer(
                 src: coverUrl,
                 width: coverWidth,
                 height: coverHeight,
                 quality: 40,
+                type: .emote,
               ),
               // badge（充电专属等）
               if (video?.badge?.text case final badge?)
@@ -252,7 +255,7 @@ class DynamicGridCard extends StatelessWidget {
                   ),
                 ),
             ],
-          );
+          ));
         }
 
         // 无封面：渐变占位 + 类型图标

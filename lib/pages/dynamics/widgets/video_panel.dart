@@ -54,6 +54,7 @@ Widget videoSeasonWidget(
             height: constraints.maxWidth / Style.aspectRatio,
             src: cover,
             quality: 40,
+            type: .emote,
           ),
         ),
         if (video.badge?.text case final badge?)
@@ -85,7 +86,6 @@ Widget videoSeasonWidget(
                   Colors.black54,
                 ],
               ),
-              borderRadius: .vertical(bottom: Style.imgRadius),
             ),
             child: DefaultTextStyle.merge(
               style: TextStyle(
@@ -170,7 +170,10 @@ Widget videoSeasonWidget(
             borderRadius: const BorderRadius.vertical(top: Style.imgRadius),
             child: inner,
           )
-        : inner;
+        : ClipRRect(
+            borderRadius: Style.mdRadius,
+            child: inner,
+          );
   }
 
   return Padding(
