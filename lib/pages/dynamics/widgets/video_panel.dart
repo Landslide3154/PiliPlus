@@ -45,9 +45,7 @@ Widget videoSeasonWidget(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (video.cover case final cover?)
-          ClipRRect(
-            borderRadius: const BorderRadius.vertical(top: Style.imgRadius),
-            child: Stack(
+          Stack(
             clipBehavior: Clip.none,
             children: [
               LayoutBuilder(
@@ -167,7 +165,6 @@ Widget videoSeasonWidget(
               ),
             ],
           ),
-        ),
         if (video.title case final title?)
           Text(
             title,
