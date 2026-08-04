@@ -35,9 +35,10 @@ abstract final class Update {
         return;
       }
       final data = res.data;
-      final int latest =
-          DateTime.parse(data['created_at']).millisecondsSinceEpoch ~/ 1000;
-      if (BuildConfig.buildTime >= latest) {
+      // 版本号比较（tag 如 v2.1.0.03），不依赖时间戳，保证语义有序
+      final String latestTag = (data['tag_name'] as String? ?? '')
+          .replaceFirst(RegExp(r'^v'), '');
+      if (_compareVersion(latestTag, BuildConfig.versionName) <= 0) {
         if (!isAuto) {
           SmartDialog.showToast('已是最新版本');
         }
@@ -63,7 +64,7 @@ abstract final class Update {
                         style: const TextStyle(fontSize: 20),
                       ),
                       const SizedBox(height: 8),
-                      Text('${data['body']}'),
+                      Text(data['body'] as String? ?? '暂无更新说明'),
                       TextButton(
                         onPressed: () => PageUtils.launchURL(
                           '${Constants.sourceCodeUrl}/commits/main',
@@ -104,7 +105,7 @@ abstract final class Update {
                   downloadBtn('deb', ext: 'deb'),
                   downloadBtn('targz', ext: 'tar.gz'),
                 ] else
-                  downloadBtn('Github'),
+                  downloadBtn('立即下载'),
               ],
             );
           },
@@ -145,5 +146,18 @@ abstract final class Update {
       if (kDebugMode) debugPrint('download error: $e');
       PageUtils.launchURL('${Constants.sourceCodeUrl}/releases/latest');
     }
+  }
+
+  /// 语义化版本号比较，如 2.1.0.03 > 2.1.0.02 > 2.1.0.100(按数字逐段比较)
+  static int _compareVersion(String a, String b) {
+    final aa = a.split('.').map(int.tryParse).toList();
+    final bb = b.split('.').map(int.tryParse).toList();
+    final len = aa.length > bb.length ? aa.length : bb.length;
+    for (var i = 0; i < len; i++) {
+      final x = i < aa.length ? (aa[i] ?? 0) : 0;
+      final y = i < bb.length ? (bb[i] ?? 0) : 0;
+      if (x != y) return x.compareTo(y);
+    }
+    return 0;
   }
 }

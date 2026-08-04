@@ -100,6 +100,9 @@ jobs:
               with:
                   tag_name: v${{ env.version }}
                   name: v${{ env.version }}
+                  body: |
+                      自动构建版本 v${{ env.version }}
+                      提交: ${{ github.sha }}
                   files: PiliPlus_android_*.apk
 
             - name: 上传
