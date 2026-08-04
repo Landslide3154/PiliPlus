@@ -9,11 +9,17 @@ import 'package:PiliPlus/http/loading_state.dart';
 import 'package:PiliPlus/models/common/nav_bar_config.dart';
 import 'package:PiliPlus/models_new/fav/fav_folder/list.dart';
 import 'package:PiliPlus/pages/common/common_page.dart';
+import 'package:PiliPlus/pages/history/view.dart';
 import 'package:PiliPlus/pages/home/view.dart';
+import 'package:PiliPlus/pages/later/view.dart';
 import 'package:PiliPlus/pages/login/controller.dart';
 import 'package:PiliPlus/pages/main/controller.dart';
+import 'package:PiliPlus/pages/member_favorite/view.dart';
+import 'package:PiliPlus/pages/mine/controller.dart';
 import 'package:PiliPlus/pages/mine/controller.dart';
 import 'package:PiliPlus/pages/mine/widgets/item.dart';
+import 'package:PiliPlus/pages/subscription/view.dart';
+import 'package:PiliPlus/utils/accounts.dart';
 import 'package:PiliPlus/utils/bili_utils.dart';
 import 'package:PiliPlus/utils/extension/get_ext.dart';
 import 'package:PiliPlus/utils/extension/num_ext.dart';
@@ -36,7 +42,7 @@ class MinePage extends StatefulWidget {
 }
 
 class _MediaPageState extends CommonPageState<MinePage>
-    with AutomaticKeepAliveClientMixin {
+    with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   final MineController controller = Get.putOrFind(MineController.new);
   late final MainController _mainController = Get.find<MainController>();
 
@@ -68,36 +74,73 @@ class _MediaPageState extends CommonPageState<MinePage>
     super.build(context);
     final theme = Theme.of(context);
     final secondary = theme.colorScheme.secondary;
+    final padding = MediaQuery.viewPaddingOf(context);
     return Column(
       children: [
+        // 顶部操作栏（搜索、设置等）
         Padding(
-          padding: const .symmetric(vertical: 10),
+          padding: EdgeInsets.only(
+            top: padding.top + 8,
+            right: 8,
+          ),
           child: _buildHeaderActions,
         ),
+        // 用户信息精简行
+        _buildUserInfo(theme, secondary),
+        _buildTabBar(theme),
+        // TabBarView 内容
         Expanded(
-          child: Material(
-            type: .transparency,
-            child: refreshIndicator(
-              onRefresh: controller.onRefresh,
-              child: onBuild(
-                ListView(
-                  padding: const .only(bottom: 100),
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  children: [
-                    _buildUserInfo(theme, secondary),
-                    _buildActions(secondary),
-                    Obx(
-                      () => controller.loadingState.value is Loading
-                          ? const SizedBox.shrink()
-                          : _buildFav(theme, secondary),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+          child: TabBarView(
+            controller: _tabController,
+            children: _tabPages,
           ),
         ),
       ],
+    );
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  late final TabController _tabController = TabController(
+    length: _tabPages.length,
+    vsync: this,
+  );
+
+  late final List<_TabItem> _tabItems = const [
+    _TabItem('观看记录', 'history'),
+    _TabItem('我的收藏', 'favorite'),
+    _TabItem('我的订阅', 'subscribe'),
+    _TabItem('稍后再看', 'later'),
+  ];
+
+  late final List<Widget> _tabPages = _tabItems.map((t) {
+    final heroTag = Utils.makeHeroTag(0);
+    return switch (t.param) {
+      'history' => const HistoryPage(hideSubTabs: true),
+      'favorite' => MemberFavorite(heroTag: heroTag, mid: _userMid),
+      'subscribe' => const SubPage(),
+      'later' => const LaterPage(),
+      _ => const SizedBox.shrink(),
+    };
+  }).toList();
+
+  int get _userMid => Accounts.main.mid;
+
+  Widget _buildTabBar(ThemeData theme) {
+    return SizedBox(
+      height: 44,
+      child: TabBar(
+        controller: _tabController,
+        tabs: _tabItems.map((t) => Tab(text: t.label)).toList(),
+        labelStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+        unselectedLabelColor: theme.colorScheme.outline,
+        indicatorColor: theme.colorScheme.primary,
+        dividerColor: theme.dividerColor.withValues(alpha: 0.2),
+      ),
     );
   }
 
@@ -241,7 +284,6 @@ class _MediaPageState extends CommonPageState<MinePage>
     return Obx(() {
       final userInfo = controller.userInfo.value;
       final levelInfo = userInfo.levelInfo;
-      final hasLevel = levelInfo != null;
       final isVip = userInfo.vipStatus != null && userInfo.vipStatus! > 0;
       final userStat = controller.userStat.value;
       return Column(
@@ -349,54 +391,40 @@ class _MediaPageState extends CommonPageState<MinePage>
                           ],
                         ),
                       ),
-                      const SizedBox(height: 4),
-                      ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 225),
-                        child: LinearProgressIndicator(
-                          minHeight: 2.25,
-                          value: hasLevel
-                              ? levelInfo.currentExp! / levelInfo.nextExp!
-                              : 0,
-                          backgroundColor: theme.colorScheme.outline.withValues(
-                            alpha: 0.4,
-                          ),
-                          valueColor: AlwaysStoppedAnimation<Color>(secondary),
-                          stopIndicatorColor: Colors.transparent,
-                        ),
-                      ),
                     ],
                   ),
+                ),
+                const SizedBox(width: 12),
+                // 动态 关注 粉丝 — 水平紧凑排列
+                Row(
+                  mainAxisSize: .min,
+                  children: [
+                    _btn(
+                      count: userStat.dynamicCount,
+                      countStyle: style,
+                      name: '动态',
+                      labelStyle: labelStyle,
+                      onTap: () => controller.push('memberDynamics'),
+                    ),
+                    _btn(
+                      count: userStat.following,
+                      countStyle: style,
+                      name: '关注',
+                      labelStyle: labelStyle,
+                      onTap: () => controller.push('follow'),
+                    ),
+                    _btn(
+                      count: userStat.follower,
+                      countStyle: style,
+                      name: '粉丝',
+                      labelStyle: labelStyle,
+                      onTap: () => controller.push('fan'),
+                    ),
+                  ],
                 ),
                 const SizedBox(width: 20),
               ],
             ),
-          ),
-          const SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: .spaceEvenly,
-            children: [
-              _btn(
-                count: userStat.dynamicCount,
-                countStyle: style,
-                name: '动态',
-                labelStyle: labelStyle,
-                onTap: () => controller.push('memberDynamics'),
-              ),
-              _btn(
-                count: userStat.following,
-                countStyle: style,
-                name: '关注',
-                labelStyle: labelStyle,
-                onTap: () => controller.push('follow'),
-              ),
-              _btn(
-                count: userStat.follower,
-                countStyle: style,
-                name: '粉丝',
-                labelStyle: labelStyle,
-                onTap: () => controller.push('fan'),
-              ),
-            ],
           ),
         ],
       );
@@ -566,4 +594,10 @@ class _MediaPageState extends CommonPageState<MinePage>
       ),
     };
   }
+}
+
+class _TabItem {
+  final String label;
+  final String param;
+  const _TabItem(this.label, this.param);
 }

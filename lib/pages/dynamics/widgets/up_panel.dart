@@ -44,77 +44,7 @@ class _UpPanelState extends State<UpPanel> {
       controller: controller.scrollController,
       slivers: [
         SliverToBoxAdapter(
-          child: InkWell(
-            onTap: () => setState(() {
-              controller.showLiveUp = !controller.showLiveUp;
-            }),
-            onLongPress: toFollowPage,
-            onSecondaryTap: PlatformUtils.isMobile ? null : toFollowPage,
-            child: Container(
-              alignment: .center,
-              height: isTop ? 76 : 60,
-              padding: isTop ? const .only(left: 12, right: 6) : null,
-              child: Text.rich(
-                textAlign: .center,
-                style: TextStyle(
-                  fontSize: 13,
-                  color: theme.colorScheme.primary,
-                ),
-                TextSpan(
-                  children: [
-                    TextSpan(
-                      text: 'Live(${upData.liveUsers?.count ?? 0})',
-                    ),
-                    if (!isTop) ...[
-                      const TextSpan(text: '\n'),
-                      WidgetSpan(
-                        alignment: .middle,
-                        child: Icon(
-                          controller.showLiveUp
-                              ? Icons.expand_less
-                              : Icons.expand_more,
-                          size: 12,
-                          color: theme.colorScheme.primary,
-                        ),
-                      ),
-                    ] else
-                      WidgetSpan(
-                        alignment: .middle,
-                        child: Icon(
-                          controller.showLiveUp
-                              ? Icons.keyboard_arrow_right
-                              : Icons.keyboard_arrow_left,
-                          color: theme.colorScheme.primary,
-                          size: 14,
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-        if (controller.showLiveUp && liveList != null && liveList.isNotEmpty)
-          SliverList.builder(
-            itemCount: liveList.length,
-            itemBuilder: (context, index) {
-              return upItemBuild(theme, liveList[index]);
-            },
-          ),
-        SliverToBoxAdapter(
           child: upItemBuild(theme, UpItem(face: '', uname: '全部动态', mid: -1)),
-        ),
-        SliverToBoxAdapter(
-          child: Obx(
-            () => upItemBuild(
-              theme,
-              UpItem(
-                uname: '我',
-                face: controller.accountService.face.value,
-                mid: Accounts.main.mid,
-              ),
-            ),
-          ),
         ),
         if (upList != null && upList.isNotEmpty)
           SliverList.builder(
@@ -167,24 +97,7 @@ class _UpPanelState extends State<UpPanel> {
           type: .avatar,
         ),
       );
-      if (isLive) {
-        avatar = Stack(
-          clipBehavior: .none,
-          children: [
-            avatar,
-            Positioned(
-              top: isLive && !isTop ? -5 : 0,
-              right: -6,
-              child: Badge(
-                label: const Text(' Live '),
-                textColor: theme.colorScheme.onSecondaryContainer,
-                backgroundColor: theme.colorScheme.secondaryContainer
-                    .withValues(alpha: 0.75),
-              ),
-            ),
-          ],
-        );
-      } else if (item.hasUpdate ?? false) {
+      if (item.hasUpdate ?? false) {
         avatar = Stack(
           clipBehavior: .none,
           children: [
@@ -202,9 +115,57 @@ class _UpPanelState extends State<UpPanel> {
       }
     }
 
+    if (isTop) {
+      // 顶部模式：图标在上、名字在下（不变）
+      return SizedBox(
+        height: 76,
+        width: 70,
+        child: InkWell(
+          onTap: () {
+            feedBack();
+            if (isLive) {
+              PageUtils.toLiveRoom(item.roomId);
+            } else {
+              _onSelect(item);
+            }
+          },
+          onLongPress: !isAll ? toMemberPage : null,
+          onSecondaryTap: !isAll && !PlatformUtils.isMobile
+              ? toMemberPage
+              : null,
+          child: Opacity(
+            opacity: isCurrent ? 1 : 0.6,
+            child: Column(
+              spacing: 4,
+              mainAxisSize: .min,
+              mainAxisAlignment: .center,
+              children: [
+                avatar,
+                Padding(
+                  padding: const .symmetric(horizontal: 4),
+                  child: Text(
+                    '${item.uname}\n',
+                    maxLines: 2,
+                    textAlign: .center,
+                    style: TextStyle(
+                      color: currentMid == item.mid
+                          ? theme.colorScheme.primary
+                          : theme.colorScheme.outline,
+                      height: 1.1,
+                      fontSize: 12.5,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+    // 抽屉/侧边常驻：图标在左、名字在右
     return SizedBox(
-      height: 76,
-      width: isTop ? 70 : null,
+      height: 56,
+      width: 210,
       child: InkWell(
         onTap: () {
           feedBack();
@@ -214,33 +175,33 @@ class _UpPanelState extends State<UpPanel> {
             _onSelect(item);
           }
         },
-        // onDoubleTap: isLive ? () => _onSelect(data) : null,
         onLongPress: !isAll ? toMemberPage : null,
-        onSecondaryTap: !isAll && !PlatformUtils.isMobile ? toMemberPage : null,
-        child: Opacity(
-          opacity: isCurrent ? 1 : 0.6,
-          child: Column(
-            spacing: 4,
-            mainAxisSize: .min,
-            mainAxisAlignment: .center,
-            children: [
-              avatar,
-              Padding(
-                padding: const .symmetric(horizontal: 4),
-                child: Text(
-                  isTop ? '${item.uname}\n' : item.uname!,
-                  maxLines: 2,
-                  textAlign: .center,
-                  style: TextStyle(
-                    color: currentMid == item.mid
-                        ? theme.colorScheme.primary
-                        : theme.colorScheme.outline,
-                    height: 1.1,
-                    fontSize: 12.5,
+        onSecondaryTap: !isAll && !PlatformUtils.isMobile
+            ? toMemberPage
+            : null,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Opacity(
+            opacity: isCurrent ? 1 : 0.6,
+            child: Row(
+              spacing: 10,
+              children: [
+                avatar,
+                Flexible(
+                  child: Text(
+                    item.uname!,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: currentMid == item.mid
+                          ? theme.colorScheme.primary
+                          : theme.colorScheme.outline,
+                      fontSize: 14,
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

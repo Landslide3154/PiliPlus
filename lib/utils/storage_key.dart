@@ -220,6 +220,8 @@ abstract final class SettingBoxKey {
       smallCardWidth = 'smallCardWidth',
       recommendCardWidth = 'recommendCardWidth',
       dynamicsWaterfallFlow = 'dynamicsWaterfallFlow',
+      dynamicLayoutMode = 'dynamicLayoutMode',
+      dynamicsGridColumns = 'dynamicsGridColumns',
       upPanelPosition = 'upPanelPosition',
       dynamicsShowAllFollowedUp = 'dynamicsShowAllFollowedUp',
       useSideBar = 'useSideBar',
@@ -235,6 +237,8 @@ abstract final class SettingBoxKey {
       tempPlayerConf = 'tempPlayerConf',
       reduceLuxColor = 'reduceLuxColor',
       liveCdnUrl = 'liveCdnUrl',
+      cardSpacing = 'cardSpacing',
+      edgePadding = 'edgePadding',
       saveReply = 'saveReply';
 }
 

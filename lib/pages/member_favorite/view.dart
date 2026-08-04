@@ -77,22 +77,37 @@ class _MemberFavoriteState extends State<MemberFavorite>
       ),
       Success(:final response) =>
         response != null && response.isNotEmpty
-            ? SliverMainAxisGroup(
-                slivers: [
-                  _buildItem(
-                    theme,
-                    data: _controller.favState,
-                    isEnd: _controller.favEnd,
-                    isFav: true,
+            ? Obx(() {
+                final list = _controller.favState.value.mediaListResponse?.list;
+                if (list != null && list.isNotEmpty) {
+                  return SliverGrid.builder(
+                    gridDelegate: gridDelegate,
+                    itemCount: list.length,
+                    itemBuilder: (context, index) {
+                      final item = list[index];
+                      return SizedBox(
+                        height: 110,
+                        child: MemberFavItem(
+                          item: item,
+                          onDelete: (isDeleted) {
+                            if (isDeleted ?? false) {
+                              _controller.favState
+                                ..value.mediaListResponse?.list?.remove(item)
+                                ..refresh();
+                            }
+                          },
+                        ),
+                      );
+                    },
+                  );
+                }
+                return SliverToBoxAdapter(
+                  child: SizedBox(
+                    height: 200,
+                    child: Center(child: Text('暂无收藏夹')),
                   ),
-                  _buildItem(
-                    theme,
-                    data: _controller.subState,
-                    isEnd: _controller.subEnd,
-                    isFav: false,
-                  ),
-                ],
-              )
+                );
+              })
             : HttpError(onReload: _controller.onReload),
       Error(:final errMsg) => HttpError(
         errMsg: errMsg,

@@ -381,7 +381,7 @@ class _HorizontalMemberPageState extends State<HorizontalMemberPage> {
           mid: widget.mid,
           name: memberInfoModel.name,
         );
-      case UserInfoType.like:
+      case UserInfoType.dyn:
         num = userStat['likes'] != null
             ? NumUtils.numFormat(userStat['likes'])
             : '';

@@ -1,0 +1,412 @@
+[
+  {
+    "sha": "0102ce137164b1934a133ba2427c9273336bc5a3",
+    "node_id": "C_kwDOSsTu89oAKDAxMDJjZTEzNzE2NGIxOTM0YTEzM2JhMjQyN2M5MjczMzM2YmM1YTM",
+    "commit": {
+      "author": {
+        "name": "程浩",
+        "email": "godisout@gmail.com",
+        "date": "2026-05-30T16:38:45Z"
+      },
+      "committer": {
+        "name": "程浩",
+        "email": "godisout@gmail.com",
+        "date": "2026-05-30T16:38:45Z"
+      },
+      "message": "fix: 移除 CI 中的仓库名校验，使 fork 能正常构建",
+      "tree": {
+        "sha": "dd3f48285a740f2f43855130db1c3167d35cb7af",
+        "url": "https://api.github.com/repos/Landslide3154/PiliPlus/git/trees/dd3f48285a740f2f43855130db1c3167d35cb7af"
+      },
+      "url": "https://api.github.com/repos/Landslide3154/PiliPlus/git/commits/0102ce137164b1934a133ba2427c9273336bc5a3",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/Landslide3154/PiliPlus/commits/0102ce137164b1934a133ba2427c9273336bc5a3",
+    "html_url": "https://github.com/Landslide3154/PiliPlus/commit/0102ce137164b1934a133ba2427c9273336bc5a3",
+    "comments_url": "https://api.github.com/repos/Landslide3154/PiliPlus/commits/0102ce137164b1934a133ba2427c9273336bc5a3/comments",
+    "author": {
+      "login": "Landslide3154",
+      "id": 18253197,
+      "node_id": "MDQ6VXNlcjE4MjUzMTk3",
+      "avatar_url": "https://avatars.githubusercontent.com/u/18253197?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/Landslide3154",
+      "html_url": "https://github.com/Landslide3154",
+      "followers_url": "https://api.github.com/users/Landslide3154/followers",
+      "following_url": "https://api.github.com/users/Landslide3154/following{/other_user}",
+      "gists_url": "https://api.github.com/users/Landslide3154/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/Landslide3154/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/Landslide3154/subscriptions",
+      "organizations_url": "https://api.github.com/users/Landslide3154/orgs",
+      "repos_url": "https://api.github.com/users/Landslide3154/repos",
+      "events_url": "https://api.github.com/users/Landslide3154/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/Landslide3154/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "Landslide3154",
+      "id": 18253197,
+      "node_id": "MDQ6VXNlcjE4MjUzMTk3",
+      "avatar_url": "https://avatars.githubusercontent.com/u/18253197?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/Landslide3154",
+      "html_url": "https://github.com/Landslide3154",
+      "followers_url": "https://api.github.com/users/Landslide3154/followers",
+      "following_url": "https://api.github.com/users/Landslide3154/following{/other_user}",
+      "gists_url": "https://api.github.com/users/Landslide3154/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/Landslide3154/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/Landslide3154/subscriptions",
+      "organizations_url": "https://api.github.com/users/Landslide3154/orgs",
+      "repos_url": "https://api.github.com/users/Landslide3154/repos",
+      "events_url": "https://api.github.com/users/Landslide3154/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/Landslide3154/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "15846baa76d5c8b2b19be5f13ac1970ed3875a8f",
+        "url": "https://api.github.com/repos/Landslide3154/PiliPlus/commits/15846baa76d5c8b2b19be5f13ac1970ed3875a8f",
+        "html_url": "https://github.com/Landslide3154/PiliPlus/commit/15846baa76d5c8b2b19be5f13ac1970ed3875a8f"
+      }
+    ]
+  },
+  {
+    "sha": "15846baa76d5c8b2b19be5f13ac1970ed3875a8f",
+    "node_id": "C_kwDOSsTu89oAKDE1ODQ2YmFhNzZkNWM4YjJiMTliZTVmMTNhYzE5NzBlZDM4NzVhOGY",
+    "commit": {
+      "author": {
+        "name": "程浩",
+        "email": "godisout@gmail.com",
+        "date": "2026-05-30T16:17:25Z"
+      },
+      "committer": {
+        "name": "程浩",
+        "email": "godisout@gmail.com",
+        "date": "2026-05-30T16:17:25Z"
+      },
+      "message": "feat: 动态页支持网格对齐布局 + 视频卡片缩略图重排\n\n### 新增功能\n- 动态页布局三选一：瀑布流（原）/ 网格对齐（新增）/ 单列列表（原）\n  - 网格对齐模式使用 SliverGrid，同一行卡片高度统一，垂直方向严格对齐\n  - 列数可在设置中 1~6 列调节（默认 4 列）\n- 设置页外观设置中新增「动态页布局模式」和「网格对齐列数」两个配置项\n\n### 视觉优化\n- 视频卡片缩略图底部 overlay 重新布局：\n  - 左下角：播放量 + 弹幕数（≥10000 自动以万为单位，如 \"9.9万播放\"）\n  - 右下角：视频时长\n  - 移除播放按钮图标，信息更紧凑\n\n### 技术改动\n- DynMixin 新增 buildDynamicContent() 统一入口，替代各页面手写瀑布流/列表分支\n- 涉及 5 个页面：全部动态 / 话题动态 / 用户动态 / 搜索结果 / 我的评论\n- 旧设置 dynamicsWaterfallFlow 自动迁移至新 layoutMode 配置\n- 所有布局切换均需重启应用生效\n\n### 影响范围\nlib/utils/storage_key.dart\nlib/utils/storage_pref.dart\nlib/utils/global_data.dart\nlib/utils/waterfall.dart\nlib/pages/dynamics_tab/view.dart\nlib/pages/dynamics_topic/view.dart\nlib/pages/member_dynamics/view.dart\nlib/pages/member_search/child/view.dart\nlib/pages/my_reply/view.dart\nlib/pages/setting/models/style_settings.dart\nlib/pages/dynamics/widgets/video_panel.dart",
+      "tree": {
+        "sha": "2e8f0a938d8b55309636e14e8d2005419a5334e5",
+        "url": "https://api.github.com/repos/Landslide3154/PiliPlus/git/trees/2e8f0a938d8b55309636e14e8d2005419a5334e5"
+      },
+      "url": "https://api.github.com/repos/Landslide3154/PiliPlus/git/commits/15846baa76d5c8b2b19be5f13ac1970ed3875a8f",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/Landslide3154/PiliPlus/commits/15846baa76d5c8b2b19be5f13ac1970ed3875a8f",
+    "html_url": "https://github.com/Landslide3154/PiliPlus/commit/15846baa76d5c8b2b19be5f13ac1970ed3875a8f",
+    "comments_url": "https://api.github.com/repos/Landslide3154/PiliPlus/commits/15846baa76d5c8b2b19be5f13ac1970ed3875a8f/comments",
+    "author": {
+      "login": "Landslide3154",
+      "id": 18253197,
+      "node_id": "MDQ6VXNlcjE4MjUzMTk3",
+      "avatar_url": "https://avatars.githubusercontent.com/u/18253197?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/Landslide3154",
+      "html_url": "https://github.com/Landslide3154",
+      "followers_url": "https://api.github.com/users/Landslide3154/followers",
+      "following_url": "https://api.github.com/users/Landslide3154/following{/other_user}",
+      "gists_url": "https://api.github.com/users/Landslide3154/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/Landslide3154/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/Landslide3154/subscriptions",
+      "organizations_url": "https://api.github.com/users/Landslide3154/orgs",
+      "repos_url": "https://api.github.com/users/Landslide3154/repos",
+      "events_url": "https://api.github.com/users/Landslide3154/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/Landslide3154/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "Landslide3154",
+      "id": 18253197,
+      "node_id": "MDQ6VXNlcjE4MjUzMTk3",
+      "avatar_url": "https://avatars.githubusercontent.com/u/18253197?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/Landslide3154",
+      "html_url": "https://github.com/Landslide3154",
+      "followers_url": "https://api.github.com/users/Landslide3154/followers",
+      "following_url": "https://api.github.com/users/Landslide3154/following{/other_user}",
+      "gists_url": "https://api.github.com/users/Landslide3154/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/Landslide3154/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/Landslide3154/subscriptions",
+      "organizations_url": "https://api.github.com/users/Landslide3154/orgs",
+      "repos_url": "https://api.github.com/users/Landslide3154/repos",
+      "events_url": "https://api.github.com/users/Landslide3154/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/Landslide3154/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "d4d9fc3405a1d585083f81e6a89730749416ca5d",
+        "url": "https://api.github.com/repos/Landslide3154/PiliPlus/commits/d4d9fc3405a1d585083f81e6a89730749416ca5d",
+        "html_url": "https://github.com/Landslide3154/PiliPlus/commit/d4d9fc3405a1d585083f81e6a89730749416ca5d"
+      }
+    ]
+  },
+  {
+    "sha": "d4d9fc3405a1d585083f81e6a89730749416ca5d",
+    "node_id": "C_kwDOSsTu89oAKGQ0ZDlmYzM0MDVhMWQ1ODUwODNmODFlNmE4OTczMDc0OTQxNmNhNWQ",
+    "commit": {
+      "author": {
+        "name": "My-Responsitories",
+        "email": "107370289+My-Responsitories@users.noreply.github.com",
+        "date": "2026-05-30T12:10:35Z"
+      },
+      "committer": {
+        "name": "GitHub",
+        "email": "noreply@github.com",
+        "date": "2026-05-30T12:10:35Z"
+      },
+      "message": "refa: jni (#2244)\n\n* refa: jni\n\n* refa: jni",
+      "tree": {
+        "sha": "2b03e5f519e2e3f0008edb6d9f1e45a71a81db1e",
+        "url": "https://api.github.com/repos/Landslide3154/PiliPlus/git/trees/2b03e5f519e2e3f0008edb6d9f1e45a71a81db1e"
+      },
+      "url": "https://api.github.com/repos/Landslide3154/PiliPlus/git/commits/d4d9fc3405a1d585083f81e6a89730749416ca5d",
+      "comment_count": 0,
+      "verification": {
+        "verified": true,
+        "reason": "valid",
+        "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsFcBAABCAAQBQJqGtO7CRC1aQ7uu5UhlAAAFhAQAB2eejkPItQ2lPUnufZLu2tv\nU4BEbDTAi5+2wDaRccGDFm6CrcgdOoV5FIZ5G201Af9n8c20gftvsKhyw2ahdVKh\nco5DVpTzbCOt/YDeMA1enNQcgWUjy6HJPxKmOt+oALFWcKBFvz0E/9RyprgN9Kxj\nzVNWl7aMzEfwvt6argN1dv5P40GR/1f4jDgq9ixrU0SOtJwcHSNRdRAPe/j0tO4B\niGgNT3lkWMqt4rpKeVNO4E2W4XwvKn4KyUs9L7pHqOocF3OKWMJp/+zSCXJWVfYV\nIPfQiqtMQVjk3G00lQTQMfUjsLJq53FW3jdnqjtVyiivLmeARZ/drJpLdQscFLxt\nOt83XI4k+TrVy76vn99OkdxuZ+2Vp4oe0CHWvFcyHLW+ka+zGEmU4vxkS4S/1Nys\nmw/qzs6HemS91C5+GevvCIX4xHZIIs8gX4j0J71fiopV2O9dnOQA5opbgv9I/7wy\nthENkLsaRzEDScsGtcHYUkOxZuJwF0c5V4xGmsLK6m86lC5yP6HG4i5CXZmxRCwX\nUaP8nlIfKx9DR7wRay0Bwrl5V7Q3LyH7iBqemJ7f/+V1ZD2g8R7BtkIIU76SAqdP\nz6/AT5lyIuDdeptyjTtTaLeKO2DiUUyAgJTZ9nTVcgy7JfGO+zrTDq6DIHqSewap\nSYXuDqymT39jpVz+QqJr\n=3hot\n-----END PGP SIGNATURE-----\n",
+        "payload": "tree 2b03e5f519e2e3f0008edb6d9f1e45a71a81db1e\nparent 6a75061dbb5ad99a4eea776ec9a3efc8046c8d57\nauthor My-Responsitories <107370289+My-Responsitories@users.noreply.github.com> 1780143035 +0000\ncommitter GitHub <noreply@github.com> 1780143035 +0800\n\nrefa: jni (#2244)\n\n* refa: jni\n\n* refa: jni",
+        "verified_at": "2026-05-30T12:10:36Z"
+      }
+    },
+    "url": "https://api.github.com/repos/Landslide3154/PiliPlus/commits/d4d9fc3405a1d585083f81e6a89730749416ca5d",
+    "html_url": "https://github.com/Landslide3154/PiliPlus/commit/d4d9fc3405a1d585083f81e6a89730749416ca5d",
+    "comments_url": "https://api.github.com/repos/Landslide3154/PiliPlus/commits/d4d9fc3405a1d585083f81e6a89730749416ca5d/comments",
+    "author": {
+      "login": "My-Responsitories",
+      "id": 107370289,
+      "node_id": "U_kgDOBmZXMQ",
+      "avatar_url": "https://avatars.githubusercontent.com/u/107370289?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/My-Responsitories",
+      "html_url": "https://github.com/My-Responsitories",
+      "followers_url": "https://api.github.com/users/My-Responsitories/followers",
+      "following_url": "https://api.github.com/users/My-Responsitories/following{/other_user}",
+      "gists_url": "https://api.github.com/users/My-Responsitories/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/My-Responsitories/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/My-Responsitories/subscriptions",
+      "organizations_url": "https://api.github.com/users/My-Responsitories/orgs",
+      "repos_url": "https://api.github.com/users/My-Responsitories/repos",
+      "events_url": "https://api.github.com/users/My-Responsitories/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/My-Responsitories/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "web-flow",
+      "id": 19864447,
+      "node_id": "MDQ6VXNlcjE5ODY0NDQ3",
+      "avatar_url": "https://avatars.githubusercontent.com/u/19864447?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/web-flow",
+      "html_url": "https://github.com/web-flow",
+      "followers_url": "https://api.github.com/users/web-flow/followers",
+      "following_url": "https://api.github.com/users/web-flow/following{/other_user}",
+      "gists_url": "https://api.github.com/users/web-flow/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/web-flow/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/web-flow/subscriptions",
+      "organizations_url": "https://api.github.com/users/web-flow/orgs",
+      "repos_url": "https://api.github.com/users/web-flow/repos",
+      "events_url": "https://api.github.com/users/web-flow/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/web-flow/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "6a75061dbb5ad99a4eea776ec9a3efc8046c8d57",
+        "url": "https://api.github.com/repos/Landslide3154/PiliPlus/commits/6a75061dbb5ad99a4eea776ec9a3efc8046c8d57",
+        "html_url": "https://github.com/Landslide3154/PiliPlus/commit/6a75061dbb5ad99a4eea776ec9a3efc8046c8d57"
+      }
+    ]
+  },
+  {
+    "sha": "6a75061dbb5ad99a4eea776ec9a3efc8046c8d57",
+    "node_id": "C_kwDOSsTu89oAKDZhNzUwNjFkYmI1YWQ5OWE0ZWVhNzc2ZWM5YTNlZmM4MDQ2YzhkNTc",
+    "commit": {
+      "author": {
+        "name": "dom",
+        "email": "githubaccount56556@proton.me",
+        "date": "2026-05-30T08:55:34Z"
+      },
+      "committer": {
+        "name": "dom",
+        "email": "githubaccount56556@proton.me",
+        "date": "2026-05-30T08:55:51Z"
+      },
+      "message": "fix dev build\n\nSigned-off-by: dom <githubaccount56556@proton.me>",
+      "tree": {
+        "sha": "4ee54d6a58bc0a6cc94deb33666549a49b88404b",
+        "url": "https://api.github.com/repos/Landslide3154/PiliPlus/git/trees/4ee54d6a58bc0a6cc94deb33666549a49b88404b"
+      },
+      "url": "https://api.github.com/repos/Landslide3154/PiliPlus/git/commits/6a75061dbb5ad99a4eea776ec9a3efc8046c8d57",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/Landslide3154/PiliPlus/commits/6a75061dbb5ad99a4eea776ec9a3efc8046c8d57",
+    "html_url": "https://github.com/Landslide3154/PiliPlus/commit/6a75061dbb5ad99a4eea776ec9a3efc8046c8d57",
+    "comments_url": "https://api.github.com/repos/Landslide3154/PiliPlus/commits/6a75061dbb5ad99a4eea776ec9a3efc8046c8d57/comments",
+    "author": {
+      "login": "bggRGjQaUbCoE",
+      "id": 114972867,
+      "node_id": "U_kgDOBtpYww",
+      "avatar_url": "https://avatars.githubusercontent.com/u/114972867?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/bggRGjQaUbCoE",
+      "html_url": "https://github.com/bggRGjQaUbCoE",
+      "followers_url": "https://api.github.com/users/bggRGjQaUbCoE/followers",
+      "following_url": "https://api.github.com/users/bggRGjQaUbCoE/following{/other_user}",
+      "gists_url": "https://api.github.com/users/bggRGjQaUbCoE/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/bggRGjQaUbCoE/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/bggRGjQaUbCoE/subscriptions",
+      "organizations_url": "https://api.github.com/users/bggRGjQaUbCoE/orgs",
+      "repos_url": "https://api.github.com/users/bggRGjQaUbCoE/repos",
+      "events_url": "https://api.github.com/users/bggRGjQaUbCoE/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/bggRGjQaUbCoE/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "bggRGjQaUbCoE",
+      "id": 114972867,
+      "node_id": "U_kgDOBtpYww",
+      "avatar_url": "https://avatars.githubusercontent.com/u/114972867?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/bggRGjQaUbCoE",
+      "html_url": "https://github.com/bggRGjQaUbCoE",
+      "followers_url": "https://api.github.com/users/bggRGjQaUbCoE/followers",
+      "following_url": "https://api.github.com/users/bggRGjQaUbCoE/following{/other_user}",
+      "gists_url": "https://api.github.com/users/bggRGjQaUbCoE/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/bggRGjQaUbCoE/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/bggRGjQaUbCoE/subscriptions",
+      "organizations_url": "https://api.github.com/users/bggRGjQaUbCoE/orgs",
+      "repos_url": "https://api.github.com/users/bggRGjQaUbCoE/repos",
+      "events_url": "https://api.github.com/users/bggRGjQaUbCoE/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/bggRGjQaUbCoE/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "2e7c80422c7c36b9708e92fc684e38886bed5791",
+        "url": "https://api.github.com/repos/Landslide3154/PiliPlus/commits/2e7c80422c7c36b9708e92fc684e38886bed5791",
+        "html_url": "https://github.com/Landslide3154/PiliPlus/commit/2e7c80422c7c36b9708e92fc684e38886bed5791"
+      }
+    ]
+  },
+  {
+    "sha": "2e7c80422c7c36b9708e92fc684e38886bed5791",
+    "node_id": "C_kwDOSsTu89oAKDJlN2M4MDQyMmM3YzM2Yjk3MDhlOTJmYzY4NGUzODg4NmJlZDU3OTE",
+    "commit": {
+      "author": {
+        "name": "dom",
+        "email": "githubaccount56556@proton.me",
+        "date": "2026-05-30T04:38:54Z"
+      },
+      "committer": {
+        "name": "dom",
+        "email": "githubaccount56556@proton.me",
+        "date": "2026-05-30T04:47:41Z"
+      },
+      "message": "upgrade deps\n\nSigned-off-by: dom <githubaccount56556@proton.me>",
+      "tree": {
+        "sha": "423142278b3d7577f2a6f2d9d869bed0d374fefc",
+        "url": "https://api.github.com/repos/Landslide3154/PiliPlus/git/trees/423142278b3d7577f2a6f2d9d869bed0d374fefc"
+      },
+      "url": "https://api.github.com/repos/Landslide3154/PiliPlus/git/commits/2e7c80422c7c36b9708e92fc684e38886bed5791",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/Landslide3154/PiliPlus/commits/2e7c80422c7c36b9708e92fc684e38886bed5791",
+    "html_url": "https://github.com/Landslide3154/PiliPlus/commit/2e7c80422c7c36b9708e92fc684e38886bed5791",
+    "comments_url": "https://api.github.com/repos/Landslide3154/PiliPlus/commits/2e7c80422c7c36b9708e92fc684e38886bed5791/comments",
+    "author": {
+      "login": "bggRGjQaUbCoE",
+      "id": 114972867,
+      "node_id": "U_kgDOBtpYww",
+      "avatar_url": "https://avatars.githubusercontent.com/u/114972867?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/bggRGjQaUbCoE",
+      "html_url": "https://github.com/bggRGjQaUbCoE",
+      "followers_url": "https://api.github.com/users/bggRGjQaUbCoE/followers",
+      "following_url": "https://api.github.com/users/bggRGjQaUbCoE/following{/other_user}",
+      "gists_url": "https://api.github.com/users/bggRGjQaUbCoE/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/bggRGjQaUbCoE/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/bggRGjQaUbCoE/subscriptions",
+      "organizations_url": "https://api.github.com/users/bggRGjQaUbCoE/orgs",
+      "repos_url": "https://api.github.com/users/bggRGjQaUbCoE/repos",
+      "events_url": "https://api.github.com/users/bggRGjQaUbCoE/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/bggRGjQaUbCoE/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "bggRGjQaUbCoE",
+      "id": 114972867,
+      "node_id": "U_kgDOBtpYww",
+      "avatar_url": "https://avatars.githubusercontent.com/u/114972867?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/bggRGjQaUbCoE",
+      "html_url": "https://github.com/bggRGjQaUbCoE",
+      "followers_url": "https://api.github.com/users/bggRGjQaUbCoE/followers",
+      "following_url": "https://api.github.com/users/bggRGjQaUbCoE/following{/other_user}",
+      "gists_url": "https://api.github.com/users/bggRGjQaUbCoE/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/bggRGjQaUbCoE/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/bggRGjQaUbCoE/subscriptions",
+      "organizations_url": "https://api.github.com/users/bggRGjQaUbCoE/orgs",
+      "repos_url": "https://api.github.com/users/bggRGjQaUbCoE/repos",
+      "events_url": "https://api.github.com/users/bggRGjQaUbCoE/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/bggRGjQaUbCoE/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "60f800b671029d5d46fa34ecf97c573376a6bf8d",
+        "url": "https://api.github.com/repos/Landslide3154/PiliPlus/commits/60f800b671029d5d46fa34ecf97c573376a6bf8d",
+        "html_url": "https://github.com/Landslide3154/PiliPlus/commit/60f800b671029d5d46fa34ecf97c573376a6bf8d"
+      }
+    ]
+  }
+]

@@ -2,9 +2,9 @@
 import 'package:PiliPlus/common/style.dart';
 import 'package:PiliPlus/common/widgets/badge.dart';
 import 'package:PiliPlus/common/widgets/image/network_img_layer.dart';
-import 'package:PiliPlus/common/widgets/svg/play_icon.dart';
 import 'package:PiliPlus/models/common/badge_type.dart';
 import 'package:PiliPlus/models/dynamics/result.dart';
+import 'package:PiliPlus/utils/global_data.dart';
 import 'package:PiliPlus/utils/num_utils.dart';
 import 'package:flutter/material.dart';
 
@@ -33,93 +33,156 @@ Widget videoSeasonWidget(
     return const SizedBox.shrink();
   }
 
+  // 只有单列列表模式保持四角圆角，瀑布流和网格对齐使用上圆下方
+  final bool topOnlyRadius = GlobalData().dynamicLayoutMode != 2;
+
   EdgeInsets padding;
   if (floor == 1) {
     padding = const EdgeInsets.symmetric(horizontal: 12);
   } else {
     padding = EdgeInsets.zero;
   }
+
+  Widget? coverWidget;
+  if (video.cover case final cover?) {
+    final inner = Stack(
+      clipBehavior: Clip.none,
+      children: [
+        LayoutBuilder(
+          builder: (context, constraints) => NetworkImgLayer(
+            width: constraints.maxWidth,
+            height: constraints.maxWidth / Style.aspectRatio,
+            src: cover,
+            quality: 40,
+            type: .emote,
+          ),
+        ),
+        if (video.badge?.text case final badge?)
+          PBadge(
+            text: badge,
+            top: 8.0,
+            right: 10.0,
+            bottom: null,
+            left: null,
+            type: switch (badge) {
+              '充电专属' => PBadgeType.error,
+              _ => PBadgeType.primary,
+            },
+          ),
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: 0,
+          child: Container(
+            height: 70,
+            alignment: Alignment.bottomLeft,
+            padding: const EdgeInsets.fromLTRB(10, 0, 8, 8),
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.transparent,
+                  Colors.black54,
+                ],
+              ),
+            ),
+            child: DefaultTextStyle.merge(
+              style: TextStyle(
+                fontSize: theme.textTheme.labelMedium!.fontSize,
+                color: Colors.white,
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  if (video.stat case final stat?) ...[
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 4,
+                        vertical: 1,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.black45,
+                        borderRadius: BorderRadius.circular(3),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.play_circle_outlined,
+                            size: 10,
+                            color: Colors.white,
+                          ),
+                          const SizedBox(width: 2),
+                          Text(NumUtils.numFormat(stat.play)),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 4,
+                        vertical: 1,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.black45,
+                        borderRadius: BorderRadius.circular(3),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.subtitles_outlined,
+                            size: 10,
+                            color: Colors.white,
+                          ),
+                          const SizedBox(width: 2),
+                          Text(NumUtils.numFormat(stat.danmu)),
+                        ],
+                      ),
+                    ),
+                  ],
+                  const Spacer(),
+                  if (video.durationText case final durationText?)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 4,
+                        vertical: 1,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.black45,
+                        borderRadius: BorderRadius.circular(3),
+                      ),
+                      child: Text(
+                        durationText,
+                        style: const TextStyle(fontSize: 10),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+    coverWidget = topOnlyRadius
+        ? ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Style.imgRadius),
+            child: inner,
+          )
+        : ClipRRect(
+            borderRadius: Style.mdRadius,
+            child: inner,
+          );
+  }
+
   return Padding(
     padding: padding,
     child: Column(
       spacing: 6,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (video.cover case final cover?)
-          Stack(
-            clipBehavior: Clip.none,
-            children: [
-              LayoutBuilder(
-                builder: (context, constraints) => NetworkImgLayer(
-                  width: constraints.maxWidth,
-                  height: constraints.maxWidth / Style.aspectRatio,
-                  src: cover,
-                  quality: 40,
-                ),
-              ),
-              if (video.badge?.text case final badge?)
-                PBadge(
-                  text: badge,
-                  top: 8.0,
-                  right: 10.0,
-                  bottom: null,
-                  left: null,
-                  type: switch (badge) {
-                    '充电专属' => PBadgeType.error,
-                    _ => PBadgeType.primary,
-                  },
-                ),
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: Container(
-                  height: 70,
-                  alignment: Alignment.bottomLeft,
-                  padding: const EdgeInsets.fromLTRB(10, 0, 8, 8),
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.transparent,
-                        Colors.black54,
-                      ],
-                    ),
-                    borderRadius: .vertical(bottom: Style.imgRadius),
-                  ),
-                  child: DefaultTextStyle.merge(
-                    style: TextStyle(
-                      fontSize: theme.textTheme.labelMedium!.fontSize,
-                      color: Colors.white,
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        if (video.durationText case final durationText?) ...[
-                          DecoratedBox(
-                            decoration: const BoxDecoration(
-                              color: Colors.black45,
-                              borderRadius: .all(.circular(4)),
-                            ),
-                            child: Text(' $durationText '),
-                          ),
-                          const SizedBox(width: 6),
-                        ],
-                        if (video.stat case final stat?) ...[
-                          Text('${NumUtils.numFormat(stat.play)}播放'),
-                          const SizedBox(width: 6),
-                          Text('${NumUtils.numFormat(stat.danmu)}弹幕'),
-                        ],
-                        const Spacer(),
-                        const PlayIcon(size: 50),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+        if (coverWidget != null) coverWidget,
         if (video.title case final title?)
           Text(
             title,

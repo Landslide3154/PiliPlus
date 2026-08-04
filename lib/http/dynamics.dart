@@ -37,7 +37,7 @@ abstract final class DynamicsHttp {
     int? hostMid,
     String? offset,
     Set<int>? tempBannedList,
-    DynamicsTabType type = .all,
+    DynamicsTabType type = .video,
   }) async {
     Map<String, dynamic> data = {
       if (type == .up) 'host_mid': hostMid else 'type': type.name,

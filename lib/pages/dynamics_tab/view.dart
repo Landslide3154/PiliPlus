@@ -6,10 +6,10 @@ import 'package:PiliPlus/http/loading_state.dart';
 import 'package:PiliPlus/models/common/dynamic/dynamics_type.dart';
 import 'package:PiliPlus/models/dynamics/result.dart';
 import 'package:PiliPlus/pages/dynamics/controller.dart';
+import 'package:PiliPlus/pages/dynamics/widgets/dynamic_grid_card.dart';
 import 'package:PiliPlus/pages/dynamics/widgets/dynamic_panel.dart';
 import 'package:PiliPlus/pages/dynamics_tab/controller.dart';
 import 'package:PiliPlus/utils/extension/get_ext.dart';
-import 'package:PiliPlus/utils/global_data.dart';
 import 'package:PiliPlus/utils/waterfall.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -72,19 +72,23 @@ class _DynamicsTabPageState extends State<DynamicsTabPage>
       Loading() => dynSkeleton,
       Success(:final response) =>
         response != null && response.isNotEmpty
-            ? GlobalData().dynamicsWaterfallFlow
-                  ? SliverWaterfallFlow(
-                      gridDelegate: dynGridDelegate,
-                      delegate: SliverChildBuilderDelegate(
-                        (_, index) => _itemBuilder(response, index),
-                        childCount: response.length,
-                      ),
-                    )
-                  : SliverList.builder(
-                      itemBuilder: (context, index) =>
-                          _itemBuilder(response, index),
-                      itemCount: response.length,
-                    )
+            ? buildDynamicContent(
+                context: context,
+                itemCount: response.length,
+                itemBuilder: (context, index) {
+                  final item = response[index];
+                  return DynamicPanel(
+                    item: item,
+                    onRemove: (idStr) =>
+                        controller.onRemove(index, idStr),
+                    onBlock: () => controller.onBlock(index),
+                    onUnfold: () => controller.onUnfold(item, index),
+                  );
+                },
+                gridItemBuilder: (context, index) =>
+                    DynamicGridCard(item: response[index]),
+                onLoadMore: () => controller.onLoadMore(),
+              )
             : HttpError(onReload: controller.onReload),
       Error(:final errMsg) => HttpError(
         errMsg: errMsg,

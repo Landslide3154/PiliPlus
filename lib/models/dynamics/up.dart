@@ -80,12 +80,14 @@ class UpItem {
   bool? hasUpdate;
   late int mid;
   String? uname;
+  int? pubTs; // 最新发布时间戳，用于排序
 
   UpItem({
     this.face,
     this.hasUpdate,
     required this.mid,
     this.uname,
+    this.pubTs,
   });
 
   UpItem.fromJson(Map<String, dynamic> json) {
@@ -93,6 +95,7 @@ class UpItem {
     hasUpdate = json['has_update'];
     mid = safeToInt(json['mid']) ?? 0;
     uname = json['uname'];
+    pubTs = safeToInt(json['pub_ts']);
   }
 
   @override

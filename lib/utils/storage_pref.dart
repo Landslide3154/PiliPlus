@@ -318,8 +318,16 @@ abstract final class Pref {
 
   static int get defaultDynamicTypeIndex => _setting.get(
     SettingBoxKey.defaultDynamicType,
-    defaultValue: DynamicsTabType.all.index,
+    defaultValue: DynamicsTabType.video.index,
   );
+  // 迁移：旧枚举删了 all/article，所有索引左移并截断
+  static int get migratedDefaultDynamicTypeIndex {
+    final idx = defaultDynamicTypeIndex;
+    if (idx == 0) return 0; // all → video（不变）
+    // video(1)→video(0), pgc(2)→pgc(1), article/up(3+)→up(2)
+    final migrated = idx - 1;
+    return migrated.clamp(0, DynamicsTabType.values.length - 1);
+  }
 
   static bool get showDynInteraction =>
       _setting.get(SettingBoxKey.showDynInteraction, defaultValue: true);
@@ -686,6 +694,31 @@ abstract final class Pref {
   static bool get dynamicsWaterfallFlow => _setting.get(
     SettingBoxKey.dynamicsWaterfallFlow,
     defaultValue: horizontalScreen,
+  );
+
+  /// 动态页布局模式: 0=瀑布流 1=网格对齐 2=单列列表
+  /// 默认值从 dynamicsWaterfallFlow 派生，保证旧版本迁移兼容
+  static int get dynamicLayoutMode => _setting.get(
+    SettingBoxKey.dynamicLayoutMode,
+    defaultValue: Pref.dynamicsWaterfallFlow ? 0 : 2,
+  );
+
+  /// 网格对齐模式列数
+  static int get dynamicsGridColumns => _setting.get(
+    SettingBoxKey.dynamicsGridColumns,
+    defaultValue: 4,
+  );
+
+  /// 卡片间距（首页和动态页的 mainAxisSpacing / crossAxisSpacing）
+  static double get cardSpacing => _setting.get(
+    SettingBoxKey.cardSpacing,
+    defaultValue: 20.0,
+  );
+
+  /// 卡片与边缘间距（首页和动态页的 horizontal padding）
+  static double get edgePadding => _setting.get(
+    SettingBoxKey.edgePadding,
+    defaultValue: 12.0,
   );
 
   static bool get hideTopBar => _setting.get(

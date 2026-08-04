@@ -878,6 +878,7 @@ class PlPlayerController with BlockConfigMixin {
 
   // 开始播放
   Future<void> _initializePlayer() async {
+    // PiP mode is queried via AndroidHelper.isPipMode native JNI field
     if (_instance == null) return;
     // 设置倍速
     if (isLive) {
@@ -1541,8 +1542,10 @@ class PlPlayerController with BlockConfigMixin {
 
   void onCloseAll() {
     _isCloseAll = true;
-    dispose();
-    Get.until((route) => route.isFirst);
+    triggerFullScreen(status: false).then((_) {
+      Get.until((route) => route.isFirst);
+      dispose();
+    });
   }
 
   void dispose() {

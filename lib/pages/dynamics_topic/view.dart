@@ -15,12 +15,12 @@ import 'package:PiliPlus/models_new/dynamic/dyn_topic_feed/fold_card_item.dart';
 import 'package:PiliPlus/models_new/dynamic/dyn_topic_feed/item.dart';
 import 'package:PiliPlus/models_new/dynamic/dyn_topic_top/top_details.dart';
 import 'package:PiliPlus/pages/common/fab_mixin.dart';
+import 'package:PiliPlus/pages/dynamics/widgets/dynamic_grid_card.dart';
 import 'package:PiliPlus/pages/dynamics/widgets/dynamic_panel.dart';
 import 'package:PiliPlus/pages/dynamics_create/view.dart';
 import 'package:PiliPlus/pages/dynamics_topic/controller.dart';
 import 'package:PiliPlus/utils/extension/num_ext.dart';
 import 'package:PiliPlus/utils/extension/theme_ext.dart';
-import 'package:PiliPlus/utils/global_data.dart';
 import 'package:PiliPlus/utils/num_utils.dart';
 import 'package:PiliPlus/utils/page_utils.dart';
 import 'package:PiliPlus/utils/share_utils.dart';
@@ -360,19 +360,25 @@ class _DynTopicPageState extends State<DynTopicPage>
       Loading() => dynSkeleton,
       Success(:final response) =>
         response != null && response.isNotEmpty
-            ? GlobalData().dynamicsWaterfallFlow
-                  ? SliverWaterfallFlow(
-                      gridDelegate: dynGridDelegate,
-                      delegate: SliverChildBuilderDelegate(
-                        (_, index) => _itemBuilder(response, index),
-                        childCount: response.length,
-                      ),
-                    )
-                  : SliverList.builder(
-                      itemBuilder: (context, index) =>
-                          _itemBuilder(response, index),
-                      itemCount: response.length,
-                    )
+            ? buildDynamicContent(
+                context: context,
+                itemCount: response.length,
+                itemBuilder: (context, index) {
+                  final item = response[index];
+                  if (item.dynamicCardItem != null) {
+                    return DynamicPanel(item: item.dynamicCardItem!);
+                  }
+                  return Text(item.topicType ?? 'err');
+                },
+                gridItemBuilder: (context, index) {
+                  final item = response[index];
+                  if (item.dynamicCardItem != null) {
+                    return DynamicGridCard(item: item.dynamicCardItem!);
+                  }
+                  return Text(item.topicType ?? 'err');
+                },
+                onLoadMore: () => _controller.onLoadMore(),
+              )
             : HttpError(onReload: _controller.onReload),
       Error(:final errMsg) => HttpError(
         errMsg: errMsg,

@@ -3,9 +3,9 @@ import 'package:PiliPlus/common/widgets/loading_widget/http_error.dart';
 import 'package:PiliPlus/common/widgets/scaffold/simple_scaffold.dart';
 import 'package:PiliPlus/http/loading_state.dart';
 import 'package:PiliPlus/models/dynamics/result.dart';
+import 'package:PiliPlus/pages/dynamics/widgets/dynamic_grid_card.dart';
 import 'package:PiliPlus/pages/dynamics/widgets/dynamic_panel.dart';
 import 'package:PiliPlus/pages/member_dynamics/controller.dart';
-import 'package:PiliPlus/utils/global_data.dart';
 import 'package:PiliPlus/utils/utils.dart';
 import 'package:PiliPlus/utils/waterfall.dart';
 import 'package:flutter/material.dart';
@@ -81,19 +81,20 @@ class _MemberDynamicsPageState extends State<MemberDynamicsPage>
       Loading() => dynSkeleton,
       Success(:final response) =>
         response != null && response.isNotEmpty
-            ? GlobalData().dynamicsWaterfallFlow
-                  ? SliverWaterfallFlow(
-                      gridDelegate: dynGridDelegate,
-                      delegate: SliverChildBuilderDelegate(
-                        (_, index) => _itemBuilder(response, index),
-                        childCount: response.length,
-                      ),
-                    )
-                  : SliverList.builder(
-                      itemBuilder: (context, index) =>
-                          _itemBuilder(response, index),
-                      itemCount: response.length,
-                    )
+            ? buildDynamicContent(
+                context: context,
+                itemCount: response.length,
+                itemBuilder: (context, index) {
+                  return DynamicPanel(
+                    item: response[index],
+                    onRemove: _memberDynamicController.onRemove,
+                    onSetTop: _memberDynamicController.onSetTop,
+                  );
+                },
+                gridItemBuilder: (context, index) =>
+                    DynamicGridCard(item: response[index]),
+                onLoadMore: () => _memberDynamicController.onLoadMore(),
+              )
             : HttpError(onReload: _memberDynamicController.onReload),
       Error(:final errMsg) => HttpError(
         errMsg: errMsg,

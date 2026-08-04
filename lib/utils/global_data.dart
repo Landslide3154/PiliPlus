@@ -14,6 +14,8 @@ class GlobalData {
   Set<int> blackMids = Pref.blackMids;
 
   bool dynamicsWaterfallFlow = Pref.dynamicsWaterfallFlow;
+  int dynamicLayoutMode = Pref.dynamicLayoutMode;
+  int dynamicsGridColumns = Pref.dynamicsGridColumns;
 
   bool showMedal = Pref.showMedal;
 

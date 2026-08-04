@@ -68,6 +68,7 @@ class MemberController extends CommonDataController<SpaceData, SpaceData?>
   @override
   void onInit() {
     super.onInit();
+    if (mid < 0) mid = account.mid;
     queryData();
   }
 
@@ -113,15 +114,26 @@ class MemberController extends CommonDataController<SpaceData, SpaceData?>
       hasSeasonOrSeries = true;
     }
     tab2?.retainWhere((item) => MemberTabType.contains(item.param!));
+    // 自己的页面：固定 4 个标签页
+    if (mid == account.mid) {
+      tab2 = const [
+        SpaceTab2(title: '观看记录', param: 'history'),
+        SpaceTab2(title: '我的收藏', param: 'favorite'),
+        SpaceTab2(title: '我的订阅', param: 'subscribe'),
+        SpaceTab2(title: '稍后再看', param: 'later'),
+      ];
+    }
     if (tab2?.isNotEmpty == true) {
-      if (data.hasItem != true && tab2!.first.param == 'home') {
-        // remove empty home tab
-        tab2!.removeAt(0);
+      if (mid != account.mid) {
+        tab2!.retainWhere((item) => MemberTabType.contains(item.param!));
+        if (data.hasItem != true && tab2!.first.param == 'home') {
+          tab2!.removeAt(0);
+        }
       }
       if (tab2!.isNotEmpty) {
         int initialIndex = -1;
         MemberTabType memberTab = Pref.memberTab;
-        if (memberTab != MemberTabType.def) {
+        if (mid != account.mid && memberTab != MemberTabType.def) {
           initialIndex = tab2!.indexWhere((item) {
             return item.param == memberTab.name;
           });
@@ -135,6 +147,10 @@ class MemberController extends CommonDataController<SpaceData, SpaceData?>
           });
         }
         tabs = tab2!.map((item) => Tab(text: item.title ?? '')).toList();
+        // 自己的页面默认选中「观看记录」（index 0）
+        if (initialIndex == -1 && mid == account.mid) {
+          initialIndex = 0;
+        }
         tabController?.dispose();
         tabController = TabController(
           vsync: this,
@@ -153,6 +169,7 @@ class MemberController extends CommonDataController<SpaceData, SpaceData?>
   @override
   bool handleError(String? errMsg) {
     tab2 = const [
+      SpaceTab2(title: '观看记录', param: 'history'),
       SpaceTab2(title: '动态', param: 'dynamic'),
       SpaceTab2(
         title: '投稿',

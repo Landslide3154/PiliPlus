@@ -5,12 +5,14 @@ import 'package:PiliPlus/common/constants.dart';
 import 'package:PiliPlus/common/style.dart';
 import 'package:PiliPlus/common/widgets/floating_navigation_bar.dart';
 import 'package:PiliPlus/common/widgets/flutter/pop_scope.dart';
+import 'package:PiliPlus/common/widgets/flutter/tabs.dart';
 import 'package:PiliPlus/common/widgets/image/network_img_layer.dart';
-import 'package:PiliPlus/common/widgets/main_layout.dart';
 import 'package:PiliPlus/common/widgets/route_aware_mixin.dart';
 import 'package:PiliPlus/models/common/nav_bar_config.dart';
 import 'package:PiliPlus/pages/home/view.dart';
 import 'package:PiliPlus/pages/main/controller.dart';
+import 'package:PiliPlus/pages/mine/controller.dart';
+import 'package:PiliPlus/utils/extension/get_ext.dart';
 import 'package:PiliPlus/plugin/pl_player/controller.dart';
 import 'package:PiliPlus/plugin/pl_player/models/play_status.dart';
 import 'package:PiliPlus/utils/android/android_helper.dart';
@@ -44,9 +46,10 @@ class _MainAppState extends PopScopeState<MainApp>
         WindowListener,
         TrayListener {
   final _mainController = Get.put(MainController());
+  MineController get _mineCtr => Get.putOrFind(MineController.new);
   late final _setting = GStorage.setting;
   late EdgeInsets _padding;
-  late ColorScheme _colorScheme;
+  late ThemeData theme;
   Brightness? _brightness;
 
   @override
@@ -74,8 +77,8 @@ class _MainAppState extends PopScopeState<MainApp>
   void didChangeDependencies() {
     super.didChangeDependencies();
     _padding = MediaQuery.viewPaddingOf(context);
-    _colorScheme = ColorScheme.of(context);
-    final brightness = _colorScheme.brightness;
+    theme = Theme.of(context);
+    final brightness = theme.brightness;
     NetworkImgLayer.reduce =
         NetworkImgLayer.reduceLuxColor != null && brightness.isDark;
     if (PlatformUtils.isDesktop) {
@@ -368,139 +371,174 @@ class _MainAppState extends PopScopeState<MainApp>
     return bottomNav;
   }
 
-  Widget _sideBar() {
-    if (_mainController.navigationBars.length > 1) {
-      if (context.isTablet && _mainController.optTabletNav) {
-        return Padding(
-          padding: const .only(top: 25),
-          child: MediaQuery.removePadding(
-            context: context,
-            removeRight: true,
-            child: DrawerTheme(
-              data: DrawerThemeData(width: 130 + _padding.left),
-              child: Obx(
-                () => NavigationDrawer(
-                  /// apply `lib/scripts/navigation_drawer.patch`
-                  flex: 5,
-                  backgroundColor: Colors.transparent,
-                  onDestinationSelected: _mainController.setIndex,
-                  selectedIndex: _mainController.selectedIndex.value,
-                  header: Expanded(flex: 4, child: userAndSearchVertical()),
-                  tilePadding: const .symmetric(vertical: 5, horizontal: 12),
-                  indicatorShape: const RoundedRectangleBorder(
-                    borderRadius: .all(.circular(16)),
-                  ),
-                  children: _mainController.navigationBars
-                      .map(
-                        (e) => NavigationDrawerDestination(
-                          label: Text(e.label),
-                          icon: _buildIcon(type: e),
-                          selectedIcon: _buildIcon(
-                            type: e,
-                            selected: true,
+  Widget _sideBar(ThemeData theme) {
+    return _mainController.navigationBars.length > 1
+        ? context.isTablet && _mainController.optTabletNav
+              ? Column(
+                  children: [
+                    const SizedBox(height: 25),
+                    userAndSearchVertical(theme),
+                    const Spacer(flex: 2),
+                    Expanded(
+                      flex: 5,
+                      child: SizedBox(
+                        width: 130,
+                        child: Obx(
+                          () => NavigationDrawer(
+                            backgroundColor: Colors.transparent,
+                            tilePadding: const .symmetric(
+                              vertical: 5,
+                              horizontal: 12,
+                            ),
+                            indicatorShape: const RoundedRectangleBorder(
+                              borderRadius: .all(.circular(16)),
+                            ),
+                            onDestinationSelected: _mainController.setIndex,
+                            selectedIndex: _mainController.selectedIndex.value,
+                            children: _mainController.navigationBars
+                                .map(
+                                  (e) => NavigationDrawerDestination(
+                                    label: Text(e.label),
+                                    icon: _buildIcon(type: e),
+                                    selectedIcon: _buildIcon(
+                                      type: e,
+                                      selected: true,
+                                    ),
+                                  ),
+                                )
+                                .toList(),
                           ),
                         ),
-                      )
-                      .toList(),
-                ),
-              ),
-            ),
-          ),
-        );
-      }
-      return Obx(
-        () => NavigationRail(
-          groupAlignment: 0.5,
-          labelType: .selected,
-          leading: userAndSearchVertical(),
-          backgroundColor: Colors.transparent,
-          onDestinationSelected: _mainController.setIndex,
-          selectedIndex: _mainController.selectedIndex.value,
-          destinations: _mainController.navigationBars
-              .map(
-                (e) => NavigationRailDestination(
-                  label: Text(e.label),
-                  icon: _buildIcon(type: e),
-                  selectedIcon: _buildIcon(type: e, selected: true),
-                ),
-              )
-              .toList(),
-        ),
-      );
-    }
-    return Container(
-      width: 80,
-      margin: .only(top: 12 + _padding.top, left: _padding.left),
-      child: userAndSearchVertical(),
-    );
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Obx(
+                            () => IconButton(
+                              iconSize: 22,
+                              icon: _mineCtr.themeType.value.icon,
+                              tooltip: '切换主题',
+                              onPressed: _mineCtr.onChangeTheme,
+                            ),
+                          ),
+                          IconButton(
+                            iconSize: 22,
+                            icon: const Icon(Icons.settings_outlined),
+                            tooltip: '设置',
+                            onPressed: () =>
+                                Get.toNamed('/setting', preventDuplicates: false),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                )
+              : Obx(
+                  () => NavigationRail(
+                    groupAlignment: 0.5,
+                    selectedIndex: _mainController.selectedIndex.value,
+                    onDestinationSelected: _mainController.setIndex,
+                    labelType: .selected,
+                    leading: userAndSearchVertical(theme),
+                    destinations: _mainController.navigationBars
+                        .map(
+                          (e) => NavigationRailDestination(
+                            label: Text(e.label),
+                            icon: _buildIcon(type: e),
+                            selectedIcon: _buildIcon(type: e, selected: true),
+                          ),
+                        )
+                        .toList(),
+                    trailing: Padding(
+                      padding: EdgeInsets.only(bottom: _padding.bottom + 8),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            iconSize: 22,
+                            icon: Obx(
+                              () => _mineCtr.themeType.value.icon,
+                            ),
+                            tooltip: '切换主题',
+                            onPressed: _mineCtr.onChangeTheme,
+                          ),
+                          IconButton(
+                            iconSize: 22,
+                            icon: const Icon(Icons.settings_outlined),
+                            tooltip: '设置',
+                            onPressed: () =>
+                                Get.toNamed('/setting', preventDuplicates: false),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                )
+        : Container(
+            width: 80,
+            padding: const .only(top: 10),
+            child: userAndSearchVertical(theme),
+          );
   }
 
   @override
   Widget build(BuildContext context) {
     Widget child;
     if (_mainController.mainTabBarView) {
-      child = TabBarView(
-        controller: _mainController.controller,
-        physics: const NeverScrollableScrollPhysics(),
+      child = CustomTabBarView(
         scrollDirection: _mainController.useBottomNav ? .horizontal : .vertical,
+        physics: const NeverScrollableScrollPhysics(),
+        controller: _mainController.controller,
         children: _mainController.navigationBars.map((i) => i.page).toList(),
       );
     } else {
       child = PageView(
-        controller: _mainController.controller,
         physics: const NeverScrollableScrollPhysics(),
+        controller: _mainController.controller,
         children: _mainController.navigationBars.map((i) => i.page).toList(),
       );
     }
 
-    Widget? sideBar;
     Widget? bottomNav;
-    final EdgeInsets padding;
     if (_mainController.useBottomNav) {
       bottomNav = _bottomNav;
-      if (bottomNav != null) {
-        bottomNav = MediaQuery.removePadding(
-          context: context,
-          removeTop: true,
-          child: bottomNav,
-        );
-      }
-      padding = .only(
-        top: _padding.top,
-        left: _padding.left,
-        right: _padding.right,
-      );
+      child = Row(children: [Expanded(child: child)]);
     } else {
-      sideBar = DecoratedBox(
-        decoration: BoxDecoration(
-          border: Border(
-            right: BorderSide(
-              color: _colorScheme.outline.withValues(alpha: 0.06),
-            ),
+      child = Row(
+        children: [
+          _sideBar(theme),
+          VerticalDivider(
+            width: 1,
+            endIndent: _padding.bottom,
+            color: theme.colorScheme.outline.withValues(alpha: 0.06),
           ),
-        ),
-        child: _sideBar(),
+          Expanded(child: child),
+        ],
       );
-      padding = .only(top: _padding.top, right: _padding.right);
     }
 
-    child = Material(
-      child: MainLayout(
-        sideBar: sideBar,
-        bottomNav: bottomNav,
-        body: Padding(padding: padding, child: child),
+    child = Scaffold(
+      extendBody: true,
+      resizeToAvoidBottomInset: false,
+      appBar: AppBar(toolbarHeight: 0),
+      body: Padding(
+        padding: EdgeInsets.only(
+          left: _mainController.useBottomNav ? _padding.left : 0.0,
+          right: _padding.right,
+        ),
+        child: child,
       ),
+      bottomNavigationBar: bottomNav,
     );
 
     if (PlatformUtils.isMobile) {
-      return AnnotatedRegion<SystemUiOverlayStyle>(
+      child = AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle(
-          statusBarColor: Colors.transparent,
-          statusBarBrightness: _colorScheme.brightness,
-          statusBarIconBrightness: _colorScheme.brightness.reverse,
-          systemStatusBarContrastEnforced: false,
           systemNavigationBarColor: Colors.transparent,
-          systemNavigationBarIconBrightness: _colorScheme.brightness.reverse,
+          systemNavigationBarIconBrightness: theme.brightness.reverse,
         ),
         child: child,
       );
@@ -528,10 +566,10 @@ class _MainAppState extends PopScopeState<MainApp>
         : icon;
   }
 
-  Widget userAndSearchVertical() {
+  Widget userAndSearchVertical(ThemeData theme) {
     return Column(
       children: [
-        userAvatar(colorScheme: _colorScheme, mainController: _mainController),
+        userAvatar(theme: theme, mainController: _mainController),
         const SizedBox(height: 8),
         msgBadge(_mainController),
         IconButton(

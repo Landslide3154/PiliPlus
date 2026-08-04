@@ -59,7 +59,7 @@ class _DynamicsPageState extends CommonPageState<DynamicsPage>
       type: needBg ? .canvas : .transparency,
       color: needBg ? theme.colorScheme.surface : null,
       child: SizedBox(
-        width: isTop ? null : 64,
+        width: isTop ? null : 210,
         height: isTop ? 76 : null,
         child: NotificationListener<ScrollEndNotification>(
           onNotification: (notification) {
@@ -136,6 +136,11 @@ class _DynamicsPageState extends CommonPageState<DynamicsPage>
         child = Column(
           children: [
             upPanelPart(theme),
+            Divider(
+              height: 1,
+              thickness: 1,
+              color: theme.dividerColor.withValues(alpha: 0.1),
+            ),
             Expanded(child: child),
           ],
         );
@@ -144,6 +149,11 @@ class _DynamicsPageState extends CommonPageState<DynamicsPage>
         child = Row(
           children: [
             upPanelPart(theme),
+            VerticalDivider(
+              width: 1,
+              thickness: 1,
+              color: theme.dividerColor.withValues(alpha: 0.1),
+            ),
             Expanded(child: child),
           ],
         );
@@ -152,6 +162,11 @@ class _DynamicsPageState extends CommonPageState<DynamicsPage>
         child = Row(
           children: [
             Expanded(child: child),
+            VerticalDivider(
+              width: 1,
+              thickness: 1,
+              color: theme.dividerColor.withValues(alpha: 0.1),
+            ),
             upPanelPart(theme),
           ],
         );

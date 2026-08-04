@@ -2,16 +2,14 @@ import 'package:PiliPlus/common/widgets/flutter/refresh_indicator.dart';
 import 'package:PiliPlus/common/widgets/loading_widget/http_error.dart';
 import 'package:PiliPlus/http/loading_state.dart';
 import 'package:PiliPlus/models/common/member/search_type.dart';
+import 'package:PiliPlus/pages/dynamics/widgets/dynamic_grid_card.dart';
 import 'package:PiliPlus/pages/dynamics/widgets/dynamic_panel.dart';
 import 'package:PiliPlus/pages/member_search/child/controller.dart';
 import 'package:PiliPlus/pages/member_search/child/widgets/search_archive_grpc.dart';
-import 'package:PiliPlus/utils/global_data.dart';
 import 'package:PiliPlus/utils/grid.dart';
 import 'package:PiliPlus/utils/waterfall.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:waterfall_flow/waterfall_flow.dart'
-    hide SliverWaterfallFlowDelegateWithMaxCrossAxisExtent;
 
 class MemberSearchChildPage extends StatefulWidget {
   const MemberSearchChildPage({
@@ -83,19 +81,16 @@ class _MemberSearchChildPageState extends State<MemberSearchChildPage>
                   itemCount: response.length,
                 ),
                 MemberSearchType.dynamic =>
-                  GlobalData().dynamicsWaterfallFlow
-                      ? SliverWaterfallFlow(
-                          gridDelegate: dynGridDelegate,
-                          delegate: SliverChildBuilderDelegate(
-                            (_, index) => _itemBuilder(response, index),
-                            childCount: response.length,
-                          ),
-                        )
-                      : SliverList.builder(
-                          itemBuilder: (context, index) =>
-                              _itemBuilder(response, index),
-                          itemCount: response.length,
-                        ),
+                  buildDynamicContent(
+                    context: context,
+                    itemCount: response.length,
+                    itemBuilder: (context, index) {
+                      return DynamicPanel(item: response[index]);
+                    },
+                    gridItemBuilder: (context, index) =>
+                        DynamicGridCard(item: response[index]),
+                    onLoadMore: () => _controller.onLoadMore(),
+                  ),
               }
             : HttpError(onReload: _controller.onReload),
       Error(:final errMsg) => HttpError(

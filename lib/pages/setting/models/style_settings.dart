@@ -138,6 +138,18 @@ List<SettingsModel> get styleSettings => [
         '当前: 主页${Pref.recommendCardWidth.toInt()}dp 其他${Pref.smallCardWidth.toInt()}dp，屏幕宽度:${MediaQuery.widthOf(Get.context!).toPrecision(2)}dp。宽度越小列数越多。',
     onTap: _showCardWidthDialog,
   ),
+  NormalModel(
+    leading: const Icon(Icons.space_bar_outlined),
+    title: '首页/动态页卡片间距',
+    getSubtitle: () => '当前：${Pref.cardSpacing.toInt()}px',
+    onTap: _showCardSpacingDialog,
+  ),
+  NormalModel(
+    leading: const Icon(Icons.straighten_outlined),
+    title: '首页/动态页卡片边缘距离',
+    getSubtitle: () => '当前：${Pref.edgePadding.toInt()}px',
+    onTap: _showEdgePaddingDialog,
+  ),
   const SwitchModel(
     title: '播放页移除安全边距',
     leading: Icon(Icons.fit_screen_outlined),
@@ -150,13 +162,21 @@ List<SettingsModel> get styleSettings => [
     setKey: SettingBoxKey.darkVideoPage,
     defaultVal: false,
   ),
-  SwitchModel(
-    title: '动态页启用瀑布流',
-    subtitle: '关闭会显示为单列',
+  NormalModel(
+    title: '动态页布局模式',
     leading: const Icon(Icons.view_array_outlined),
-    setKey: SettingBoxKey.dynamicsWaterfallFlow,
-    defaultVal: Pref.horizontalScreen,
-    needReboot: true,
+    getSubtitle: () {
+      final mode = Pref.dynamicLayoutMode;
+      final label = switch (mode) { 0 => '瀑布流', 1 => '网格对齐', _ => '单列列表' };
+      return '当前：$label';
+    },
+    onTap: _showDynLayoutDialog,
+  ),
+  NormalModel(
+    title: '动态页卡片宽度',
+    leading: const Icon(Icons.grid_view_outlined),
+    getSubtitle: () => '当前：${Pref.recommendCardWidth.toInt()}dp',
+    onTap: _showDynGridCardWidthDialog,
   ),
   NormalModel(
     title: '动态页UP主显示位置',
@@ -702,6 +722,50 @@ Future<void> _showCardWidthDialog(
   }
 }
 
+Future<void> _showCardSpacingDialog(
+  BuildContext context,
+  VoidCallback setState,
+) async {
+  final res = await showDialog<double>(
+    context: context,
+    builder: (context) => SliderDialog(
+      title: const Text('首页/动态页卡片间距'),
+      value: Pref.cardSpacing,
+      min: 0,
+      max: 30,
+      divisions: 30,
+      suffix: 'px',
+      precise: 0,
+    ),
+  );
+  if (res != null) {
+    await GStorage.setting.put(SettingBoxKey.cardSpacing, res.toDouble());
+    setState();
+  }
+}
+
+Future<void> _showEdgePaddingDialog(
+  BuildContext context,
+  VoidCallback setState,
+) async {
+  final res = await showDialog<double>(
+    context: context,
+    builder: (context) => SliderDialog(
+      title: const Text('首页/动态页卡片与边缘距离'),
+      value: Pref.edgePadding,
+      min: 0,
+      max: 30,
+      divisions: 30,
+      suffix: 'px',
+      precise: 0,
+    ),
+  );
+  if (res != null) {
+    await GStorage.setting.put(SettingBoxKey.edgePadding, res.toDouble());
+    setState();
+  }
+}
+
 Future<void> _showUpPosDialog(
   BuildContext context,
   VoidCallback setState,
@@ -928,6 +992,55 @@ Future<void> _showBarHideTypeDialog(
   );
   if (res != null) {
     await GStorage.setting.put(SettingBoxKey.barHideType, res.index);
+    SmartDialog.showToast('重启生效');
+    setState();
+  }
+}
+
+Future<void> _showDynLayoutDialog(
+  BuildContext context,
+  VoidCallback setState,
+) async {
+  final res = await showDialog<int>(
+    context: context,
+    builder: (context) => SelectDialog<int>(
+      title: '动态页布局模式',
+      value: Pref.dynamicLayoutMode,
+      values: const [
+        (0, '瀑布流（不等高，自动列数）'),
+        (1, '网格对齐（等高，可调列数）'),
+        (2, '单列列表'),
+      ],
+    ),
+  );
+  if (res != null) {
+    await GStorage.setting.putAll({
+      SettingBoxKey.dynamicLayoutMode: res,
+      SettingBoxKey.dynamicsWaterfallFlow: res == 0,
+    });
+    SmartDialog.showToast('重启生效');
+    setState();
+  }
+}
+
+Future<void> _showDynGridCardWidthDialog(
+  BuildContext context,
+  VoidCallback setState,
+) async {
+  final res = await showDialog<double>(
+    context: context,
+    builder: (context) => SliderDialog(
+      title: const Text('动态页卡片宽度'),
+      value: Pref.recommendCardWidth,
+      min: 150,
+      max: 500,
+      divisions: 35,
+      suffix: 'dp',
+      precise: 0,
+    ),
+  );
+  if (res != null) {
+    await GStorage.setting.put(SettingBoxKey.recommendCardWidth, res.toDouble());
     SmartDialog.showToast('重启生效');
     setState();
   }

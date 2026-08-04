@@ -22,8 +22,12 @@ class _SubPageState extends State<SubPage> with GridMixin {
 
   @override
   Widget build(BuildContext context) {
-    return SimpleScaffold(
-      appBar: AppBar(title: const Text('我的订阅')),
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      appBar: const PreferredSize(
+        preferredSize: Size.zero,
+        child: SizedBox.shrink(),
+      ),
       body: refreshIndicator(
         onRefresh: _subController.onRefresh,
         child: CustomScrollView(

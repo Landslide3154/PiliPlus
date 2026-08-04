@@ -2,22 +2,21 @@ import 'package:PiliPlus/common/style.dart';
 import 'package:PiliPlus/common/widgets/badge.dart';
 import 'package:PiliPlus/common/widgets/image/image_save.dart';
 import 'package:PiliPlus/common/widgets/image/network_img_layer.dart';
-import 'package:PiliPlus/common/widgets/stat/stat.dart';
 import 'package:PiliPlus/common/widgets/video_popup_menu.dart';
 import 'package:PiliPlus/http/search.dart';
 import 'package:PiliPlus/models/home/rcmd/result.dart';
 import 'package:PiliPlus/models/model_rec_video_item.dart';
 import 'package:PiliPlus/models_new/video/video_detail/dimension.dart';
 import 'package:PiliPlus/utils/app_scheme.dart';
-import 'package:PiliPlus/utils/date_utils.dart';
 import 'package:PiliPlus/utils/duration_utils.dart';
+import 'package:PiliPlus/utils/num_utils.dart';
 import 'package:PiliPlus/utils/extension/dimension_ext.dart';
 import 'package:PiliPlus/utils/id_utils.dart';
 import 'package:PiliPlus/utils/page_utils.dart';
 import 'package:PiliPlus/utils/platform_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
-import 'package:intl/intl.dart';
+import 'package:intl/intl.dart' show DateFormat;
 
 // 视频卡片 - 垂直布局
 class VideoCardV extends StatelessWidget {
@@ -90,13 +89,13 @@ class VideoCardV extends StatelessWidget {
       clipBehavior: Clip.none,
       children: [
         Card(
+          clipBehavior: Clip.hardEdge,
           child: InkWell(
             onTap: onPushDetail,
             onLongPress: onLongPress,
             onSecondaryTap: PlatformUtils.isMobile ? null : onLongPress,
-            borderRadius: const .all(.circular(12)),
             child: Column(
-              crossAxisAlignment: .start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 AspectRatio(
                   aspectRatio: Style.aspectRatio,
@@ -111,16 +110,124 @@ class VideoCardV extends StatelessWidget {
                             src: videoItem.cover,
                             width: maxWidth,
                             height: maxHeight,
-                            borderRadius: const .vertical(top: .circular(12)),
+                            type: .emote,
                           ),
-                          if (videoItem.duration > 0)
-                            PBadge(
-                              bottom: 6,
-                              right: 7,
-                              size: .small,
-                              type: .gray,
-                              text: DurationUtils.formatDuration(
-                                videoItem.duration,
+                          // 底部信息条：左-播放/弹幕，右-时长
+                          if (videoItem.stat.view != null ||
+                              videoItem.duration > 0)
+                            Positioned(
+                              left: 0,
+                              right: 0,
+                              bottom: 0,
+                              child: Container(
+                                height: 26,
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 8),
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [
+                                      Colors.transparent,
+                                      Colors.black.withValues(alpha: 0.55),
+                                    ],
+                                  ),
+                                ),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    if (videoItem.stat.view != null) ...[
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 4,
+                                          vertical: 1,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: Colors.black45,
+                                          borderRadius:
+                                              BorderRadius.circular(3),
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(
+                                              Icons.play_circle_outlined,
+                                              size: 10,
+                                              color: Colors.white,
+                                            ),
+                                            const SizedBox(width: 2),
+                                            Text(
+                                              NumUtils.numFormat(
+                                                videoItem.stat.view,
+                                              ),
+                                              style: const TextStyle(
+                                                fontSize: 10,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      if (videoItem.stat.danmu != null) ...[
+                                        const SizedBox(width: 4),
+                                        Container(
+                                          padding:
+                                              const EdgeInsets.symmetric(
+                                            horizontal: 4,
+                                            vertical: 1,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.black45,
+                                            borderRadius:
+                                                BorderRadius.circular(3),
+                                          ),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(
+                                                Icons.subtitles_outlined,
+                                                size: 10,
+                                                color: Colors.white,
+                                              ),
+                                              const SizedBox(width: 2),
+                                              Text(
+                                                NumUtils.numFormat(
+                                                  videoItem.stat.danmu,
+                                                ),
+                                                style: const TextStyle(
+                                                  fontSize: 10,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ],
+                                    const Spacer(),
+                                    if (videoItem.duration > 0)
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 4,
+                                          vertical: 1,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: Colors.black45,
+                                          borderRadius:
+                                              BorderRadius.circular(3),
+                                        ),
+                                        child: Text(
+                                          DurationUtils.formatDuration(
+                                            videoItem.duration,
+                                          ),
+                                          style: const TextStyle(
+                                            fontSize: 10,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
                               ),
                             ),
                         ],
@@ -128,7 +235,7 @@ class VideoCardV extends StatelessWidget {
                     },
                   ),
                 ),
-                content(context),
+                _contentCompact(context),
               ],
             ),
           ),
@@ -149,115 +256,38 @@ class VideoCardV extends StatelessWidget {
     );
   }
 
-  Widget content(BuildContext context) {
+  static final shortFormat = DateFormat('M-d');
+  static final longFormat = DateFormat('yy-M-d');
+
+  Widget _contentCompact(BuildContext context) {
     final theme = Theme.of(context);
     return Expanded(
       child: Padding(
-        padding: const .fromLTRB(6, 5, 6, 5),
+        padding: const EdgeInsets.fromLTRB(6, 5, 6, 5),
         child: Column(
-          crossAxisAlignment: .start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
               child: Text(
-                videoItem.title,
+                "${videoItem.title}\n",
                 maxLines: 2,
-                overflow: .ellipsis,
+                overflow: TextOverflow.ellipsis,
                 style: const TextStyle(height: 1.38),
               ),
             ),
-            videoStat(theme),
-            Row(
-              spacing: 2,
-              children: [
-                if (videoItem.goto == 'bangumi')
-                  PBadge(
-                    text: videoItem.pgcBadge,
-                    isStack: false,
-                    size: .small,
-                    type: .line_primary,
-                    fontSize: 9,
-                  ),
-                if (videoItem.rcmdReason != null)
-                  PBadge(
-                    text: videoItem.rcmdReason,
-                    isStack: false,
-                    size: .small,
-                    type: .secondary,
-                  ),
-                if (videoItem.goto == 'picture')
-                  const PBadge(
-                    text: '动态',
-                    isStack: false,
-                    size: .small,
-                    type: .line_primary,
-                    fontSize: 9,
-                  ),
-                if (videoItem.isFollowed)
-                  const PBadge(
-                    text: '已关注',
-                    isStack: false,
-                    size: .small,
-                    type: .secondary,
-                  ),
-                Expanded(
-                  flex: 1,
-                  child: Text(
-                    videoItem.owner.name.toString(),
-                    maxLines: 1,
-                    overflow: .clip,
-                    semanticsLabel: 'UP：${videoItem.owner.name}',
-                    style: TextStyle(
-                      height: 1.5,
-                      fontSize: theme.textTheme.labelMedium!.fontSize,
-                      color: theme.colorScheme.outline,
-                    ),
-                  ),
-                ),
-                if (videoItem.goto == 'av') const SizedBox(width: 10),
-              ],
+            // 底部：作者名（左）
+            Text(
+              videoItem.owner.name.toString(),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 10,
+                color: theme.colorScheme.outline,
+              ),
             ),
           ],
         ),
       ),
-    );
-  }
-
-  static final shortFormat = DateFormat('M-d');
-  static final longFormat = DateFormat('yy-M-d');
-
-  Widget videoStat(ThemeData theme) {
-    return Row(
-      children: [
-        StatWidget(
-          type: .play,
-          value: videoItem.stat.view,
-        ),
-        if (videoItem.goto != 'picture') ...[
-          const SizedBox(width: 4),
-          StatWidget(
-            type: .danmaku,
-            value: videoItem.stat.danmu,
-          ),
-        ],
-        if (videoItem is RcmdVideoItemModel) ...[
-          const Spacer(),
-          Text.rich(
-            maxLines: 1,
-            TextSpan(
-              style: TextStyle(
-                fontSize: theme.textTheme.labelSmall!.fontSize,
-                color: theme.colorScheme.outline.withValues(alpha: 0.8),
-              ),
-              text: DateFormatUtils.dateFormat(
-                videoItem.pubdate,
-                short: shortFormat,
-                long: longFormat,
-              ),
-            ),
-          ),
-          const SizedBox(width: 2),
-        ],
-      ],
     );
   }
 }
