@@ -250,9 +250,6 @@ class VideoCardV extends StatelessWidget {
               style: TextStyle(
                 fontSize: 10,
                 color: Theme.of(context).colorScheme.outline,
-                shadows: const [
-                  Shadow(blurRadius: 2, color: Colors.black54),
-                ],
               ),
             ),
           ),
