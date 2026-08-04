@@ -20,6 +20,7 @@ class RcmdVideoItemAppModel extends BaseRcmdVideoItemModel {
     duration = json['player_args']?['duration'] ?? 0;
     //duration = json['cover_right_text'];
     title = json['title'];
+    pubdate = json['pubdate'];
     owner = RcmdOwner.fromJson(json);
     rcmdReason = json['rcmd_reason'];
     //     json['bottom_rcmd_reason'] ??
