@@ -87,6 +87,9 @@ android {
         val variant = this
         variant.outputs.forEach { output ->
             (output as ApkVariantOutputImpl).versionCodeOverride = flutter.versionCode
+            // APK 命名：软件名-版本号-ABI.apk
+            val abi = output.getFilter(com.android.build.OutputFile.ABI) ?: "universal"
+            output.outputFileName = "PiliPlus-${flutter.versionName}-${abi}.apk"
         }
     }
 }
