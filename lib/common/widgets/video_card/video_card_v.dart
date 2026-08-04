@@ -9,6 +9,7 @@ import 'package:PiliPlus/models/model_rec_video_item.dart';
 import 'package:PiliPlus/models_new/video/video_detail/dimension.dart';
 import 'package:PiliPlus/utils/app_scheme.dart';
 import 'package:PiliPlus/utils/duration_utils.dart';
+import 'package:PiliPlus/utils/date_utils.dart';
 import 'package:PiliPlus/utils/num_utils.dart';
 import 'package:PiliPlus/utils/extension/dimension_ext.dart';
 import 'package:PiliPlus/utils/id_utils.dart';
@@ -240,6 +241,21 @@ class VideoCardV extends StatelessWidget {
             ),
           ),
         ),
+        if (videoItem.goto == 'av' && videoItem.pubdate != null)
+          Positioned(
+            right: 28,
+            bottom: 6,
+            child: Text(
+              DateFormatUtils.dateFormat(videoItem.pubdate),
+              style: const TextStyle(
+                fontSize: 10,
+                color: Colors.white,
+                shadows: [
+                  Shadow(blurRadius: 2, color: Colors.black54),
+                ],
+              ),
+            ),
+          ),
         if (videoItem.goto == 'av')
           Positioned(
             right: -5,
