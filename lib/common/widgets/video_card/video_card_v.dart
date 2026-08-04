@@ -247,10 +247,10 @@ class VideoCardV extends StatelessWidget {
             bottom: 6,
             child: Text(
               DateFormatUtils.dateFormat(videoItem.pubdate),
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 10,
-                color: Colors.white,
-                shadows: [
+                color: Theme.of(context).colorScheme.outline,
+                shadows: const [
                   Shadow(blurRadius: 2, color: Colors.black54),
                 ],
               ),
