@@ -74,11 +74,10 @@ jobs:
             exit 1
           }
 
-      - name: Package setup (fastforge, skip if fails)
-        continue-on-error: true
+      - name: Package setup (fastforge)
         shell: pwsh
         run: |
-          fastforge package --platform windows --targets exe --skip-build --flutter-build-args="dart-define-from-file=pili_release.json"
+          fastforge package --platform windows --targets exe --skip-clean --flutter-build-args="dart-define-from-file=pili_release.json"
           New-Item -ItemType Directory -Force -Path PiliPlus-Win-Setup | Out-Null
           if (Test-Path "dist") {
             Get-ChildItem -Recurse dist/*.exe | ForEach-Object {
