@@ -305,7 +305,7 @@ abstract final class Pref {
       _setting.get(SettingBoxKey.banWordForZone, defaultValue: '');
 
   static bool get appRcmd =>
-      _setting.get(SettingBoxKey.appRcmd, defaultValue: true);
+      _setting.get(SettingBoxKey.appRcmd, defaultValue: false);
 
   static String get systemProxyHost =>
       _setting.get(SettingBoxKey.systemProxyHost, defaultValue: '');
