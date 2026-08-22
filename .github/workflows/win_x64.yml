@@ -26,10 +26,6 @@ jobs:
           channel: stable
           flutter-version-file: pubspec.yaml
 
-      - name: Apply Patch
-        shell: pwsh
-        run: lib/scripts/patch.ps1 windows
-
       - name: Add fastforge and Inno Setup
         run: |
           dart pub global activate fastforge

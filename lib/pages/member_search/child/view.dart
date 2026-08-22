@@ -8,8 +8,10 @@ import 'package:PiliPlus/pages/member_search/child/controller.dart';
 import 'package:PiliPlus/pages/member_search/child/widgets/search_archive_grpc.dart';
 import 'package:PiliPlus/utils/grid.dart';
 import 'package:PiliPlus/utils/waterfall.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:waterfall_flow/waterfall_flow.dart'
+    hide SliverWaterfallFlowDelegateWithMaxCrossAxisExtent;
 
 class MemberSearchChildPage extends StatefulWidget {
   const MemberSearchChildPage({

@@ -1,7 +1,8 @@
+import 'package:PiliPlus/utils/extension/get_ext.dart';
 import 'package:PiliPlus/utils/extension/iterable_ext.dart';
 import 'package:PiliPlus/utils/page_utils.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:material_ui/material_ui.dart';
 
 extension SelectableRegionStateExt on SelectableRegionState {
   static final _schemeRegex = RegExp(r'[\w\-]+://\S');
@@ -19,9 +20,10 @@ extension SelectableRegionStateExt on SelectableRegionState {
           onPressed: () => onMenuPressed(
             isScheme
                 ? PageUtils.handleWebview
-                : (text) => Get.offNamed(
+                : (text) => Get.offOrToNamed(
                     '/searchResult',
                     parameters: {'keyword': text},
+                    off: Get.routing.route is! PageRoute,
                   ),
           ),
         ),
