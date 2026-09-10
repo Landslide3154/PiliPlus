@@ -40,7 +40,12 @@ abstract final class DynamicsHttp {
     DynamicsTabType type = .video,
   }) async {
     Map<String, dynamic> data = {
-      if (type == .up) 'host_mid': hostMid else 'type': type.name,
+      // UP 标签：只拉该 UP 的视频动态（不显示文章/图文/文字动态）
+      if (type == .up) ...{
+        'host_mid': hostMid,
+        'type': 'video',
+      } else
+        'type': type.name,
       'offset': ?offset,
       'features': Constants.dynFeatures,
     };

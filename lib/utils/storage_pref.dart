@@ -304,17 +304,20 @@ abstract final class Pref {
   static DynamicsTabType get defaultDynamicType =>
       DynamicsTabType.values[defaultDynamicTypeIndex];
 
-  static int get defaultDynamicTypeIndex => _setting.get(
-    SettingBoxKey.defaultDynamicType,
-    defaultValue: DynamicsTabType.video.index,
-  );
-  // 迁移：旧枚举删了 all/article，所有索引左移并截断
-  static int get migratedDefaultDynamicTypeIndex {
-    final idx = defaultDynamicTypeIndex;
-    if (idx == 0) return 0; // all → video（不变）
-    // video(1)→video(0), pgc(2)→pgc(1), article/up(3+)→up(2)
-    final migrated = idx - 1;
-    return migrated.clamp(0, DynamicsTabType.values.length - 1);
+  /// 读取「动态展示」默认 TAB。
+  /// 新值存 enum name；兼容历史值——旧版本存索引且枚举含已删除的 all/article，
+  /// 非零旧索引需左移一位（all→video 不变，video→video，pgc→pgc，article/up→up）
+  static int get defaultDynamicTypeIndex {
+    final value = _setting.get(
+      SettingBoxKey.defaultDynamicType,
+      defaultValue: DynamicsTabType.video.name,
+    );
+    if (value is int) {
+      final migrated = value <= 0 ? 0 : value - 1;
+      return migrated.clamp(0, DynamicsTabType.values.length - 1);
+    }
+    final index = DynamicsTabType.values.indexWhere((e) => e.name == value);
+    return index < 0 ? 0 : index;
   }
 
   static bool get showDynInteraction =>

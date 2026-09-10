@@ -577,9 +577,9 @@ List<SettingsModel> get extraSettings => [
     title: '动态展示',
     leading: const Icon(Icons.dynamic_feed_rounded),
     value: () => Pref.defaultDynamicType,
-    items: DynamicsTabType.values.take(4),
+    items: DynamicsTabType.values.take(3),
     onSelected: (value, setState) => GStorage.setting
-        .put(SettingBoxKey.defaultDynamicType, value.index)
+        .put(SettingBoxKey.defaultDynamicType, value.name)
         .whenComplete(setState),
   ),
   SwitchModel(
@@ -1113,7 +1113,7 @@ Future<void> _showDefDynDialog(
   if (res != null) {
     await GStorage.setting.put(
       SettingBoxKey.defaultDynamicType,
-      res.index,
+      res.name,
     );
     setState();
   }

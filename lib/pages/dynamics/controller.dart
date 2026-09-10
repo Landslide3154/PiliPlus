@@ -51,7 +51,7 @@ class DynamicsController
     tabController = TabController(
       vsync: this,
       length: DynamicsTabType.values.length,
-      initialIndex: Pref.migratedDefaultDynamicTypeIndex,
+      initialIndex: Pref.defaultDynamicTypeIndex,
     );
     queryData();
   }
@@ -61,26 +61,38 @@ class DynamicsController
   }
 
   void onSelectUp(int mid) {
+    if (mid == -1) {
+      // 「全部视频」：选中全部 UP，切到「视频」标签并刷新其内容
+      currentMid = -1;
+      _jumpToTab(-1);
+      _refreshVideoTab();
+      return;
+    }
+
     if (currentMid == mid) {
       _jumpToTab(mid);
-      if (mid == -1) {
-        singleRefresh();
-      }
       controller?.onReload();
       return;
     }
 
-    if (mid != -1) {
-      hostMid = mid;
-      try {
-        Get.find<DynamicsTabController>(
-          tag: DynamicsTabType.up.name,
-        ).onReload();
-      } catch (_) {}
-    }
+    hostMid = mid;
+    try {
+      Get.find<DynamicsTabController>(
+        tag: DynamicsTabType.up.name,
+      ).onReload();
+    } catch (_) {}
 
     currentMid = mid;
     _jumpToTab(mid);
+  }
+
+  /// 刷新「视频」标签内容（「全部视频」入口使用）
+  void _refreshVideoTab() {
+    try {
+      Get.find<DynamicsTabController>(
+        tag: DynamicsTabType.video.name,
+      ).onReload();
+    } catch (_) {}
   }
 
   Future<void> singleRefresh() {

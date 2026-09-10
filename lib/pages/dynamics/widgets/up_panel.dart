@@ -44,7 +44,7 @@ class _UpPanelState extends State<UpPanel> {
       controller: controller.scrollController,
       slivers: [
         SliverToBoxAdapter(
-          child: upItemBuild(theme, UpItem(face: '', uname: '全部动态', mid: -1)),
+          child: upItemBuild(theme, UpItem(face: '', uname: '全部视频', mid: -1)),
         ),
         if (upList != null && upList.isNotEmpty)
           SliverList.builder(
