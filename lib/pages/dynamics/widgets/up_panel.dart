@@ -9,8 +9,8 @@ import 'package:PiliPlus/utils/extension/num_ext.dart';
 import 'package:PiliPlus/utils/feed_back.dart';
 import 'package:PiliPlus/utils/page_utils.dart';
 import 'package:PiliPlus/utils/platform_utils.dart';
-import 'package:material_ui/material_ui.dart';
 import 'package:get/get.dart';
+import 'package:material_ui/material_ui.dart';
 
 class UpPanel extends StatefulWidget {
   const UpPanel({
@@ -50,6 +50,12 @@ class _UpPanelState extends State<UpPanel> {
           SliverList.builder(
             itemCount: upList.length,
             itemBuilder: (context, index) {
+              // 构建到列表末尾时主动加载下一页：
+              // 内容不足一屏（第一页通常 9 个）时 ScrollEndNotification 不会触发，
+              // 否则必须手动在空白处点一下才会加载剩余 UP 主
+              if (index == upList.length - 1) {
+                controller.onLoadMore();
+              }
               return upItemBuild(theme, upList[index]);
             },
           ),
