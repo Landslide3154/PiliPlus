@@ -47,6 +47,7 @@ PiliPlus（本地路径 `D:\code\PiliPlus`）是用户 fork 维护的 B 站客�
 - **卡片间距 / 边缘距离**设置项：`SettingBoxKey.cardSpacing` / `edgePadding`（`Pref.cardSpacing`、`Pref.edgePadding`）
 - **更新检查**：`lib/utils/update.dart` 指向本仓库 `/releases/latest`
 - **默认展示 TAB 存储**：`Pref.defaultDynamicTypeIndex` 按 enum `name` 存储，读取时兼容旧 int 索引（非零左移一位），避免上游增删 tab 后错位
+- **竖屏视频 `vertical_av`（上游未修，合并时易被覆盖）**：app 端推荐接口对竖屏视频返回 `goto: 'vertical_av'`（不是 `'av'`），`uri` 为 `bilibili://story/{aid}?cid=…&player_width=…&player_height=…`，其余字段与 `av` 一致。本 fork 在识别 `av` 处一并识别 `vertical_av`（`video_card_v.dart` 的 switch 与 `_isVideo`、`member_home/widgets/video_card_v_member_home.dart`、`rcmd/result.dart` 的 `RcmdOwner` 取 `args.up_name`），并给 `app_scheme.dart` 的 `case 'video'` 加了 `|| 'story'`。**故意不把 goto 改写成 `av`**——不感兴趣接口（`feedDislike`）要把 goto 原样回传；上游 issue #2996 的补丁是改写 goto，别照抄。web 端推荐接口不会碰到（`http/video.dart` 只放行 `goto == 'av'`），所以现象只在「首页使用app端推荐」开启时出现
 
 ## 验证
 
