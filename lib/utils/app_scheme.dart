@@ -142,9 +142,11 @@ abstract final class PiliScheme {
               return true;
             }
             return false;
-          case 'video':
+          case 'video' || 'story':
             // bilibili://video/12345678?dm_progress=123000&cid=12345678&dmid=12345678
             // bilibili://video/{aid}/?comment_root_id=***&comment_secondary_id=***
+            // bilibili://story/{aid}?cid=…&player_width=…&player_height=…
+            // （竖屏视频，接口 goto 为 vertical_av；除 scheme 外与 video 一致）
             final queryParameters = uri.queryParameters;
             if (queryParameters['comment_root_id'] != null) {
               // to video reply

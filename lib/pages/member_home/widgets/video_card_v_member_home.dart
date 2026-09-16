@@ -29,7 +29,8 @@ class VideoCardVMemberHome extends StatelessWidget {
         PageUtils.viewPgc(epId: videoItem.param);
         break;
 
-      case 'av':
+      // vertical_av 为竖屏视频，字段与 av 一致，按视频处理
+      case 'av' || 'vertical_av':
         if (videoItem.isPgc == true) {
           if (videoItem.uri?.isNotEmpty == true) {
             PageUtils.viewPgcFromUri(videoItem.uri!);

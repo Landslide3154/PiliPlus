@@ -62,7 +62,9 @@ class RcmdStat extends BaseStat {
 
 class RcmdOwner extends BaseOwner {
   RcmdOwner.fromJson(Map<String, dynamic> json) {
-    name = json['goto'] == 'av'
+    // 竖屏视频的 goto 是 vertical_av，字段与 av 一致，同样取 args.up_name；
+    // 否则会落到 desc_button.text——那是「竖屏」角标文案，会被当成 UP 主名字
+    name = json['goto'] == 'av' || json['goto'] == 'vertical_av'
         ? (json['args']?['up_name'] ?? '')
         : (json['desc_button']?['text'] ?? '');
     mid = json['args']?['up_id'] ?? 0;

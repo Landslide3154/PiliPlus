@@ -35,7 +35,7 @@ class VideoCardV extends StatelessWidget {
       case 'bangumi':
         PageUtils.viewPgc(epId: videoItem.param!);
         break;
-      case 'av':
+      case 'av' || 'vertical_av':
         var bvid = videoItem.bvid ?? IdUtils.av2bv(videoItem.aid!);
         var cid = videoItem.cid;
         bool isVertical = false;
@@ -78,6 +78,11 @@ class VideoCardV extends StatelessWidget {
         }
     }
   }
+
+  /// 竖屏视频：app 端推荐接口的 goto 是 vertical_av，uri 形如
+  /// bilibili://story/{aid}，其余字段与 av 卡片一致，展示与点击都按视频处理
+  bool get _isVideo =>
+      videoItem.goto == 'av' || videoItem.goto == 'vertical_av';
 
   @override
   Widget build(BuildContext context) {
@@ -241,7 +246,7 @@ class VideoCardV extends StatelessWidget {
             ),
           ),
         ),
-        if (videoItem.goto == 'av' && videoItem.pubdate != null)
+        if (_isVideo && videoItem.pubdate != null)
           Positioned(
             right: 28,
             bottom: 6,
@@ -253,7 +258,7 @@ class VideoCardV extends StatelessWidget {
               ),
             ),
           ),
-        if (videoItem.goto == 'av')
+        if (_isVideo)
           Positioned(
             right: -5,
             bottom: -2,
