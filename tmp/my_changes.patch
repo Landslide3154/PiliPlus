@@ -1,0 +1,4579 @@
+diff --git a/.github/workflows/build.yml b/.github/workflows/build.yml
+index d59e5d6a7..1646224be 100644
+--- a/.github/workflows/build.yml
++++ b/.github/workflows/build.yml
+@@ -49,7 +49,7 @@ on:
+ 
+ jobs:
+     android:
+-        if: ${{ (github.event_name == 'pull_request' && github.repository == 'bggRGjQaUbCoE/PiliPlus') || github.event.inputs.build_android == 'true' }}
++        if: ${{ github.event_name == 'pull_request' || github.event.inputs.build_android == 'true' }}
+         name: Release Android
+         runs-on: ubuntu-latest
+         permissions: write-all
+@@ -145,7 +145,7 @@ jobs:
+                   path: PiliPlus_android_*_x86_64.apk
+ 
+     ios:
+-        if: ${{ (github.event_name == 'pull_request' && github.repository == 'bggRGjQaUbCoE/PiliPlus') || github.event.inputs.build_ios == 'true' }}
++        if: ${{ github.event.inputs.build_ios == 'true' }}
+         uses: ./.github/workflows/ios.yml
+         permissions: write-all
+         with:
+@@ -159,7 +159,7 @@ jobs:
+             tag: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.tag || '' }}
+ 
+     win_x64:
+-        if: ${{ (github.event_name == 'pull_request' && github.repository == 'bggRGjQaUbCoE/PiliPlus') || github.event.inputs.build_win_x64 == 'true' }}
++        if: ${{ github.event_name == 'pull_request' || github.event.inputs.build_win_x64 == 'true' }}
+         uses: ./.github/workflows/win_x64.yml
+         permissions: write-all
+         with:
+diff --git a/.github/workflows/win_x64.yml b/.github/workflows/win_x64.yml
+index bca1b0d3f..354ae4ec9 100644
+--- a/.github/workflows/win_x64.yml
++++ b/.github/workflows/win_x64.yml
+@@ -13,7 +13,7 @@ on:
+ jobs:
+   build-windows-app:
+     name: Release Windows x64
+-    runs-on: windows-latest
++    runs-on: windows-2022
+     steps:
+       - name: Checkout code
+         uses: actions/checkout@v7
+@@ -44,16 +44,47 @@ jobs:
+         shell: pwsh
+         run: lib/scripts/build.ps1
+ 
+-      - name: Build Windows
++      - name: Check pili_release.json
++        shell: pwsh
+         run: |
+-          fastforge package --platform windows --targets exe --flutter-build-args="dart-define-from-file=pili_release.json"
++          if (Test-Path "pili_release.json") {
++            Write-Host "pili_release.json exists:"
++            Get-Content "pili_release.json"
++          } else {
++            Write-Host "pili_release.json NOT FOUND!"
++            exit 1
++          }
++
++      - name: Flutter Build Windows (verbose)
++        run: flutter build windows --release -v --pub --dart-define-from-file=pili_release.json
+ 
+       - name: Prepare Upload
++        shell: pwsh
++        run: |
++          Write-Host "=== Checking build output ==="
++          if (Test-Path "build/windows/x64/runner/Release") {
++            Get-ChildItem "build/windows/x64/runner/Release"
++            New-Item -ItemType Directory -Force -Path Release/PiliPlus-Win | Out-Null
++            Get-ChildItem "build/windows/x64/runner/Release/*" | Move-Item -Destination "Release/PiliPlus-Win/"
++            Write-Host "=== Build output prepared ==="
++          } else {
++            Write-Host "build/windows/x64/runner/Release NOT FOUND"
++            Write-Host "=== Listing build/ contents ==="
++            if (Test-Path "build") { Get-ChildItem -Recurse build | Select-Object -First 50 }
++            exit 1
++          }
++
++      - name: Package setup (fastforge, skip if fails)
++        continue-on-error: true
++        shell: pwsh
+         run: |
+-          mkdir -p Release/PiliPlus-Win
+-          mkdir -p PiliPlus-Win-Setup
+-          mv build/windows/x64/runner/Release/* Release/PiliPlus-Win/
+-          mv dist/**/*.exe PiliPlus-Win-Setup/PiliPlus_windows_${{env.version}}_x64_setup.exe
++          fastforge package --platform windows --targets exe --skip-build --flutter-build-args="dart-define-from-file=pili_release.json"
++          New-Item -ItemType Directory -Force -Path PiliPlus-Win-Setup | Out-Null
++          if (Test-Path "dist") {
++            Get-ChildItem -Recurse dist/*.exe | ForEach-Object {
++              Copy-Item $_ "PiliPlus-Win-Setup/PiliPlus_windows_${{env.version}}_x64_setup.exe"
++            }
++          }
+ 
+       - name: Compress
+         run: |
+diff --git a/.reasonix/truncated-results/1780160654744-02ec7176-github_list_commits.txt b/.reasonix/truncated-results/1780160654744-02ec7176-github_list_commits.txt
+new file mode 100644
+index 000000000..e2a979293
+--- /dev/null
++++ b/.reasonix/truncated-results/1780160654744-02ec7176-github_list_commits.txt
+@@ -0,0 +1,412 @@
++[
++  {
++    "sha": "0102ce137164b1934a133ba2427c9273336bc5a3",
++    "node_id": "C_kwDOSsTu89oAKDAxMDJjZTEzNzE2NGIxOTM0YTEzM2JhMjQyN2M5MjczMzM2YmM1YTM",
++    "commit": {
++      "author": {
++        "name": "程浩",
++        "email": "godisout@gmail.com",
++        "date": "2026-05-30T16:38:45Z"
++      },
++      "committer": {
++        "name": "程浩",
++        "email": "godisout@gmail.com",
++        "date": "2026-05-30T16:38:45Z"
++      },
++      "message": "fix: 移除 CI 中的仓库名校验，使 fork 能正常构建",
++      "tree": {
++        "sha": "dd3f48285a740f2f43855130db1c3167d35cb7af",
++        "url": "https://api.github.com/repos/Landslide3154/PiliPlus/git/trees/dd3f48285a740f2f43855130db1c3167d35cb7af"
++      },
++      "url": "https://api.github.com/repos/Landslide3154/PiliPlus/git/commits/0102ce137164b1934a133ba2427c9273336bc5a3",
++      "comment_count": 0,
++      "verification": {
++        "verified": false,
++        "reason": "unsigned",
++        "signature": null,
++        "payload": null,
++        "verified_at": null
++      }
++    },
++    "url": "https://api.github.com/repos/Landslide3154/PiliPlus/commits/0102ce137164b1934a133ba2427c9273336bc5a3",
++    "html_url": "https://github.com/Landslide3154/PiliPlus/commit/0102ce137164b1934a133ba2427c9273336bc5a3",
++    "comments_url": "https://api.github.com/repos/Landslide3154/PiliPlus/commits/0102ce137164b1934a133ba2427c9273336bc5a3/comments",
++    "author": {
++      "login": "Landslide3154",
++      "id": 18253197,
++      "node_id": "MDQ6VXNlcjE4MjUzMTk3",
++      "avatar_url": "https://avatars.githubusercontent.com/u/18253197?v=4",
++      "gravatar_id": "",
++      "url": "https://api.github.com/users/Landslide3154",
++      "html_url": "https://github.com/Landslide3154",
++      "followers_url": "https://api.github.com/users/Landslide3154/followers",
++      "following_url": "https://api.github.com/users/Landslide3154/following{/other_user}",
++      "gists_url": "https://api.github.com/users/Landslide3154/gists{/gist_id}",
++      "starred_url": "https://api.github.com/users/Landslide3154/starred{/owner}{/repo}",
++      "subscriptions_url": "https://api.github.com/users/Landslide3154/subscriptions",
++      "organizations_url": "https://api.github.com/users/Landslide3154/orgs",
++      "repos_url": "https://api.github.com/users/Landslide3154/repos",
++      "events_url": "https://api.github.com/users/Landslide3154/events{/privacy}",
++      "received_events_url": "https://api.github.com/users/Landslide3154/received_events",
++      "type": "User",
++      "user_view_type": "public",
++      "site_admin": false
++    },
++    "committer": {
++      "login": "Landslide3154",
++      "id": 18253197,
++      "node_id": "MDQ6VXNlcjE4MjUzMTk3",
++      "avatar_url": "https://avatars.githubusercontent.com/u/18253197?v=4",
++      "gravatar_id": "",
++      "url": "https://api.github.com/users/Landslide3154",
++      "html_url": "https://github.com/Landslide3154",
++      "followers_url": "https://api.github.com/users/Landslide3154/followers",
++      "following_url": "https://api.github.com/users/Landslide3154/following{/other_user}",
++      "gists_url": "https://api.github.com/users/Landslide3154/gists{/gist_id}",
++      "starred_url": "https://api.github.com/users/Landslide3154/starred{/owner}{/repo}",
++      "subscriptions_url": "https://api.github.com/users/Landslide3154/subscriptions",
++      "organizations_url": "https://api.github.com/users/Landslide3154/orgs",
++      "repos_url": "https://api.github.com/users/Landslide3154/repos",
++      "events_url": "https://api.github.com/users/Landslide3154/events{/privacy}",
++      "received_events_url": "https://api.github.com/users/Landslide3154/received_events",
++      "type": "User",
++      "user_view_type": "public",
++      "site_admin": false
++    },
++    "parents": [
++      {
++        "sha": "15846baa76d5c8b2b19be5f13ac1970ed3875a8f",
++        "url": "https://api.github.com/repos/Landslide3154/PiliPlus/commits/15846baa76d5c8b2b19be5f13ac1970ed3875a8f",
++        "html_url": "https://github.com/Landslide3154/PiliPlus/commit/15846baa76d5c8b2b19be5f13ac1970ed3875a8f"
++      }
++    ]
++  },
++  {
++    "sha": "15846baa76d5c8b2b19be5f13ac1970ed3875a8f",
++    "node_id": "C_kwDOSsTu89oAKDE1ODQ2YmFhNzZkNWM4YjJiMTliZTVmMTNhYzE5NzBlZDM4NzVhOGY",
++    "commit": {
++      "author": {
++        "name": "程浩",
++        "email": "godisout@gmail.com",
++        "date": "2026-05-30T16:17:25Z"
++      },
++      "committer": {
++        "name": "程浩",
++        "email": "godisout@gmail.com",
++        "date": "2026-05-30T16:17:25Z"
++      },
++      "message": "feat: 动态页支持网格对齐布局 + 视频卡片缩略图重排\n\n### 新增功能\n- 动态页布局三选一：瀑布流（原）/ 网格对齐（新增）/ 单列列表（原）\n  - 网格对齐模式使用 SliverGrid，同一行卡片高度统一，垂直方向严格对齐\n  - 列数可在设置中 1~6 列调节（默认 4 列）\n- 设置页外观设置中新增「动态页布局模式」和「网格对齐列数」两个配置项\n\n### 视觉优化\n- 视频卡片缩略图底部 overlay 重新布局：\n  - 左下角：播放量 + 弹幕数（≥10000 自动以万为单位，如 \"9.9万播放\"）\n  - 右下角：视频时长\n  - 移除播放按钮图标，信息更紧凑\n\n### 技术改动\n- DynMixin 新增 buildDynamicContent() 统一入口，替代各页面手写瀑布流/列表分支\n- 涉及 5 个页面：全部动态 / 话题动态 / 用户动态 / 搜索结果 / 我的评论\n- 旧设置 dynamicsWaterfallFlow 自动迁移至新 layoutMode 配置\n- 所有布局切换均需重启应用生效\n\n### 影响范围\nlib/utils/storage_key.dart\nlib/utils/storage_pref.dart\nlib/utils/global_data.dart\nlib/utils/waterfall.dart\nlib/pages/dynamics_tab/view.dart\nlib/pages/dynamics_topic/view.dart\nlib/pages/member_dynamics/view.dart\nlib/pages/member_search/child/view.dart\nlib/pages/my_reply/view.dart\nlib/pages/setting/models/style_settings.dart\nlib/pages/dynamics/widgets/video_panel.dart",
++      "tree": {
++        "sha": "2e8f0a938d8b55309636e14e8d2005419a5334e5",
++        "url": "https://api.github.com/repos/Landslide3154/PiliPlus/git/trees/2e8f0a938d8b55309636e14e8d2005419a5334e5"
++      },
++      "url": "https://api.github.com/repos/Landslide3154/PiliPlus/git/commits/15846baa76d5c8b2b19be5f13ac1970ed3875a8f",
++      "comment_count": 0,
++      "verification": {
++        "verified": false,
++        "reason": "unsigned",
++        "signature": null,
++        "payload": null,
++        "verified_at": null
++      }
++    },
++    "url": "https://api.github.com/repos/Landslide3154/PiliPlus/commits/15846baa76d5c8b2b19be5f13ac1970ed3875a8f",
++    "html_url": "https://github.com/Landslide3154/PiliPlus/commit/15846baa76d5c8b2b19be5f13ac1970ed3875a8f",
++    "comments_url": "https://api.github.com/repos/Landslide3154/PiliPlus/commits/15846baa76d5c8b2b19be5f13ac1970ed3875a8f/comments",
++    "author": {
++      "login": "Landslide3154",
++      "id": 18253197,
++      "node_id": "MDQ6VXNlcjE4MjUzMTk3",
++      "avatar_url": "https://avatars.githubusercontent.com/u/18253197?v=4",
++      "gravatar_id": "",
++      "url": "https://api.github.com/users/Landslide3154",
++      "html_url": "https://github.com/Landslide3154",
++      "followers_url": "https://api.github.com/users/Landslide3154/followers",
++      "following_url": "https://api.github.com/users/Landslide3154/following{/other_user}",
++      "gists_url": "https://api.github.com/users/Landslide3154/gists{/gist_id}",
++      "starred_url": "https://api.github.com/users/Landslide3154/starred{/owner}{/repo}",
++      "subscriptions_url": "https://api.github.com/users/Landslide3154/subscriptions",
++      "organizations_url": "https://api.github.com/users/Landslide3154/orgs",
++      "repos_url": "https://api.github.com/users/Landslide3154/repos",
++      "events_url": "https://api.github.com/users/Landslide3154/events{/privacy}",
++      "received_events_url": "https://api.github.com/users/Landslide3154/received_events",
++      "type": "User",
++      "user_view_type": "public",
++      "site_admin": false
++    },
++    "committer": {
++      "login": "Landslide3154",
++      "id": 18253197,
++      "node_id": "MDQ6VXNlcjE4MjUzMTk3",
++      "avatar_url": "https://avatars.githubusercontent.com/u/18253197?v=4",
++      "gravatar_id": "",
++      "url": "https://api.github.com/users/Landslide3154",
++      "html_url": "https://github.com/Landslide3154",
++      "followers_url": "https://api.github.com/users/Landslide3154/followers",
++      "following_url": "https://api.github.com/users/Landslide3154/following{/other_user}",
++      "gists_url": "https://api.github.com/users/Landslide3154/gists{/gist_id}",
++      "starred_url": "https://api.github.com/users/Landslide3154/starred{/owner}{/repo}",
++      "subscriptions_url": "https://api.github.com/users/Landslide3154/subscriptions",
++      "organizations_url": "https://api.github.com/users/Landslide3154/orgs",
++      "repos_url": "https://api.github.com/users/Landslide3154/repos",
++      "events_url": "https://api.github.com/users/Landslide3154/events{/privacy}",
++      "received_events_url": "https://api.github.com/users/Landslide3154/received_events",
++      "type": "User",
++      "user_view_type": "public",
++      "site_admin": false
++    },
++    "parents": [
++      {
++        "sha": "d4d9fc3405a1d585083f81e6a89730749416ca5d",
++        "url": "https://api.github.com/repos/Landslide3154/PiliPlus/commits/d4d9fc3405a1d585083f81e6a89730749416ca5d",
++        "html_url": "https://github.com/Landslide3154/PiliPlus/commit/d4d9fc3405a1d585083f81e6a89730749416ca5d"
++      }
++    ]
++  },
++  {
++    "sha": "d4d9fc3405a1d585083f81e6a89730749416ca5d",
++    "node_id": "C_kwDOSsTu89oAKGQ0ZDlmYzM0MDVhMWQ1ODUwODNmODFlNmE4OTczMDc0OTQxNmNhNWQ",
++    "commit": {
++      "author": {
++        "name": "My-Responsitories",
++        "email": "107370289+My-Responsitories@users.noreply.github.com",
++        "date": "2026-05-30T12:10:35Z"
++      },
++      "committer": {
++        "name": "GitHub",
++        "email": "noreply@github.com",
++        "date": "2026-05-30T12:10:35Z"
++      },
++      "message": "refa: jni (#2244)\n\n* refa: jni\n\n* refa: jni",
++      "tree": {
++        "sha": "2b03e5f519e2e3f0008edb6d9f1e45a71a81db1e",
++        "url": "https://api.github.com/repos/Landslide3154/PiliPlus/git/trees/2b03e5f519e2e3f0008edb6d9f1e45a71a81db1e"
++      },
++      "url": "https://api.github.com/repos/Landslide3154/PiliPlus/git/commits/d4d9fc3405a1d585083f81e6a89730749416ca5d",
++      "comment_count": 0,
++      "verification": {
++        "verified": true,
++        "reason": "valid",
++        "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsFcBAABCAAQBQJqGtO7CRC1aQ7uu5UhlAAAFhAQAB2eejkPItQ2lPUnufZLu2tv\nU4BEbDTAi5+2wDaRccGDFm6CrcgdOoV5FIZ5G201Af9n8c20gftvsKhyw2ahdVKh\nco5DVpTzbCOt/YDeMA1enNQcgWUjy6HJPxKmOt+oALFWcKBFvz0E/9RyprgN9Kxj\nzVNWl7aMzEfwvt6argN1dv5P40GR/1f4jDgq9ixrU0SOtJwcHSNRdRAPe/j0tO4B\niGgNT3lkWMqt4rpKeVNO4E2W4XwvKn4KyUs9L7pHqOocF3OKWMJp/+zSCXJWVfYV\nIPfQiqtMQVjk3G00lQTQMfUjsLJq53FW3jdnqjtVyiivLmeARZ/drJpLdQscFLxt\nOt83XI4k+TrVy76vn99OkdxuZ+2Vp4oe0CHWvFcyHLW+ka+zGEmU4vxkS4S/1Nys\nmw/qzs6HemS91C5+GevvCIX4xHZIIs8gX4j0J71fiopV2O9dnOQA5opbgv9I/7wy\nthENkLsaRzEDScsGtcHYUkOxZuJwF0c5V4xGmsLK6m86lC5yP6HG4i5CXZmxRCwX\nUaP8nlIfKx9DR7wRay0Bwrl5V7Q3LyH7iBqemJ7f/+V1ZD2g8R7BtkIIU76SAqdP\nz6/AT5lyIuDdeptyjTtTaLeKO2DiUUyAgJTZ9nTVcgy7JfGO+zrTDq6DIHqSewap\nSYXuDqymT39jpVz+QqJr\n=3hot\n-----END PGP SIGNATURE-----\n",
++        "payload": "tree 2b03e5f519e2e3f0008edb6d9f1e45a71a81db1e\nparent 6a75061dbb5ad99a4eea776ec9a3efc8046c8d57\nauthor My-Responsitories <107370289+My-Responsitories@users.noreply.github.com> 1780143035 +0000\ncommitter GitHub <noreply@github.com> 1780143035 +0800\n\nrefa: jni (#2244)\n\n* refa: jni\n\n* refa: jni",
++        "verified_at": "2026-05-30T12:10:36Z"
++      }
++    },
++    "url": "https://api.github.com/repos/Landslide3154/PiliPlus/commits/d4d9fc3405a1d585083f81e6a89730749416ca5d",
++    "html_url": "https://github.com/Landslide3154/PiliPlus/commit/d4d9fc3405a1d585083f81e6a89730749416ca5d",
++    "comments_url": "https://api.github.com/repos/Landslide3154/PiliPlus/commits/d4d9fc3405a1d585083f81e6a89730749416ca5d/comments",
++    "author": {
++      "login": "My-Responsitories",
++      "id": 107370289,
++      "node_id": "U_kgDOBmZXMQ",
++      "avatar_url": "https://avatars.githubusercontent.com/u/107370289?v=4",
++      "gravatar_id": "",
++      "url": "https://api.github.com/users/My-Responsitories",
++      "html_url": "https://github.com/My-Responsitories",
++      "followers_url": "https://api.github.com/users/My-Responsitories/followers",
++      "following_url": "https://api.github.com/users/My-Responsitories/following{/other_user}",
++      "gists_url": "https://api.github.com/users/My-Responsitories/gists{/gist_id}",
++      "starred_url": "https://api.github.com/users/My-Responsitories/starred{/owner}{/repo}",
++      "subscriptions_url": "https://api.github.com/users/My-Responsitories/subscriptions",
++      "organizations_url": "https://api.github.com/users/My-Responsitories/orgs",
++      "repos_url": "https://api.github.com/users/My-Responsitories/repos",
++      "events_url": "https://api.github.com/users/My-Responsitories/events{/privacy}",
++      "received_events_url": "https://api.github.com/users/My-Responsitories/received_events",
++      "type": "User",
++      "user_view_type": "public",
++      "site_admin": false
++    },
++    "committer": {
++      "login": "web-flow",
++      "id": 19864447,
++      "node_id": "MDQ6VXNlcjE5ODY0NDQ3",
++      "avatar_url": "https://avatars.githubusercontent.com/u/19864447?v=4",
++      "gravatar_id": "",
++      "url": "https://api.github.com/users/web-flow",
++      "html_url": "https://github.com/web-flow",
++      "followers_url": "https://api.github.com/users/web-flow/followers",
++      "following_url": "https://api.github.com/users/web-flow/following{/other_user}",
++      "gists_url": "https://api.github.com/users/web-flow/gists{/gist_id}",
++      "starred_url": "https://api.github.com/users/web-flow/starred{/owner}{/repo}",
++      "subscriptions_url": "https://api.github.com/users/web-flow/subscriptions",
++      "organizations_url": "https://api.github.com/users/web-flow/orgs",
++      "repos_url": "https://api.github.com/users/web-flow/repos",
++      "events_url": "https://api.github.com/users/web-flow/events{/privacy}",
++      "received_events_url": "https://api.github.com/users/web-flow/received_events",
++      "type": "User",
++      "user_view_type": "public",
++      "site_admin": false
++    },
++    "parents": [
++      {
++        "sha": "6a75061dbb5ad99a4eea776ec9a3efc8046c8d57",
++        "url": "https://api.github.com/repos/Landslide3154/PiliPlus/commits/6a75061dbb5ad99a4eea776ec9a3efc8046c8d57",
++        "html_url": "https://github.com/Landslide3154/PiliPlus/commit/6a75061dbb5ad99a4eea776ec9a3efc8046c8d57"
++      }
++    ]
++  },
++  {
++    "sha": "6a75061dbb5ad99a4eea776ec9a3efc8046c8d57",
++    "node_id": "C_kwDOSsTu89oAKDZhNzUwNjFkYmI1YWQ5OWE0ZWVhNzc2ZWM5YTNlZmM4MDQ2YzhkNTc",
++    "commit": {
++      "author": {
++        "name": "dom",
++        "email": "githubaccount56556@proton.me",
++        "date": "2026-05-30T08:55:34Z"
++      },
++      "committer": {
++        "name": "dom",
++        "email": "githubaccount56556@proton.me",
++        "date": "2026-05-30T08:55:51Z"
++      },
++      "message": "fix dev build\n\nSigned-off-by: dom <githubaccount56556@proton.me>",
++      "tree": {
++        "sha": "4ee54d6a58bc0a6cc94deb33666549a49b88404b",
++        "url": "https://api.github.com/repos/Landslide3154/PiliPlus/git/trees/4ee54d6a58bc0a6cc94deb33666549a49b88404b"
++      },
++      "url": "https://api.github.com/repos/Landslide3154/PiliPlus/git/commits/6a75061dbb5ad99a4eea776ec9a3efc8046c8d57",
++      "comment_count": 0,
++      "verification": {
++        "verified": false,
++        "reason": "unsigned",
++        "signature": null,
++        "payload": null,
++        "verified_at": null
++      }
++    },
++    "url": "https://api.github.com/repos/Landslide3154/PiliPlus/commits/6a75061dbb5ad99a4eea776ec9a3efc8046c8d57",
++    "html_url": "https://github.com/Landslide3154/PiliPlus/commit/6a75061dbb5ad99a4eea776ec9a3efc8046c8d57",
++    "comments_url": "https://api.github.com/repos/Landslide3154/PiliPlus/commits/6a75061dbb5ad99a4eea776ec9a3efc8046c8d57/comments",
++    "author": {
++      "login": "bggRGjQaUbCoE",
++      "id": 114972867,
++      "node_id": "U_kgDOBtpYww",
++      "avatar_url": "https://avatars.githubusercontent.com/u/114972867?v=4",
++      "gravatar_id": "",
++      "url": "https://api.github.com/users/bggRGjQaUbCoE",
++      "html_url": "https://github.com/bggRGjQaUbCoE",
++      "followers_url": "https://api.github.com/users/bggRGjQaUbCoE/followers",
++      "following_url": "https://api.github.com/users/bggRGjQaUbCoE/following{/other_user}",
++      "gists_url": "https://api.github.com/users/bggRGjQaUbCoE/gists{/gist_id}",
++      "starred_url": "https://api.github.com/users/bggRGjQaUbCoE/starred{/owner}{/repo}",
++      "subscriptions_url": "https://api.github.com/users/bggRGjQaUbCoE/subscriptions",
++      "organizations_url": "https://api.github.com/users/bggRGjQaUbCoE/orgs",
++      "repos_url": "https://api.github.com/users/bggRGjQaUbCoE/repos",
++      "events_url": "https://api.github.com/users/bggRGjQaUbCoE/events{/privacy}",
++      "received_events_url": "https://api.github.com/users/bggRGjQaUbCoE/received_events",
++      "type": "User",
++      "user_view_type": "public",
++      "site_admin": false
++    },
++    "committer": {
++      "login": "bggRGjQaUbCoE",
++      "id": 114972867,
++      "node_id": "U_kgDOBtpYww",
++      "avatar_url": "https://avatars.githubusercontent.com/u/114972867?v=4",
++      "gravatar_id": "",
++      "url": "https://api.github.com/users/bggRGjQaUbCoE",
++      "html_url": "https://github.com/bggRGjQaUbCoE",
++      "followers_url": "https://api.github.com/users/bggRGjQaUbCoE/followers",
++      "following_url": "https://api.github.com/users/bggRGjQaUbCoE/following{/other_user}",
++      "gists_url": "https://api.github.com/users/bggRGjQaUbCoE/gists{/gist_id}",
++      "starred_url": "https://api.github.com/users/bggRGjQaUbCoE/starred{/owner}{/repo}",
++      "subscriptions_url": "https://api.github.com/users/bggRGjQaUbCoE/subscriptions",
++      "organizations_url": "https://api.github.com/users/bggRGjQaUbCoE/orgs",
++      "repos_url": "https://api.github.com/users/bggRGjQaUbCoE/repos",
++      "events_url": "https://api.github.com/users/bggRGjQaUbCoE/events{/privacy}",
++      "received_events_url": "https://api.github.com/users/bggRGjQaUbCoE/received_events",
++      "type": "User",
++      "user_view_type": "public",
++      "site_admin": false
++    },
++    "parents": [
++      {
++        "sha": "2e7c80422c7c36b9708e92fc684e38886bed5791",
++        "url": "https://api.github.com/repos/Landslide3154/PiliPlus/commits/2e7c80422c7c36b9708e92fc684e38886bed5791",
++        "html_url": "https://github.com/Landslide3154/PiliPlus/commit/2e7c80422c7c36b9708e92fc684e38886bed5791"
++      }
++    ]
++  },
++  {
++    "sha": "2e7c80422c7c36b9708e92fc684e38886bed5791",
++    "node_id": "C_kwDOSsTu89oAKDJlN2M4MDQyMmM3YzM2Yjk3MDhlOTJmYzY4NGUzODg4NmJlZDU3OTE",
++    "commit": {
++      "author": {
++        "name": "dom",
++        "email": "githubaccount56556@proton.me",
++        "date": "2026-05-30T04:38:54Z"
++      },
++      "committer": {
++        "name": "dom",
++        "email": "githubaccount56556@proton.me",
++        "date": "2026-05-30T04:47:41Z"
++      },
++      "message": "upgrade deps\n\nSigned-off-by: dom <githubaccount56556@proton.me>",
++      "tree": {
++        "sha": "423142278b3d7577f2a6f2d9d869bed0d374fefc",
++        "url": "https://api.github.com/repos/Landslide3154/PiliPlus/git/trees/423142278b3d7577f2a6f2d9d869bed0d374fefc"
++      },
++      "url": "https://api.github.com/repos/Landslide3154/PiliPlus/git/commits/2e7c80422c7c36b9708e92fc684e38886bed5791",
++      "comment_count": 0,
++      "verification": {
++        "verified": false,
++        "reason": "unsigned",
++        "signature": null,
++        "payload": null,
++        "verified_at": null
++      }
++    },
++    "url": "https://api.github.com/repos/Landslide3154/PiliPlus/commits/2e7c80422c7c36b9708e92fc684e38886bed5791",
++    "html_url": "https://github.com/Landslide3154/PiliPlus/commit/2e7c80422c7c36b9708e92fc684e38886bed5791",
++    "comments_url": "https://api.github.com/repos/Landslide3154/PiliPlus/commits/2e7c80422c7c36b9708e92fc684e38886bed5791/comments",
++    "author": {
++      "login": "bggRGjQaUbCoE",
++      "id": 114972867,
++      "node_id": "U_kgDOBtpYww",
++      "avatar_url": "https://avatars.githubusercontent.com/u/114972867?v=4",
++      "gravatar_id": "",
++      "url": "https://api.github.com/users/bggRGjQaUbCoE",
++      "html_url": "https://github.com/bggRGjQaUbCoE",
++      "followers_url": "https://api.github.com/users/bggRGjQaUbCoE/followers",
++      "following_url": "https://api.github.com/users/bggRGjQaUbCoE/following{/other_user}",
++      "gists_url": "https://api.github.com/users/bggRGjQaUbCoE/gists{/gist_id}",
++      "starred_url": "https://api.github.com/users/bggRGjQaUbCoE/starred{/owner}{/repo}",
++      "subscriptions_url": "https://api.github.com/users/bggRGjQaUbCoE/subscriptions",
++      "organizations_url": "https://api.github.com/users/bggRGjQaUbCoE/orgs",
++      "repos_url": "https://api.github.com/users/bggRGjQaUbCoE/repos",
++      "events_url": "https://api.github.com/users/bggRGjQaUbCoE/events{/privacy}",
++      "received_events_url": "https://api.github.com/users/bggRGjQaUbCoE/received_events",
++      "type": "User",
++      "user_view_type": "public",
++      "site_admin": false
++    },
++    "committer": {
++      "login": "bggRGjQaUbCoE",
++      "id": 114972867,
++      "node_id": "U_kgDOBtpYww",
++      "avatar_url": "https://avatars.githubusercontent.com/u/114972867?v=4",
++      "gravatar_id": "",
++      "url": "https://api.github.com/users/bggRGjQaUbCoE",
++      "html_url": "https://github.com/bggRGjQaUbCoE",
++      "followers_url": "https://api.github.com/users/bggRGjQaUbCoE/followers",
++      "following_url": "https://api.github.com/users/bggRGjQaUbCoE/following{/other_user}",
++      "gists_url": "https://api.github.com/users/bggRGjQaUbCoE/gists{/gist_id}",
++      "starred_url": "https://api.github.com/users/bggRGjQaUbCoE/starred{/owner}{/repo}",
++      "subscriptions_url": "https://api.github.com/users/bggRGjQaUbCoE/subscriptions",
++      "organizations_url": "https://api.github.com/users/bggRGjQaUbCoE/orgs",
++      "repos_url": "https://api.github.com/users/bggRGjQaUbCoE/repos",
++      "events_url": "https://api.github.com/users/bggRGjQaUbCoE/events{/privacy}",
++      "received_events_url": "https://api.github.com/users/bggRGjQaUbCoE/received_events",
++      "type": "User",
++      "user_view_type": "public",
++      "site_admin": false
++    },
++    "parents": [
++      {
++        "sha": "60f800b671029d5d46fa34ecf97c573376a6bf8d",
++        "url": "https://api.github.com/repos/Landslide3154/PiliPlus/commits/60f800b671029d5d46fa34ecf97c573376a6bf8d",
++        "html_url": "https://github.com/Landslide3154/PiliPlus/commit/60f800b671029d5d46fa34ecf97c573376a6bf8d"
++      }
++    ]
++  }
++]
+\ No newline at end of file
+diff --git a/.reasonix/truncated-results/1780472429391-04244aa6-run_command.txt b/.reasonix/truncated-results/1780472429391-04244aa6-run_command.txt
+new file mode 100644
+index 000000000..3e0bd7f80
+--- /dev/null
++++ b/.reasonix/truncated-results/1780472429391-04244aa6-run_command.txt
+@@ -0,0 +1,790 @@
++$ git log --oneline --format="%h %ad %s" --date=short
++[exit 0]
++6deced8ec 2026-06-03 fix(desktop): 返回主页改用 Get.offAllNamed 绕过 PopScope 拦截
++287628a29 2026-05-31 fix: 推荐页卡片文字区高度从90降到75，减少标题和作者间多余空间
++6372037fb 2026-05-31 fix: 标题用 Expanded 将底栏（作者左+时间右）固定到卡片底部
++43f138538 2026-05-31 fix: 标题去掉 Expanded 让作者行紧贴标题，减少多余间距
++73fa4e446 2026-05-31 fix: 恢复 VideoCardV.shortFormat/longFormat 静态字段供其他模块引用
++cd83f194d 2026-05-31 fix: 标题改回最多两行，播放/弹幕添加黑底圆角背景
++ced90f588 2026-05-31 refactor: 统计改为图标+数字格式，移除多余间距，优化空间分配
++e4d89e0f4 2026-05-31 refactor: 首页推荐卡片改用与动态网格一致的紧凑布局（统计移到封面上，文字区只留标题+作者）
++712dc1030 2026-05-31 fix: 发布时间移到卡片文字区底部（标题下面），而非缩略图 overlay
++c974a0f00 2026-05-31 fix: pubTs 移入 _buildCover 方法内引用
++76499fcd8 2026-05-31 feat: 卡片缩略图左下角添加发布时间（X分钟前/X小时前/昨天/MM-DD）
++483352b3d 2026-05-31 fix: opus.pics 级联空安全修复
++68249612b 2026-05-31 fix: DynamicGridCard 封面用 LayoutBuilder 修复不显示，统计移至缩略图左下角，转发图文提取封面
++cbc48e338 2026-05-31 chore: 清理死代码和未使用的导入
++1c9e8995d 2026-05-31 fix: 修复 DynamicGridCard 中错误的模型字段名和 pattern match 语法
++8d7e8f302 2026-05-31 fix: 动态页网格模式改用 DynamicGridCard 紧凑卡片，解决重叠错乱问题
++015fa579b 2026-05-31 fix(ci): 锁定 Windows 构建使用 windows-2022 避免 VS2026 废弃 coroutine 导致的编译失败
++91746404d 2026-05-31 fix: 修复 SliverWaterfallFlow 未导入的编译错误
++afbbce957 2026-05-31 fix(ci): 拆分 Windows 构建步骤，直接运行 flutter build 暴露编译错误
++b01a2baf2 2026-05-31 Create 1780160654744-02ec7176-github_list_commits.txt
++0102ce137 2026-05-31 fix: 移除 CI 中的仓库名校验，使 fork 能正常构建
++15846baa7 2026-05-31 feat: 动态页支持网格对齐布局 + 视频卡片缩略图重排
++d4d9fc340 2026-05-30 refa: jni (#2244)
++6a75061db 2026-05-30 fix dev build
++2e7c80422 2026-05-30 upgrade deps
++60f800b67 2026-05-30 gitignore
++1ba6983f3 2026-05-29 fix #2233
++6c61ff59f 2026-05-28 opt publish page
++646498743 2026-05-27 upgrade deps
++41027f701 2026-05-28 fix #2226
++41c8e1a53 2026-05-26 refa: log (#2216)
++56756c5c8 2026-05-26 fix #2209
++3b68fe467 2026-05-25 opt rcmd
++f14aacd66 2026-05-24 handle msg type `EN_MSG_TYPE_CUSTOM_FACE`
++c2ceb9ec7 2026-05-24 improve pay coin
++99a950b04 2026-05-24 fix #2192
++87914a267 2026-05-24 fix fav favFolder toast
++dd85aba8a 2026-05-24 upgrade deps
++8309be9ca 2026-05-21 fix #2171
++5fbc86afa 2026-05-21 fix #2171
++be5889ee3 2026-05-20 upgrade deps
++7c342032d 2026-05-20 improve handle opus nullType
++46baad899 2026-05-20 upgrade deps
++66f15f532 2026-05-19 add publish throttle
++89522e205 2026-05-19 layoutbuilder patch
++0cac46ee2 2026-05-19 fix setEnabledSystemUIMode
++1fcc26464 2026-05-16 flutter 3.44.0
++ad1583706 2026-05-19 upgrade deps
++cc169db12 2026-05-18 upgrade deps
++6a1db5d26 2026-05-17 opt handle brightness/volume
++b04c3d878 2026-05-18 custom angle degree
++68e302b5d 2026-05-18 fix #2143
++ed3962447 2026-05-16 opt member header
++868365804 2026-05-16 opt update page transition
++0c308a700 2026-05-16 fix text selection patch
++cd8266843 2026-05-16 fix #2112
++e142cb680 2026-05-16 add patch link
++200329df4 2026-05-16 remove image anim check
++859f14423 2026-05-15 image anim patch
++9d21be104 2026-05-15 improve text selection patch
++d5293fbc7 2026-05-15 feat: handle vote uri (#2105)
++ad6c0e0d1 2026-05-15 upgrade deps
++ce706d473 2026-05-15 improve horizontal touch slop
++2c511d1a2 2026-05-14 tweaks
++3ac21d95f 2026-05-14 improve player gesture
++b33fdf14a 2026-05-15 tweaks (#2100)
++24769e144 2026-05-13 fix #2087
++50875421a 2026-05-12 tweaks
++0581d8f7d 2026-05-12 upgrade deps
++be9f39d04 2026-05-12 remove longpress threshold on main
++034482362 2026-05-11 fix(dynamics): disable shadow ban check for scheduled posts (#2059)
++1a45b5cb4 2026-05-10 upgrade deps
++fab34df97 2026-05-09 tweaks
++dbb865d72 2026-05-09 fix #2002
++23db48518 2026-05-09 improve player gesture
++d63116542 2026-05-08 tweaks
++f5dbfcec7 2026-05-08 tweaks (#2032)
++b7b40c557 2026-05-05 Release 2.0.7
++d0373da5c 2026-05-05 fix get video part dimension
++31aeab351 2026-05-04 fix ios build
++4228f918d 2026-05-04 fix: html numeric character (#1972)
++0f07dccc4 2026-05-04 upgrade deps
++9b0c9e927 2026-05-04 navigator patch
++ac9631462 2026-05-04 flutter 3.41.9
++d5bf3487f 2026-05-03 add audio volume button & slider on desktop
++9259e84d5 2026-05-03 upgrade deps
++583092735 2026-05-03 opt android orientation
++d41f69e95 2026-05-02 improve gesture patch
++c4847caa2 2026-05-02 opt icons
++cdd9289e6 2026-05-02 opt reply cardLabels
++cd1fdd42d 2026-05-02 transparent live dm panel barrier
++74ed06157 2026-05-02 opt icons
++293f046b3 2026-05-02 fix orientation
++b00b9e281 2026-05-02 opt view opus images
++68e9afd72 2026-05-02 fixes
++09c73d3c8 2026-05-02 improve slide gesture patch
++a91a90b7d 2026-05-02 tweak
++d434f54dd 2026-05-01 fix #1929
++dbbdb61e3 2026-05-01 fix decrease system brightness on android
++d85dd864f 2026-05-01 opt sc endTime
++84bbbd19f 2026-05-01 update gitignore
++3f34d1a25 2026-05-01 fix: orientation (#1935)
++7b6d8bef9 2026-04-30 Release 2.0.6
++a2b54e50d 2026-04-30 tweak
++887c3525a 2026-04-30 fix #1917
++3a46ce242 2026-04-30 upgrade deps
++c0b5876d5 2026-04-30 fix #1917
++74c389be8 2026-04-30 custom fullscreen sc width
++5d8736169 2026-04-30 do not exit onDestroy
++9752ae2f3 2026-04-30 refresh live msg if needed
++3a9cafaf2 2026-04-30 handle foldable screen size
++5937d83aa 2026-04-29 ios bottom sheet patch
++6feb1c15e 2026-04-29 tweak
++57c683d5d 2026-04-29 upgrade deps
++cd26cf6d9 2026-04-29 tweaks
++c7864ff4a 2026-04-29 Reapply "hide systembar when preview"
++7b51b6900 2026-04-29 improve handling android window mode
++11b6f241b 2026-04-28 opt reorder
++88c01ffca 2026-04-28 improve handling video pop
++9ed8b14d1 2026-04-28 feat: add to filter (#1903)
++f7a2be192 2026-04-28 fix #1904
++47e3a47e0 2026-04-27 fix fav sort
++524b6bca1 2026-04-28 unify horizontal video models
++80ecd3578 2026-04-27 sort follow tag
++89fdc2815 2026-04-27 auto add to created fav/follow
++b406a00c8 2026-04-27 opt audio normalization
++6755b7fae 2026-04-27 get real-time video duration in post panel
++60801f984 2026-04-26 disable auto reset brightness on iOS
++fae0cfe80 2026-04-27 disable blank issue
++dccb5d4bf 2026-04-26 create fav tag from fav panel
++b9ce4bad6 2026-04-26 opt follow item
++baef1655d 2026-04-25 Release 2.0.5
++8fd5f353e 2026-04-25 replace errorWidget with errorBuilder in CachedNetworkSVGImage
++326291de2 2026-04-25 upgrade deps
++1761a9abc 2026-04-24 fix image gesture
++d372142d6 2026-04-24 view vote image
++91f00173b 2026-04-24 fix(player): suppress volume indicator during audio duck events (#1899)
++73484f1f7 2026-04-24 opt ui
++490a08fa7 2026-04-24 grpc search archive
++5b5983ed5 2026-04-23 precheck video dimension
++efc202c10 2026-04-23 upgrade deps
++24ab7505e 2026-04-23 opt onOrientationChanged
++d6bce6aa6 2026-04-23 Revert "hide systembar when preview"
++354282930 2026-04-23 fix(article): fix Opus article body font size too small (#1897)
++79c9849c8 2026-04-22 Sync progress if needed before exit (#1896)
++d7b4ceabb 2026-04-21 improve Dyn/Topic DraggableScrollableSheet
++dd5ccd11b 2026-04-21 text selection patch
++26a5d0071 2026-04-21 opt image gesture
++d32456fae 2026-04-20 opt ui
++bffdfae1f 2026-04-20 scroll view patch
++44b7cced0 2026-04-20 Revert "opt scroll view"
++91936a9f4 2026-04-20 update pref default value
++0fb394cc3 2026-04-20 hide systembar when preview
++4229024ad 2026-04-20 tweaks
++add633bc6 2026-04-19 upgrade deps
++54a88fa2f 2026-04-19 fix initial isDyAllowed
++9543f3b45 2026-04-19 bring back remove player safearea
++e88769308 2026-04-19 fix retry
++bac076993 2026-04-18 add split settings model
++24f2cfa4e 2026-04-18 tweaks
++970ee679f 2026-04-18 fix: reset Dio adapters on iOS network switch (#1885)
++db7ad269b 2026-04-17 fix RichTextField affinity on desktop
++2232bc009 2026-04-16 use linux_webview_window to support linux geetest (#1889)
++e778f2b46 2026-04-16 correct reply field names
++7e9618d71 2026-04-16 fix ios build
++62880a376 2026-04-16 increase dm proto extra field number
++e566a358d 2026-04-15 tweaks
++1b0b966e7 2026-04-15 upgrade deps
++dd2492e04 2026-04-16 Add translation support to reply items (#1894)
++0b4ed2589 2026-04-14 Release 2.0.4
++372c677e8 2026-04-14 opt android orientation
++9a6f335e4 2026-04-14 upgrade deps
++f9441db23 2026-04-14 opt scroll view
++4de43faa2 2026-04-12 tweaks
++ba372a101 2026-04-12 opt avatar
++a2ff54af7 2026-04-11 opt player progress bar behavior (#1887)
++cbc4f5832 2026-04-09 upgrade deps
++b553e7554 2026-04-10 opt video statusbar
++68724c8a9 2026-04-10 opt sc background image
++85baf8e0e 2026-04-09 opt android orientation
++222c9d01a 2026-04-09 bubble page
++db30aa804 2026-04-08 tweaks
++6f95456d2 2026-04-08 fix vipStatus check
++de6e402d9 2026-04-08 fix return button not working (#1883)
++634166078 2026-04-08 Release 2.0.3
++a1dbcae93 2026-04-07 upgrade deps
++1526137a6 2026-04-07 fix AppSign
++3097b5681 2026-04-06 refactor device orientation
++db74eccf7 2026-04-06 android shortcut
++14890d342 2026-04-05 tweaks
++51163dd98 2026-04-05 create user shorcut on Android
++f0d9b3a9a 2026-04-05 upgrade dep
++8f3707fbf 2026-04-05 opt reserve btn
++f52bbe980 2026-04-05 upgrade dep
++3ec54868d 2026-04-05 show reserve btn in space page
++c0b55f9af 2026-04-05 show member guard
++279f21857 2026-04-05 clean up models
++b897103af 2026-04-02 Upgrade deps
++353664fbd 2026-04-03 Open offline dir on desktop
++de3505ce0 2026-04-02 Floating NavBar
++cdc172035 2026-04-02 Reformat
++904d210ba 2026-04-01 build
++db8dd85b6 2026-04-02 fix: revert commit 7ee6d1e element.weight (#1879)
++8ad130567 2026-03-31 Release 2.0.2
++7eb21bc5a 2026-03-31 build
++ea4316a84 2026-03-31 opt ui
++2bbc97a95 2026-03-31 fix macOS build
++0178d105b 2026-03-31 add Local Network permissions for iOS & macOS
++771fa75f4 2026-03-30 upgrade deps
++82483b33f 2026-03-29 opt live emote
++886c53c7d 2026-03-29 opt: m3e loading (#1877)
++f0050dd6e 2026-03-29 fix pendent offset
++e6a2f65b4 2026-03-29 fix reply `up` badge
++2fc3f9864 2026-03-28 opt ui
++64c05a1b0 2026-03-28 upgrade deps
++7c4e20f96 2026-03-29 safely parse up list (#1876)
++ace286753 2026-03-27 flutter 3.41.6
++f0430eba9 2026-03-26 opt player bar
++bbcceb72a 2026-03-26 upgrade deps
++be4fa6ad2 2026-03-25 build
++50e1f77e1 2026-03-25 log player error instead of toast
++ba56b4503 2026-03-25 clamp archive page
++b4b3764e5 2026-03-23 web archive
++2220372e4 2026-03-23 tweaks
++0957dfc66 2026-03-23 fix ios build
++9578f948b 2026-03-23 tweaks
++1724f0d20 2026-03-23 upgrade deps
++2bebf200d 2026-03-22 show user medal
++fc7fc18b1 2026-03-22 tweaks
++8f00ca568 2026-03-22 fix: macOS Media Control not activated & remove Background Play switch on desktop  (#1872)
++236b52444 2026-03-20 opt image viewer gesture
++ae59d257c 2026-03-20 show medal wall
++662ccfcf0 2026-03-19 upgrade deps
++b7ab3655c 2026-03-19 flutter 3.41.5
++eda04b32a 2026-03-19 fix(player): clamp loudnorm measured_thresh parameters to valid range (#1871)
++9b1ae3992 2026-03-17 m3e loading indicator
++d1497115d 2026-03-17 tweaks
++7f2682bb7 2026-03-17 opt(download): force cache downloads to use http/1.1 (#1870)
++d6579b29a 2026-03-17 reduce rebuild
++8a8aa6c1e 2026-03-16 unique image tag
++ed66a4655 2026-03-16 opt fab location
++e04affd0f 2026-03-15 opt: hive ce (#1868)
++e29308349 2026-03-15 opt set shader
++7f39f36c7 2026-03-14 fix auto fullscreen
++565819feb 2026-03-14 remove unused param
++af150118a 2026-03-14 opt load saved reply
++470e519a2 2026-03-14 opt save panel
++d73588f1f 2026-03-15 fix(player): disable audio normalization on missing audio input (#1865)
++ffbbd8e70 2026-03-14 Release 2.0.1
++a1815c4cc 2026-03-14 unify platform file name
++b9e543f26 2026-03-14 improve export/import
++0788a4de2 2026-03-14 upgrade deps
++b0c6e2f5c 2026-03-14 fix dyn folded link
++9489d8a7c 2026-03-13 opt handle dyn additional
++aee4424db 2026-03-13 opt: escape performReassemble (#1864)
++96f997289 2026-03-13 upgrade deps
++6ddf28255 2026-03-13 fix header progress
++e98b2b69b 2026-03-12 tweaks
++448192b63 2026-03-12 DynamicFlexibleSpaceBar: provide height
++6cda3a188 2026-03-12 tweaks (#1862)
++99128b264 2026-03-12 stateless `DynamicSliverAppBar`
++b8098fe06 2026-03-10 show member collection top
++9fef3284d 2026-03-11 opt ui
++f2b0a3a5e 2026-03-10 link up to launcher
++3090cfc6f 2026-03-10 live first frame
++98ce99202 2026-03-10 decrease image max ratio
++fddf46a90 2026-03-10 upgrade dep
++a5231a55b 2026-03-09 fix dyn with title only
++b8cae015d 2026-03-09 upgrade dep
++3b0953432 2026-03-09 upgrade dep
++702cf988d 2026-03-09 tweaks
++5586d12b1 2026-03-09 opt live chat list
++468393936 2026-03-08 upgrade deps
++f825f87dc 2026-03-08 opt: save reply (#1860)
++4ad422c3e 2026-03-08 suppress build annotation
++c01318c06 2026-03-08 feat: sliver wrap (#1858)
++01a74e191 2026-03-08 redirect ugc to pgc
++a1f15b5da 2026-03-08 feat: record reply
++1e83a23c5 2026-03-08 feat: "Selected Comments" status displayed (#1857)
++2d69c05f3 2026-03-08 tweak
++7a2dbe68c 2026-03-08 build
++db08af6ca 2026-03-07 correct scrollable position when hiding top bar
++fefb5c837 2026-03-07 build
++a88429d6d 2026-03-07 upgrade deps
++cbe99a32e 2026-03-06 fix player interactive viewer recognizer
++b65d10ac5 2026-03-06 flutter 3.41.4
++868f7f505 2026-03-06 increase image max ratio
++e84368410 2026-03-06 upgrade deps
++631197e3b 2026-03-06 opt perf
++381c38572 2026-03-05 refactor image grid
++077255e77 2026-03-06 opt member profile
++0bcc1a7f1 2026-03-05 build
++9b145b525 2026-03-05 opt floating header
++b61a54bf9 2026-03-04 fix auto fullscreen
++cf103a09c 2026-03-04 fix typo
++a802bc1cd 2026-03-04 opt auto fullscreen
++8d312d8cf 2026-03-04 build
++6738142ac 2026-03-04 opt player listener
++3d99e6c76 2026-03-03 fetch dyn type `onlyfansQaCard`
++f9f52e918 2026-03-03 resize image placeholder
++6108290b4 2026-03-03 remove unused property
++8bae27512 2026-03-03 fix trackpad not respecting `enableSlideVolumeBrightness` property
++0504011ba 2026-03-03 Release 2.0.0
++dc9d4f9ee 2026-03-03 upgrade deps
++187c92d69 2026-03-03 flutter 3.41.3
++9c7b18710 2026-03-02 refa persistent header & dynamic sliver appbar
++1dbc54f06 2026-02-28 opt ui
++348bc8b92 2026-03-01 opt: set repeat ui (#1854)
++a375d8525 2026-02-28 upgrade deps
++e3e423f9b 2026-02-28 fix app scheme
++62048992b 2026-02-28 chore(ci): upgrade upload-artifact to v7 and set archive options (#1852)
++ec9498a2c 2026-02-28 fix profile actions constraints
++1d35abef6 2026-02-27 fixes
++889f6d01c 2026-02-27 upgrade deps
++d9c47be2a 2026-02-27 opt chat list
++cf4403658 2026-02-27 tweaks
++7276cde48 2026-02-27 refa player (#1848)
++6782bee11 2026-02-27 opt: HeaderLayout with SlottedMultiChild (#1850)
++b55e102dc 2026-02-27 feat(whisper): add uploader message attachment display (#1849)
++65ad8a0fd 2026-02-26 opt anim
++fdb3bf3ed 2026-02-26 opt member profile
++95506ad89 2026-02-26 tweak
++348b2533d 2026-02-26 opt image gesture
++2bdab7113 2026-02-25 opt ui
++e707764f8 2026-02-25 tweaks (#1846)
++4a3d827f7 2026-02-24 opt ui
++e88cd12df 2026-02-23 opt refresh
++ee04978e0 2026-02-23 opt scrollPhysics
++d15ad4911 2026-02-23 upgrade deps
++14b6c115b 2026-02-23 opt refresh
++ee188da6b 2026-02-22 opt scrollPhysics
++998b70cd8 2026-02-22 tweaks
++7563a52be 2026-02-22 opt refresh
++7e81fae2b 2026-02-22 fix jump to item
++639dfac8a 2026-02-21 build
++d8950adb6 2026-02-21 opt player bottom bar
++9092db86c 2026-02-21 upgrade deps
++d7d9655f8 2026-02-20 opt: RepaintBoundary (#1840)
++a63ca9376 2026-02-20 flutter 3.41.2
++243178c11 2026-02-20 format
++dcb3a02da 2026-02-20 allow user to configure window decorations(CSD/SSD) (#1839)
++b1c0eca32 2026-02-19 fix(player): clamp loudnorm parameters to valid FFmpeg ranges (#1838)
++e3a1eb5c8 2026-02-19 opt ui
++736478b1c 2026-02-19 fix patch
++12919804d 2026-02-19 mouse cursor patch
++888b3d817 2026-02-19 remove unused val
++1e6b0f0b5 2026-02-19 opt hide bottom bar
++aa3e5a473 2026-02-18 tweaks
++3f3d54fd2 2026-02-18 add bar hide type
++a142b1534 2026-02-18 fix hide bottom bar
++651e79ce2 2026-02-18 opt handle scroll
++9b93ce84a 2026-02-18 upgrade deps
++dfa258b9e 2026-02-18 opt hide top/bottom bar
++a5efca4e1 2026-02-17 upgrade dep
++1fe84d1d3 2026-02-16 Revert "disable windows thread merging"
++b978ff564 2026-02-16 tweaks
++fa85ae47a 2026-02-16 gitignore
++3209ecd0b 2026-02-15 opt image recognizer
++807de41ff 2026-02-15 opt gesture
++d273e72a4 2026-02-15 opt image viewer
++2c0597175 2026-02-15 opt gesture
++85292a3df 2026-02-15 opt: image viewer (#1837)
++9c7c6f9e4 2026-02-14 tweaks
++511ff71f5 2026-02-14 opt share video link (#1835)
++e10498224 2026-02-14 handle Cmd+Q on macOS (#1834)
++e7e79eb62 2026-02-14 opt image preview
++352e314ee 2026-02-14 upgrade deps
++e9dafbc22 2026-02-14 upgrade deps
++96727469a 2026-02-14 build
++c70c9829c 2026-02-14 tweaks
++beb7eb1ae 2026-02-14 refa image preview
++8e726f49b 2026-02-13 Revert "opt: audio uri" (#1833)
++007375371 2026-02-12 revert new overscrollindicator
++6d7955156 2026-02-12 fix updateTicker
++483953cf5 2026-02-12 sync flutter widgets
++fbf7116ed 2026-02-12 fix modal barrier patch
++6c164d81e 2026-02-12 use TickerMode.getValuesNotifier
++d0789734e 2026-02-12 fix get icon assets
++f3bd30533 2026-02-12 use findItemIndexCallback
++5ab700071 2026-02-12 platform assets
++dc1c33f08 2026-02-12 adapt RadioClient
++920c51100 2026-02-12 flutter 3.41.0
++05a385d69 2026-02-10 tweaks
++9411785d2 2026-02-10 opt: PlPlayerController (#1832)
++ed2bd069e 2026-02-10 opt: segment (#1831)
++0460030a2 2026-02-09 feat: tempPlayerConf add playRepeat (#1830)
++7e570d11d 2026-02-09 fix: live dm
++32cd3209d 2026-02-09 opt init recognizer
++0cb07aef1 2026-02-08 audio block
++0c65605ac 2026-02-08 audio sschedule shutdown
++8234b7ac9 2026-02-08 opt: matrix anim (#1829)
++4ac855d39 2026-02-07 Release 1.1.6
++7381939c0 2026-02-07 upgrade deps
++a380bcd96 2026-02-07 tweaks
++d253ef468 2026-02-07 tweaks
++e8145ef65 2026-02-07 fix: initialize controller before super (#1827)
++0c175abc0 2026-02-07 opt image physics
++946a5a1e4 2026-02-07 opt image gesture
++29e7e0e55 2026-02-06 feat: vertical tabbar
++cc1704a02 2026-02-06 tweaks
++7ab2cf973 2026-02-06 tweaks (#1826)
++32386bf14 2026-02-06 fix check bottom bar
++40269da39 2026-02-06 tweaks
++42e082bbc 2026-02-06 scroll to current rank
++1ad710c1c 2026-02-05 opt settings
++cfa925549 2026-02-05 tweaks
++ca387787b 2026-02-05 opt handle reply note
++29a9b22c2 2026-02-05 upgrade deps
++672375b92 2026-02-04 tweaks
++c09973880 2026-02-04 fix: respect title bar setting after exiting PiP (#1825)
++50561b8dc 2026-02-03 opt persist header
++259685977 2026-02-01 custom dyn text menu
++3d453bafd 2026-02-02 modal barrier patch
++18e0b93ca 2026-02-03 feat: add copy/move support to fav/later search results (#1822)
++7260a387f 2026-02-02 tweaks (#1821)
++37fa165f5 2026-02-01 opt pip
++8f08104f3 2026-02-01 upgrade dep
++6ee4deab0 2026-02-01 Fix duplicate items in Up list when showAllUp is enabled. (#1819)
++77fff9293 2026-02-01 opt: binary search fontsize (#1818)
++8964197b7 2026-01-31 tweaks
++dbc7bcd0d 2026-01-31 upgrade deps
++207ad2753 2026-01-30 opt ui
++d6e6e52df 2026-01-30 tweaks (#1816)
++9442b17d6 2026-01-29 opt select account (#1815)
++058ff44e3 2026-01-29 opt autosync
++48c7dc0ee 2026-01-29 custom autosync
++99634a66a 2026-01-29 tweaks
++21fad89cd 2026-01-29 Add autosync property with value '30' (#1813)
++5979ddb60 2026-01-29 tweaks
++bcbfe5c84 2026-01-29 SpringDescription with duration
++1640732f5 2026-01-29 opt ui
++956791061 2026-01-29 upgrade deps
++d1713504a 2026-01-28 opt gesture
++bce73d9f1 2026-01-28 upgrade deps
++6f30d2e33 2026-01-28 opt reply
++556bda0d6 2026-01-28 opt video intro
++9d5eb55e2 2026-01-28 upgrade dep
++110469961 2026-01-27 opt video scheme
++fa348db7c 2026-01-27 tweaks
++3eac565b5 2026-01-26 fix slide
++af40e489b 2026-01-26 opt ao
++361eb4c61 2026-01-25 opt ui
++7ace981f2 2026-01-26 upgrade dep
++bfb2becb2 2026-01-26 opt: ao (#1811)
++038f03a4e 2026-01-25 tweaks (#1810)
++219228f8b 2026-01-24 upgrade deps
++1f64de595 2026-01-24 opt gesture
++e9b5cffa9 2026-01-24 tweaks
++68872f7b1 2026-01-24 opt gesture
++bd158619a 2026-01-23 opt gesture
++310f497c3 2026-01-24 opt slide
++30ee41385 2026-01-23 fix web rcmd
++0ab07a713 2026-01-23 tweaks
++7eaf05839 2026-01-24 fixes (#1809)
++777c3c227 2026-01-24 fix typo (#1808)
++b9b54ce4f 2026-01-22 tweaks
++92e5fae29 2026-01-22 opt pop
++05e8ded86 2026-01-21 upgrade deps
++7a65b777c 2026-01-21 tweaks
++0b1f6c4d0 2026-01-20 tweaks
++923af32c9 2026-01-21 tweaks (#1806)
++4eae7e698 2026-01-19 opt live border indicator
++5a61dbe30 2026-01-19 opt emoji tooltip
++036dbcaf2 2026-01-19 opt image grid
++bd97f9a50 2026-01-20 opt gesture
++33278a74b 2026-01-19 tweaks
++397f887b9 2026-01-19 fix video progress indicator
++ebe793ccf 2026-01-19 fix progress behavior
++68464e4e3 2026-01-18 refa: segment progressbar
++395893fc7 2026-01-18 refa: video progress indicator
++f5657d2d4 2026-01-18 refa custom painter
++a3ddc8343 2026-01-16 upgrade deps
++d2f8aff42 2026-01-15 opt ui
++25148509d 2026-01-18 opt: aaudio (#1805)
++2879d0dc0 2026-01-14 upgrade deps
++90349189e 2026-01-15 fix image grid
++bdc524e48 2026-01-15 tweaks
++cb5882200 2026-01-13 feat: edit dyn
++4a2679a58 2026-01-11 opt scale
++09bd1edeb 2026-01-11 tweaks
++00da3c4a0 2026-01-11 fix: ipa can't be installed by altstore/sidestore (#1803)
++c40d79418 2026-01-11 tweaks (#1802)
++34a839d9e 2026-01-10 fix menu position
++f06d0605c 2026-01-10 fix chat panel container
++ef975de62 2026-01-10 mark deleted sc
++d10c737a3 2026-01-09 show img menu
++28b69a06f 2026-01-10 feat: Add desktop scaling and fix linux postinst (#1800)
++069cf555e 2026-01-09 bump flutter
++836ab311d 2026-01-09 feat: add option to turn off dynamic interactions (#1798)
++dbc11c36d 2026-01-09 fix: permission dialog (#1799)
++fffce10b3 2026-01-08 update sponsor block api (#1797)
++de85e82bf 2026-01-07 Update build.yml
++9855b35b6 2026-01-07 opt ui
++5a0b045a1 2026-01-05 opt ui
++c226f8f6d 2026-01-03 upgrade deps
++fd06fa9cc 2026-01-03 report sc
++2b5f111fb 2026-01-03 fix: resolve Linux window close handler to prevent app hang (#1795)
++9f5ce5ae3 2026-01-03 fix find sc index
++3d95165d4 2026-01-03 feat: support more dolby id (#1794)
++cfb72f27a 2026-01-03 tweaks
++bcacc41db 2026-01-03 live dm action
++b2da99e33 2026-01-02 fix dm
++041af37bb 2026-01-02 tweaks
++80e007bac 2026-01-01 add static2Scroll option
++87c769932 2025-12-31 fix dm
++11912c5f6 2025-12-31 fix level
++236a8b302 2025-12-31 fix dm
++63e4bac20 2025-12-31 tweaks
++2e11247af 2025-12-30 fix: font size
++13f377f68 2025-12-30 fix: font size
++b9d594bc8 2025-12-29 tweaks
++2a52157c3 2025-12-28 show live rank
++a037d8e79 2025-12-28 opt dyn publish
++49b7ea14c 2025-12-29 refa: danmaku & feat: scroll fixed velocity (#1791)
++0a40d1113 2025-12-27 opt SpringDescription
++dff6b6486 2025-12-27 do not check `uploadPictureIconState`
++b51c64641 2025-12-27 tweaks
++25acf3a9b 2025-12-27 fix: dynamic openInBrowser (#1790)
++7ec90e9a2 2025-12-27 opt dyn more text
++645ce0b7b 2025-12-27 opt ui
++864fef588 2025-12-27 fix check `uploadPictureIconState`
++eea232c6d 2025-12-26 show dyn interaction
++25fca498f 2025-12-26 opt ui
++c9a02f9c7 2025-12-26 fix retry
++99602eea9 2025-12-25 tweaks
++b5fe0faee 2025-12-26 Revert "opt view dyn reply"
++20a36e8f9 2025-12-25 tweaks
++161bf2eed 2025-12-24 opt view dyn reply
++fcf4e72d8 2025-12-24 fix vote card
++b46cb69df 2025-12-24 opt reload reply
++43c7620b4 2025-12-24 fix: cacheIndex
++1a8f65b07 2025-12-23 opt bar set
++259e7080f 2025-12-23 opt ui
++7da6f05a5 2025-12-23 tweak
++521ca3ad1 2025-12-23 tweaks (#1788)
++31e5692df 2025-12-22 upgrade deps
++191bcbc52 2025-12-21 fix parse dyn emoji
++a0f3b3e44 2025-12-19 tweaks
++5bcd82225 2025-12-19 opt live follow list
++d80324655 2025-12-22 opt: cache image (#1787)
++952d16802 2025-12-19 fix grpc contentType
++af723e161 2025-12-19 tweaks
++3ff521e10 2025-12-18 Update build.yml
++b4a5d985f 2025-12-18 opt: isolate parse danmaku & feat: grpc account (#1785)
++1e0e2d2d6 2025-12-18 tweaks
++d7f7611af 2025-12-18 opt: color (#1782)
++11cdb6705 2025-12-17 feat: show network type (#1781)
++53cf9d54c 2025-12-17 opt ui
++2e7368868 2025-12-17 add superChatType
++ce5e85e64 2025-12-17 tweaks (#1780)
++02e0d3412 2025-12-17 increase desktop max volume
++830f3b60e 2025-12-17 opt theme
++b4fb7d14d 2025-12-17 tweaks
++ab1e5cb62 2025-12-17 Add multi-select support to pmshare panel (#1779)
++348a9e014 2025-12-16 opt ui
++0baf3fcd3 2025-12-16 tweaks
++13818533a 2025-12-16 opt ui
++0dd3689d6 2025-12-16 opt opus text
++23b685077 2025-12-15 opt dyn
++d8ca89ac8 2025-12-15 upgrade deps
++ae06d5f7f 2025-12-14 opt live header
++62506d3eb 2025-12-14 disable alwaysOnTop on dispose
++f7c61d63a 2025-12-14 remove deprecated pref keys
++f46437f89 2025-12-14 fix get block color
++1cd949c36 2025-12-14 use `ValueGetter`
++bc5ce1144 2025-12-14 fix PopupMenuText
++cef4beaa0 2025-12-14 feat: sync segment type with upstream (#1777)
++02bd68f69 2025-12-14 opt desktop pip
++2bc3275c1 2025-12-14 opt reply
++ec107063c 2025-12-13 opt pay coin
++4c2fd38d6 2025-12-13 upgrade deps
++1a6653ba9 2025-12-12 opt reply
++74d5e03a3 2025-12-11 show followee votes
++2b4b1debe 2025-12-13 tweak
++17883eb77 2025-12-13 opt: LoadingState (#1776)
++3741fe54f 2025-12-10 upgrade dep
++ec11af382 2025-12-10 opt ui
++890dc58dc 2025-12-10 refa: settings model (#1773)
++b12bdf2eb 2025-12-10 opt log page
++59c7f8a03 2025-12-10 opt onChangeAccount
++50cf74ccf 2025-12-10 fix play next audio
++15b5c0a87 2025-12-10 feat: modify recommend page's card width separately (#1771)
++244ef22f5 2025-12-09 feat: load config from text (#1772)
++b4daf5fbd 2025-12-08 reduce log snackbar duration
++0519ec0e4 2025-12-08 build
++ff4f97de1 2025-12-08 opt: parse sys msg (#1770)
++773bdafec 2025-12-07 opt: more linter (#1765)
++3787f99d3 2025-12-07 opt download next
++2cb833152 2025-12-07 cache follow order type
++5b6443cfa 2025-12-07 opt ui
++6fd8212d8 2025-12-06 upgrade `actions/checkout`
++0d273f690 2025-12-06 refa: logfile (#1764)
++255e39b70 2025-12-05 bump flutter
++ea52dd448 2025-12-05 fix typos
++b4a46133b 2025-12-04 opt set pageTransition
++7c1644efc 2025-12-04 upgrade dep
++775e1aa97 2025-12-04 do not show others rank
++2a55d4390 2025-12-04 opt list
++d57a34a4e 2025-12-03 fix member list jump
++278524861 2025-12-03 opt up panel
++c42468e2c 2025-12-03 opt update down progress
++196ddf3f5 2025-12-03 opt ui
++27302435b 2025-12-03 specify window class name
++2b3ec77e9 2025-12-03 opt: unnecessary_non_null_assertion (#1762)
++b7a277a57 2025-12-03 refa: member fav
++9c8e5b53e 2025-12-03 opt ui
++001b746f6 2025-12-02 change dynamicColor def value
++a78214de3 2025-12-02 sort video language
++d88ffb112 2025-12-02 tweak
++f05b90100 2025-12-02 fix & opt appsign (#1761)
++430837eef 2025-12-02 opt live
++fa583ebd0 2025-12-02 tweaks
++d2dcba5a5 2025-12-02 upgrade dep
++fb5116d52 2025-12-01 opt ui
++a48f6b1ca 2025-11-30 opt update block type
++fc0af3f28 2025-11-30 remove seek announce
++2288e1139 2025-11-30 fix dm block type
++d95283c4a 2025-11-28 upgrade deps
++4b56bd5a8 2025-11-28 fix download status
++62bb605ee 2025-11-28 tweak: danmaku (#1756)
++0f8da1999 2025-11-28 opt multi select
++21a2373a5 2025-11-28 update dm
++2ca531082 2025-11-28 reduce fullscreen sc duration
++9ccaa3072 2025-11-27 opt download (#1755)
++ded78e534 2025-11-26 upgrade protobuf
++9b0a43efc 2025-11-26 upgrade dep
++10808c2a8 2025-11-26 show live online count
++38a7afd63 2025-11-26 opt: player controller (#1753)
++54b26d20f 2025-11-23 upgrade dep
++ad2bc78eb 2025-11-23 opt ui
++c4aca389a 2025-11-22 fixes
++cb8333d4c 2025-11-22 show vote status
++2f5eed699 2025-11-22 bump flutter
++935c53e45 2025-11-22 upgrade deps
++dd0ccb327 2025-11-21 show battery level
++919134759 2025-11-21 tweak
++c1d42b498 2025-11-21 opt ui
++a7e67796f 2025-11-21 fix theme type
++6692c9e85 2025-11-21 set dm for live
++ace949aaa 2025-11-21 upgrade deps
++fbd968743 2025-11-20 upgrade kgp
++460a8262c 2025-11-20 tweaks
++c8de503fa 2025-11-20 fix dyn showmore
++a60cd51ff 2025-11-20 bump flutter
++aad980ce2 2025-11-20 tweaks
++e7cda7b9f 2025-11-19 upgrade deps
++1d368b7a8 2025-11-19 update richtextfield
++725d7055b 2025-11-19 update flutter widgets
++1fb798db4 2025-11-19 opt ui
++8e1d5e0dd 2025-11-18 opt live back btn
++2d9a1310b 2025-11-18 tweak
++588ec7bab 2025-11-18 upgrade deps
++2be13e728 2025-11-19 refa: sb & feat: sb portVideo (WIP) (#1751)
++d5d95671f 2025-11-18 ios uiscene migration
++a0eccda6f 2025-11-18 set player proxy
++ec82c8621 2025-11-17 upgrade deps
++de03bef22 2025-11-17 show video restore btn if translated
++0f8166620 2025-11-17 opt: notify-debugger-on-exception (#1750)
++76c2de439 2025-11-17 fix `THREE_DOT_ITEM_TYPE_UP_HELPER` action
++0d38ded98 2025-11-17 show lock btn for live
++646888c06 2025-11-17 fix import
++332f6f1bb 2025-11-17 upgrade deps
++aaab5371b 2025-11-17 tweaks
++ad931d7ea 2025-11-17 add media notification handling for offline videos (#1748)
++377e430d7 2025-11-17 refa: report error (#1747)
++a79746760 2025-11-16 upgrade dep (#1746)
++5ee83d902 2025-11-16 opt: exclude analysis flutter widget (#1745)
++27ae296b2 2025-11-15 refa: cdn (#1743)
++e589f2719 2025-11-15 fix; set subtitle before init (#1742)
++c89d6a5a5 2025-11-15 fix wakelock
++861365930 2025-11-14 reformat
++0d4d92a20 2025-11-14 bump flutter
++4c6ad0e38 2025-11-14 increase webdav timeout
++ad45e995e 2025-11-14 fix preferred cdn & Add more PCDN url patterns (#1739)
++50a035a47 2025-11-13 opt get season status
++c0dbd6cbb 2025-11-13 migration
++686af4a33 2025-11-13 bump flutter
++46aad06e3 2025-11-13 tweaks
++3921b2304 2025-11-12 opt download task
++bca5b0419 2025-11-13 tweaks (#1738)
++9754b061d 2025-11-12 check dm state
++407b31c5c 2025-11-12 refa: download video (#1737)
++37b122855 2025-11-12 feat: dlna
++0acd9ca76 2025-11-12 upgrade dep
++8f3c9f029 2025-11-12 opt: const page (#1736)
++931073234 2025-11-11 Mark offline cache as completed in README (#1735)
++e767e506f 2025-11-11 tweaks
++ef3a61233 2025-11-11 upgrade deps
++d66a42a0a 2025-11-11 opt ui
++0f06de004 2025-11-10 fix save subtitle on win
++963181fef 2025-11-10 feat: load file sub
++ffd4f9ee7 2025-11-06 feat: video download
++976622df8 2025-11-09 fix pm send btn
++13c220338 2025-11-09 set system brightness
++1291dc77c 2025-11-09 stop audio service
++08e5477e7 2025-11-08 enable audio cdn by def
++c4c6a2243 2025-11-07 disable win single alt key event
++58791e3e9 2025-11-07 show vote option pic
++d5bb4bc14 2025-11-07 fix fan/follow params
++3d1199363 2025-11-07 Release 1.1.5
++f225fa33e 2025-11-03 update proto
++e85c8b3dd 2025-11-02 tweaks
++737be8dca 2025-11-01 del cache
++77dd93917 2025-11-01 opt ui
++0a5965a42 2025-10-31 fix parse dyn
++a53be6814 2025-10-31 opt tooltip style
++415b8e9da 2025-10-31 fix audio action
++f034c24d1 2025-10-30 tweaks
++1ac93d626 2025-10-29 upgrade deps
++906c8f799 2025-10-29 tweaks
++c904a5ded 2025-10-29 del
++0c9486f6b 2025-10-28 build
++576740a50 2025-10-28 opt ui
++b3f9f43b5 2025-10-28 fix #1729
++e7424bcc6 2025-10-28 fix buvidActive
++209ec70ea 2025-10-28 opt icon
++3b4e25103 2025-10-28 opt desktop pip
++86beb879a 2025-10-28 tweaks
++321d43414 2025-10-28 build
++b9d17e27b 2025-10-28 fix #1718 (#1723)
++2f6f6da6c 2025-10-27 opt: tap (#1719)
++c3d3fa67f 2025-10-27 fix #1716
++032dfd69b 2025-10-26 fix #1712
++e9dc15464 2025-10-25 tweaks
++b43840b63 2025-10-25 mod: save panel (#1706)
++1a9d8e35b 2025-10-25 feat: show aiConclusion (#1698)
++ccb61415f 2025-10-25 tweaks (#1697)
++08944241b 2025-10-25 fix: danmaku (#1696)
++63030147e 2025-10-25 bump flutter
++8ff71c44c 2025-10-25 opt dyn
++4eaf16f50 2025-10-24 disable search default by def
++1a9c8a62f 2025-10-24 package linux appimage (#1688)
++4256c2b02 2025-10-24 opt ui
++bbcf0dec1 2025-10-21 upgrade deps
++da52cac2c 2025-10-23 tweaks
++e8a32a614 2025-10-21 custom audio order
++a71a7b66f 2025-10-21 opt req
++9808f5081 2025-10-21 show audio playlist parts
++cf86bb7e1 2025-10-21 add match entrance
++ff065254a 2025-10-21 fix get window pos
++39b4c1a59 2025-10-21 show rank fold items
++28f10e0a4 2025-10-20 check `uploadPictureIconState`
++12c0ed5ba 2025-10-20 fix #1616
++23272d285 2025-10-20 tweak
++67b4ed65a 2025-10-20 opt audio playlist
++7524b3d16 2025-10-20 fix: hide danmaku (#1654)
++340a933e7 2025-10-20 fix #1648
++488ca29fc 2025-10-19 opt dyn
++cc00b2cc3 2025-10-19 feat: dyn show more
++287cea4d6 2025-10-19 tweak
++39e556891 2025-10-19 upgrade deps
++0ae415738 2025-10-19 create release
++6e1ceb127 2025-10-19 feat: like count (#1640)
++71a170deb 2025-10-19 audio notification
++9482a706d 2025-10-18 fix #1613
++0804484a4 2025-10-18 check cmd key
++cdb9bb3db 2025-10-18 check cmd key
++6ca0de96f 2025-10-18 opt pip
++d908f5852 2025-10-18 opt pip
++1368733a2 2025-10-18 fix check pip
++32e71dbf6 2025-10-18 fix #1625
++c9ce1af2c 2025-10-18 Update build
++416f9e6a8 2025-10-18 upgrade dm dep
++3ae3955f5 2025-10-18 rename release files
++464f00802 2025-10-18 fix #1615
++52498b3e3 2025-10-17 tweaks
++57c57b02a 2025-10-17 build linux arm64 (#1610)
++b8c686804 2025-10-17 fix: cross import
++8200fbf51 2025-10-17 tweak
++8650c96b7 2025-10-17 feat: danmaku seekTo (#1603)
++15fe7787b 2025-10-17 pause
++d83076cb0 2025-10-17 Update android.yml
++8b3b4c28a 2025-10-17 upgrade deps
++740c001e2 2025-10-17 bump flutter
++096b057f8 2025-10-17 fix #1598
++a161fa5e5 2025-10-16 tweaks
++bebf34db2 2025-10-16 disable windows thread merging
++b95061434 2025-10-16 upgrade danmaku dep
++f2a05bb97 2025-10-16 fix #1593
++6c361a047 2025-10-16 live dm action
++3fb9e2237 2025-10-16 upgrade deps
++b2fb4c9af 2025-10-16 opt dm action
++0862c0fc8 2025-10-15 show backbtn on mine page if needed
++77ec78e3f 2025-10-15 opt: singleton FollowTypeController (#1578)
++fb59c208e 2025-10-15 package linux rpm (#1575)
++112a06f92 2025-10-15 custom show tray i
++
++[… truncated 178780 chars …]
+\ No newline at end of file
+diff --git a/lib/common/widgets/video_card/video_card_v.dart b/lib/common/widgets/video_card/video_card_v.dart
+index 1aee0e2ee..d2f9d2527 100644
+--- a/lib/common/widgets/video_card/video_card_v.dart
++++ b/lib/common/widgets/video_card/video_card_v.dart
+@@ -2,23 +2,21 @@ import 'package:PiliPlus/common/style.dart';
+ import 'package:PiliPlus/common/widgets/badge.dart';
+ import 'package:PiliPlus/common/widgets/image/image_save.dart';
+ import 'package:PiliPlus/common/widgets/image/network_img_layer.dart';
+-import 'package:PiliPlus/common/widgets/stat/stat.dart';
+ import 'package:PiliPlus/common/widgets/video_popup_menu.dart';
+ import 'package:PiliPlus/http/search.dart';
+-import 'package:PiliPlus/models/common/stat_type.dart';
+ import 'package:PiliPlus/models/home/rcmd/result.dart';
+ import 'package:PiliPlus/models/model_rec_video_item.dart';
+ import 'package:PiliPlus/models_new/video/video_detail/dimension.dart';
+ import 'package:PiliPlus/utils/app_scheme.dart';
+-import 'package:PiliPlus/utils/date_utils.dart';
+ import 'package:PiliPlus/utils/duration_utils.dart';
++import 'package:PiliPlus/utils/num_utils.dart';
+ import 'package:PiliPlus/utils/extension/dimension_ext.dart';
+ import 'package:PiliPlus/utils/id_utils.dart';
+ import 'package:PiliPlus/utils/page_utils.dart';
+ import 'package:PiliPlus/utils/platform_utils.dart';
+ import 'package:flutter/material.dart';
+ import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
+-import 'package:intl/intl.dart';
++import 'package:intl/intl.dart' show DateFormat;
+ 
+ // 视频卡片 - 垂直布局
+ class VideoCardV extends StatelessWidget {
+@@ -114,14 +112,122 @@ class VideoCardV extends StatelessWidget {
+                             height: maxHeight,
+                             type: .emote,
+                           ),
+-                          if (videoItem.duration > 0)
+-                            PBadge(
+-                              bottom: 6,
+-                              right: 7,
+-                              size: .small,
+-                              type: .gray,
+-                              text: DurationUtils.formatDuration(
+-                                videoItem.duration,
++                          // 底部信息条：左-播放/弹幕，右-时长
++                          if (videoItem.stat.view != null ||
++                              videoItem.duration > 0)
++                            Positioned(
++                              left: 0,
++                              right: 0,
++                              bottom: 0,
++                              child: Container(
++                                height: 26,
++                                padding:
++                                    const EdgeInsets.symmetric(horizontal: 8),
++                                decoration: BoxDecoration(
++                                  gradient: LinearGradient(
++                                    begin: Alignment.topCenter,
++                                    end: Alignment.bottomCenter,
++                                    colors: [
++                                      Colors.transparent,
++                                      Colors.black.withValues(alpha: 0.55),
++                                    ],
++                                  ),
++                                ),
++                                child: Row(
++                                  crossAxisAlignment: CrossAxisAlignment.end,
++                                  children: [
++                                    if (videoItem.stat.view != null) ...[
++                                      Container(
++                                        padding: const EdgeInsets.symmetric(
++                                          horizontal: 4,
++                                          vertical: 1,
++                                        ),
++                                        decoration: BoxDecoration(
++                                          color: Colors.black45,
++                                          borderRadius:
++                                              BorderRadius.circular(3),
++                                        ),
++                                        child: Row(
++                                          mainAxisSize: MainAxisSize.min,
++                                          children: [
++                                            Icon(
++                                              Icons.play_circle_outlined,
++                                              size: 10,
++                                              color: Colors.white,
++                                            ),
++                                            const SizedBox(width: 2),
++                                            Text(
++                                              NumUtils.numFormat(
++                                                videoItem.stat.view,
++                                              ),
++                                              style: const TextStyle(
++                                                fontSize: 10,
++                                                color: Colors.white,
++                                              ),
++                                            ),
++                                          ],
++                                        ),
++                                      ),
++                                      if (videoItem.stat.danmu != null) ...[
++                                        const SizedBox(width: 4),
++                                        Container(
++                                          padding:
++                                              const EdgeInsets.symmetric(
++                                            horizontal: 4,
++                                            vertical: 1,
++                                          ),
++                                          decoration: BoxDecoration(
++                                            color: Colors.black45,
++                                            borderRadius:
++                                                BorderRadius.circular(3),
++                                          ),
++                                          child: Row(
++                                            mainAxisSize: MainAxisSize.min,
++                                            children: [
++                                              Icon(
++                                                Icons.subtitles_outlined,
++                                                size: 10,
++                                                color: Colors.white,
++                                              ),
++                                              const SizedBox(width: 2),
++                                              Text(
++                                                NumUtils.numFormat(
++                                                  videoItem.stat.danmu,
++                                                ),
++                                                style: const TextStyle(
++                                                  fontSize: 10,
++                                                  color: Colors.white,
++                                                ),
++                                              ),
++                                            ],
++                                          ),
++                                        ),
++                                      ],
++                                    ],
++                                    const Spacer(),
++                                    if (videoItem.duration > 0)
++                                      Container(
++                                        padding: const EdgeInsets.symmetric(
++                                          horizontal: 4,
++                                          vertical: 1,
++                                        ),
++                                        decoration: BoxDecoration(
++                                          color: Colors.black45,
++                                          borderRadius:
++                                              BorderRadius.circular(3),
++                                        ),
++                                        child: Text(
++                                          DurationUtils.formatDuration(
++                                            videoItem.duration,
++                                          ),
++                                          style: const TextStyle(
++                                            fontSize: 10,
++                                            color: Colors.white,
++                                          ),
++                                        ),
++                                      ),
++                                  ],
++                                ),
+                               ),
+                             ),
+                         ],
+@@ -129,7 +235,7 @@ class VideoCardV extends StatelessWidget {
+                     },
+                   ),
+                 ),
+-                content(context),
++                _contentCompact(context),
+               ],
+             ),
+           ),
+@@ -150,7 +256,10 @@ class VideoCardV extends StatelessWidget {
+     );
+   }
+ 
+-  Widget content(BuildContext context) {
++  static final shortFormat = DateFormat('M-d');
++  static final longFormat = DateFormat('yy-M-d');
++
++  Widget _contentCompact(BuildContext context) {
+     final theme = Theme.of(context);
+     return Expanded(
+       child: Padding(
+@@ -163,121 +272,22 @@ class VideoCardV extends StatelessWidget {
+                 "${videoItem.title}\n",
+                 maxLines: 2,
+                 overflow: TextOverflow.ellipsis,
+-                style: const TextStyle(
+-                  height: 1.38,
+-                ),
++                style: const TextStyle(height: 1.38),
+               ),
+             ),
+-            videoStat(context, theme),
+-            Row(
+-              spacing: 2,
+-              children: [
+-                if (videoItem.goto == 'bangumi')
+-                  PBadge(
+-                    text: videoItem.pgcBadge,
+-                    isStack: false,
+-                    size: .small,
+-                    type: .line_primary,
+-                    fontSize: 9,
+-                  ),
+-                if (videoItem.rcmdReason != null)
+-                  PBadge(
+-                    text: videoItem.rcmdReason,
+-                    isStack: false,
+-                    size: .small,
+-                    type: .secondary,
+-                  ),
+-                if (videoItem.goto == 'picture')
+-                  const PBadge(
+-                    text: '动态',
+-                    isStack: false,
+-                    size: .small,
+-                    type: .line_primary,
+-                    fontSize: 9,
+-                  ),
+-                if (videoItem.isFollowed)
+-                  const PBadge(
+-                    text: '已关注',
+-                    isStack: false,
+-                    size: .small,
+-                    type: .secondary,
+-                  ),
+-                Expanded(
+-                  flex: 1,
+-                  child: Text(
+-                    videoItem.owner.name.toString(),
+-                    maxLines: 1,
+-                    overflow: TextOverflow.clip,
+-                    semanticsLabel: 'UP：${videoItem.owner.name}',
+-                    style: TextStyle(
+-                      height: 1.5,
+-                      fontSize: theme.textTheme.labelMedium!.fontSize,
+-                      color: theme.colorScheme.outline,
+-                    ),
+-                  ),
+-                ),
+-                if (videoItem.goto == 'av') const SizedBox(width: 10),
+-              ],
++            // 底部：作者名（左）
++            Text(
++              videoItem.owner.name.toString(),
++              maxLines: 1,
++              overflow: TextOverflow.ellipsis,
++              style: TextStyle(
++                fontSize: 10,
++                color: theme.colorScheme.outline,
++              ),
+             ),
+           ],
+         ),
+       ),
+     );
+   }
+-
+-  static final shortFormat = DateFormat('M-d');
+-  static final longFormat = DateFormat('yy-M-d');
+-
+-  Widget videoStat(BuildContext context, ThemeData theme) {
+-    return Row(
+-      children: [
+-        StatWidget(
+-          type: StatType.play,
+-          value: videoItem.stat.view,
+-        ),
+-        if (videoItem.goto != 'picture') ...[
+-          const SizedBox(width: 4),
+-          StatWidget(
+-            type: StatType.danmaku,
+-            value: videoItem.stat.danmu,
+-          ),
+-        ],
+-        if (videoItem is RcmdVideoItemModel) ...[
+-          const Spacer(),
+-          Text.rich(
+-            maxLines: 1,
+-            TextSpan(
+-              style: TextStyle(
+-                fontSize: theme.textTheme.labelSmall!.fontSize,
+-                color: theme.colorScheme.outline.withValues(alpha: 0.8),
+-              ),
+-              text: DateFormatUtils.dateFormat(
+-                videoItem.pubdate,
+-                short: shortFormat,
+-                long: longFormat,
+-              ),
+-            ),
+-          ),
+-          const SizedBox(width: 2),
+-        ],
+-        // deprecated
+-        //  else if (videoItem is RcmdVideoItemAppModel &&
+-        //     videoItem.desc != null &&
+-        //     videoItem.desc!.contains(' · ')) ...[
+-        //   const Spacer(),
+-        //   Text.rich(
+-        //     maxLines: 1,
+-        //     TextSpan(
+-        //         style: TextStyle(
+-        //           fontSize: theme.textTheme.labelSmall!.fontSize,
+-        //           color: theme.colorScheme.outline.withValues(alpha: 0.8),
+-        //         ),
+-        //         text: Utils.shortenChineseDateString(
+-        //             videoItem.desc!.split(' · ').last)),
+-        //   ),
+-        //   const SizedBox(width: 2),
+-        // ]
+-      ],
+-    );
+-  }
+ }
+diff --git a/lib/http/dynamics.dart b/lib/http/dynamics.dart
+index 6553bb9b7..f1fee2e01 100644
+--- a/lib/http/dynamics.dart
++++ b/lib/http/dynamics.dart
+@@ -37,7 +37,7 @@ abstract final class DynamicsHttp {
+     int? hostMid,
+     String? offset,
+     Set<int>? tempBannedList,
+-    DynamicsTabType type = .all,
++    DynamicsTabType type = .video,
+   }) async {
+     Map<String, dynamic> data = {
+       if (type == .up) 'host_mid': hostMid else 'type': type.name,
+diff --git a/lib/models/common/dynamic/dynamics_type.dart b/lib/models/common/dynamic/dynamics_type.dart
+index a2c397422..dcd73eb43 100644
+--- a/lib/models/common/dynamic/dynamics_type.dart
++++ b/lib/models/common/dynamic/dynamics_type.dart
+@@ -1,8 +1,6 @@
+ enum DynamicsTabType {
+-  all('全部'),
+-  video('投稿'),
++  video('视频'),
+   pgc('番剧'),
+-  article('专栏'),
+   up('UP'),
+   ;
+ 
+diff --git a/lib/models/common/member/tab_type.dart b/lib/models/common/member/tab_type.dart
+index 688e73c78..de2117b7b 100644
+--- a/lib/models/common/member/tab_type.dart
++++ b/lib/models/common/member/tab_type.dart
+@@ -9,6 +9,7 @@ enum MemberTabType {
+   bangumi('番剧'),
+   cheese('课堂'),
+   shop('小店'),
++  history('历史'),
+   ;
+ 
+   static bool showMemberShop = Pref.showMemberShop;
+diff --git a/lib/models/common/member/user_info_type.dart b/lib/models/common/member/user_info_type.dart
+index 426cedbd3..956618ddb 100644
+--- a/lib/models/common/member/user_info_type.dart
++++ b/lib/models/common/member/user_info_type.dart
+@@ -1,9 +1,9 @@
+ import 'package:flutter/material.dart' show Alignment;
+ 
+ enum UserInfoType {
+-  fan('粉丝', .centerLeft),
++  dyn('动态', .centerLeft),
+   follow('关注', .center),
+-  like('获赞', .centerRight),
++  fan('粉丝', .centerRight),
+   ;
+ 
+   final String title;
+diff --git a/lib/models/dynamics/result.dart b/lib/models/dynamics/result.dart
+index 18132d01d..4901b95fe 100644
+--- a/lib/models/dynamics/result.dart
++++ b/lib/models/dynamics/result.dart
+@@ -48,7 +48,7 @@ class DynamicsDataModel {
+ 
+   DynamicsDataModel.fromJson(
+     Map<String, dynamic> json, {
+-    DynamicsTabType type = DynamicsTabType.all,
++    DynamicsTabType type = DynamicsTabType.video,
+     Set<int>? tempBannedList,
+   }) {
+     hasMore = json['has_more'];
+diff --git a/lib/models/dynamics/up.dart b/lib/models/dynamics/up.dart
+index 2aba3faff..dce3c5310 100644
+--- a/lib/models/dynamics/up.dart
++++ b/lib/models/dynamics/up.dart
+@@ -80,12 +80,14 @@ class UpItem {
+   bool? hasUpdate;
+   late int mid;
+   String? uname;
++  int? pubTs; // 最新发布时间戳，用于排序
+ 
+   UpItem({
+     this.face,
+     this.hasUpdate,
+     required this.mid,
+     this.uname,
++    this.pubTs,
+   });
+ 
+   UpItem.fromJson(Map<String, dynamic> json) {
+@@ -93,6 +95,7 @@ class UpItem {
+     hasUpdate = json['has_update'];
+     mid = safeToInt(json['mid']) ?? 0;
+     uname = json['uname'];
++    pubTs = safeToInt(json['pub_ts']);
+   }
+ 
+   @override
+diff --git a/lib/pages/dynamics/controller.dart b/lib/pages/dynamics/controller.dart
+index 539bd2709..bd2dc1ca5 100644
+--- a/lib/pages/dynamics/controller.dart
++++ b/lib/pages/dynamics/controller.dart
+@@ -51,13 +51,13 @@ class DynamicsController
+     tabController = TabController(
+       vsync: this,
+       length: DynamicsTabType.values.length,
+-      initialIndex: Pref.defaultDynamicTypeIndex,
++      initialIndex: Pref.migratedDefaultDynamicTypeIndex,
+     );
+     queryData();
+   }
+ 
+   void _jumpToTab(int mid) {
+-    tabController.index = mid == -1 ? 0 : 4;
++    tabController.index = mid == -1 ? 0 : DynamicsTabType.values.length - 1;
+   }
+ 
+   void onSelectUp(int mid) {
+@@ -179,6 +179,8 @@ class DynamicsController
+         _offset = '';
+         _cacheUpList = res.upList?.toSet();
+       }
++      // UP列表按最新发布时间从新到旧排序
++      res.upList?.sort((a, b) => (b.pubTs ?? 0).compareTo(a.pubTs ?? 0));
+       loadingState.value = response;
+     } else {
+       if (_showAllUp) {
+diff --git a/lib/pages/dynamics/view.dart b/lib/pages/dynamics/view.dart
+index 1b06398e1..b1b790c35 100644
+--- a/lib/pages/dynamics/view.dart
++++ b/lib/pages/dynamics/view.dart
+@@ -59,7 +59,7 @@ class _DynamicsPageState extends CommonPageState<DynamicsPage>
+       type: needBg ? .canvas : .transparency,
+       color: needBg ? theme.colorScheme.surface : null,
+       child: SizedBox(
+-        width: isTop ? null : 64,
++        width: isTop ? null : 210,
+         height: isTop ? 76 : null,
+         child: NotificationListener<ScrollEndNotification>(
+           onNotification: (notification) {
+@@ -136,6 +136,11 @@ class _DynamicsPageState extends CommonPageState<DynamicsPage>
+         child = Column(
+           children: [
+             upPanelPart(theme),
++            Divider(
++              height: 1,
++              thickness: 1,
++              color: theme.dividerColor.withValues(alpha: 0.1),
++            ),
+             Expanded(child: child),
+           ],
+         );
+@@ -144,6 +149,11 @@ class _DynamicsPageState extends CommonPageState<DynamicsPage>
+         child = Row(
+           children: [
+             upPanelPart(theme),
++            VerticalDivider(
++              width: 1,
++              thickness: 1,
++              color: theme.dividerColor.withValues(alpha: 0.1),
++            ),
+             Expanded(child: child),
+           ],
+         );
+@@ -152,6 +162,11 @@ class _DynamicsPageState extends CommonPageState<DynamicsPage>
+         child = Row(
+           children: [
+             Expanded(child: child),
++            VerticalDivider(
++              width: 1,
++              thickness: 1,
++              color: theme.dividerColor.withValues(alpha: 0.1),
++            ),
+             upPanelPart(theme),
+           ],
+         );
+diff --git a/lib/pages/dynamics/widgets/dynamic_grid_card.dart b/lib/pages/dynamics/widgets/dynamic_grid_card.dart
+new file mode 100644
+index 000000000..4060d3d4f
+--- /dev/null
++++ b/lib/pages/dynamics/widgets/dynamic_grid_card.dart
+@@ -0,0 +1,337 @@
++import 'package:PiliPlus/common/style.dart';
++import 'package:PiliPlus/common/widgets/badge.dart';
++import 'package:PiliPlus/common/widgets/image/network_img_layer.dart';
++import 'package:PiliPlus/models/common/badge_type.dart';
++import 'package:PiliPlus/models/dynamics/result.dart';
++import 'package:PiliPlus/utils/date_utils.dart';
++import 'package:PiliPlus/utils/num_utils.dart';
++import 'package:PiliPlus/utils/page_utils.dart';
++import 'package:flutter/material.dart';
++
++/// 动态页网格模式使用的紧凑卡片，类似首页推荐 VideoCardV。
++class DynamicGridCard extends StatelessWidget {
++  final DynamicItemModel item;
++
++  const DynamicGridCard({super.key, required this.item});
++
++  @override
++  Widget build(BuildContext context) {
++    final theme = Theme.of(context);
++    final video = _resolveVideo();
++    // 尝试从转发内容或图文内容中提取封面
++    final coverUrl = video?.cover ?? _extractCover();
++    final stat = video?.stat;
++    return Card(
++      clipBehavior: Clip.hardEdge,
++      child: InkWell(
++        onTap: () => PageUtils.pushDynDetail(item),
++        child: Column(
++          crossAxisAlignment: CrossAxisAlignment.start,
++          children: [
++            // === 封面区域 (16:10) ===
++            AspectRatio(
++              aspectRatio: Style.aspectRatio,
++              child: _buildCover(theme, coverUrl, video, stat),
++            ),
++            // === 文字信息区 ===
++            Expanded(
++              child: Padding(
++                padding: const EdgeInsets.fromLTRB(6, 5, 6, 5),
++                child: Column(
++                  crossAxisAlignment: CrossAxisAlignment.start,
++                  children: [
++                    // 标题 — 撑满，把底栏推到最下
++                    Expanded(
++                      child: Text(
++                        video?.title ?? _contentPreview(),
++                        maxLines: 2,
++                        overflow: TextOverflow.ellipsis,
++                        style: const TextStyle(height: 1.38),
++                      ),
++                    ),
++                    // 底部：作者名（左）+ 发布时间（右）
++                    Row(
++                      children: [
++                        Expanded(
++                          child: Text(
++                            item.modules.moduleAuthor?.name ?? '',
++                            maxLines: 1,
++                            overflow: TextOverflow.ellipsis,
++                            style: TextStyle(
++                              fontSize: 10,
++                              color: theme.colorScheme.outline,
++                            ),
++                          ),
++                        ),
++                        if (item.modules.moduleAuthor?.pubTs case final ts?)
++                          Text(
++                            DateFormatUtils.dateFormat(ts),
++                            style: TextStyle(
++                              fontSize: 10,
++                              color: theme.colorScheme.outline,
++                            ),
++                          ),
++                      ],
++                    ),
++                  ],
++                ),
++              ),
++            ),
++          ],
++        ),
++      ),
++    );
++  }
++
++  /// 获取视频信息（视频/合集/番剧/课程）
++  DynamicArchiveModel? _resolveVideo() {
++    return switch (item.type) {
++      'DYNAMIC_TYPE_AV' => item.modules.moduleDynamic?.major?.archive,
++      'DYNAMIC_TYPE_UGC_SEASON' =>
++        item.modules.moduleDynamic?.major?.ugcSeason,
++      'DYNAMIC_TYPE_PGC' || 'DYNAMIC_TYPE_PGC_UNION' =>
++        item.modules.moduleDynamic?.major?.pgc,
++      'DYNAMIC_TYPE_COURSES_SEASON' =>
++        item.modules.moduleDynamic?.major?.courses,
++      _ => null,
++    };
++  }
++
++  /// 从非视频类型中提取封面（转发/图文等）
++  String? _extractCover() {
++    // 转发 — 查看原动态是否有封面
++    if (item.type == 'DYNAMIC_TYPE_FORWARD') {
++      return item.orig?.modules.moduleDynamic?.major?.archive?.cover ??
++          item.orig?.modules.moduleDynamic?.major?.ugcSeason?.cover ??
++          item.orig?.modules.moduleDynamic?.major?.pgc?.cover;
++    }
++    // 图文动态 — 取第一张图片
++    final opus = item.modules.moduleDynamic?.major?.opus;
++    final pics = opus?.pics;
++    if (pics != null && pics.isNotEmpty) {
++      return pics.first.url ?? pics.first.src;
++    }
++    return null;
++  }
++
++  /// 封面区域
++  Widget _buildCover(
++    ThemeData theme,
++    String? coverUrl,
++    DynamicArchiveModel? video,
++    Stat? stat,
++  ) {
++    return LayoutBuilder(
++      builder: (context, constraints) {
++        final coverWidth = constraints.maxWidth;
++        final coverHeight = constraints.maxHeight;
++
++        if (coverUrl != null) {
++          // 有封面图
++          return ClipRRect(
++            borderRadius: const BorderRadius.vertical(top: Style.imgRadius),
++            child: Stack(
++            children: [
++              NetworkImgLayer(
++                src: coverUrl,
++                width: coverWidth,
++                height: coverHeight,
++                quality: 40,
++                type: .emote,
++              ),
++              // badge（充电专属等）
++              if (video?.badge?.text case final badge?)
++                PBadge(
++                  text: badge,
++                  top: 6,
++                  right: 8,
++                  bottom: null,
++                  left: null,
++                  type:
++                      badge == '充电专属' ? PBadgeType.error : PBadgeType.primary,
++                ),
++              // 底部信息条：左-播放/弹幕，右-时长
++              if (stat != null || video?.durationText != null)
++                Positioned(
++                  left: 0,
++                  right: 0,
++                  bottom: 0,
++                  child: Container(
++                    height: 26,
++                    padding: const EdgeInsets.symmetric(horizontal: 8),
++                    decoration: BoxDecoration(
++                      gradient: LinearGradient(
++                        begin: Alignment.topCenter,
++                        end: Alignment.bottomCenter,
++                        colors: [
++                          Colors.transparent,
++                          Colors.black.withValues(alpha: 0.55),
++                        ],
++                      ),
++                    ),
++                    child: Row(
++                      crossAxisAlignment: CrossAxisAlignment.end,
++                      children: [
++                        if (stat != null) ...[
++                          Container(
++                            padding: const EdgeInsets.symmetric(
++                              horizontal: 4,
++                              vertical: 1,
++                            ),
++                            decoration: BoxDecoration(
++                              color: Colors.black45,
++                              borderRadius: BorderRadius.circular(3),
++                            ),
++                            child: Row(
++                              mainAxisSize: MainAxisSize.min,
++                              children: [
++                                Icon(
++                                  Icons.play_circle_outlined,
++                                  size: 10,
++                                  color: Colors.white,
++                                ),
++                                const SizedBox(width: 2),
++                                Text(
++                                  NumUtils.numFormat(stat.play),
++                                  style: const TextStyle(
++                                    fontSize: 10,
++                                    color: Colors.white,
++                                  ),
++                                ),
++                              ],
++                            ),
++                          ),
++                          const SizedBox(width: 4),
++                          Container(
++                            padding: const EdgeInsets.symmetric(
++                              horizontal: 4,
++                              vertical: 1,
++                            ),
++                            decoration: BoxDecoration(
++                              color: Colors.black45,
++                              borderRadius: BorderRadius.circular(3),
++                            ),
++                            child: Row(
++                              mainAxisSize: MainAxisSize.min,
++                              children: [
++                                Icon(
++                                  Icons.subtitles_outlined,
++                                  size: 10,
++                                  color: Colors.white,
++                                ),
++                                const SizedBox(width: 2),
++                                Text(
++                                  NumUtils.numFormat(stat.danmu),
++                                  style: const TextStyle(
++                                    fontSize: 10,
++                                    color: Colors.white,
++                                  ),
++                                ),
++                              ],
++                            ),
++                          ),
++                        ],
++                        const Spacer(),
++                        if (video?.durationText case final durationText?)
++                          Container(
++                            padding: const EdgeInsets.symmetric(
++                              horizontal: 4,
++                              vertical: 1,
++                            ),
++                            decoration: BoxDecoration(
++                              color: Colors.black45,
++                              borderRadius: BorderRadius.circular(3),
++                            ),
++                            child: Text(
++                              durationText,
++                              style: const TextStyle(
++                                fontSize: 10,
++                                color: Colors.white,
++                              ),
++                            ),
++                          ),
++                      ],
++                    ),
++                  ),
++                ),
++            ],
++          ));
++        }
++
++        // 无封面：渐变占位 + 类型图标
++        final moduleDynamic = item.modules.moduleDynamic;
++        final descText = moduleDynamic?.desc?.text ??
++            moduleDynamic?.major?.opus?.summary?.text;
++
++        return Container(
++          decoration: BoxDecoration(
++            gradient: LinearGradient(
++              colors: [
++                theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
++                theme.colorScheme.secondaryContainer.withValues(alpha: 0.2),
++              ],
++            ),
++          ),
++          child: Center(
++            child: Padding(
++              padding: const EdgeInsets.all(8),
++              child: Column(
++                mainAxisAlignment: MainAxisAlignment.center,
++                children: [
++                  Icon(
++                    item.type == 'DYNAMIC_TYPE_FORWARD'
++                        ? Icons.replay
++                        : Icons.article_outlined,
++                    size: 24,
++                    color: theme.colorScheme.primary.withValues(alpha: 0.5),
++                  ),
++                  if (descText != null && descText.isNotEmpty) ...[
++                    const SizedBox(height: 4),
++                    Text(
++                      descText,
++                      maxLines: 3,
++                      overflow: TextOverflow.ellipsis,
++                      textAlign: TextAlign.center,
++                      style: TextStyle(
++                        fontSize: 11,
++                        color:
++                            theme.colorScheme.onSurface.withValues(alpha: 0.6),
++                      ),
++                    ),
++                  ],
++                ],
++              ),
++            ),
++          ),
++        );
++      },
++    );
++  }
++
++  /// 内容预览文字
++  String _contentPreview() {
++    final md = item.modules.moduleDynamic;
++    final desc = md?.desc?.text ?? md?.major?.opus?.summary?.text;
++    if (desc != null && desc.isNotEmpty) return desc;
++
++    if (item.type == 'DYNAMIC_TYPE_FORWARD') {
++      // 转发：显示原动态的标题或文字
++      final orig = item.orig?.modules.moduleDynamic;
++      final origTitle = orig?.major?.archive?.title ??
++          orig?.major?.ugcSeason?.title ??
++          orig?.major?.pgc?.title;
++      if (origTitle != null) return '转发：$origTitle';
++      final origDesc = orig?.desc?.text ?? orig?.major?.opus?.summary?.text;
++      if (origDesc != null && origDesc.isNotEmpty) return '转发：$origDesc';
++      return '转发动态';
++    }
++
++    return switch (item.type) {
++      'DYNAMIC_TYPE_LIVE' => '直播中',
++      'DYNAMIC_TYPE_LIVE_RCMD' => '直播推荐',
++      'DYNAMIC_TYPE_SUBSCRIPTION_NEW' => '订阅更新',
++      'DYNAMIC_TYPE_WORD' => '图文动态',
++      _ => '动态',
++    };
++  }
++}
+diff --git a/lib/pages/dynamics/widgets/up_panel.dart b/lib/pages/dynamics/widgets/up_panel.dart
+index a798324b6..4fb834f67 100644
+--- a/lib/pages/dynamics/widgets/up_panel.dart
++++ b/lib/pages/dynamics/widgets/up_panel.dart
+@@ -43,79 +43,9 @@ class _UpPanelState extends State<UpPanel> {
+       physics: const AlwaysScrollableScrollPhysics(),
+       controller: controller.scrollController,
+       slivers: [
+-        SliverToBoxAdapter(
+-          child: InkWell(
+-            onTap: () => setState(() {
+-              controller.showLiveUp = !controller.showLiveUp;
+-            }),
+-            onLongPress: toFollowPage,
+-            onSecondaryTap: PlatformUtils.isMobile ? null : toFollowPage,
+-            child: Container(
+-              alignment: .center,
+-              height: isTop ? 76 : 60,
+-              padding: isTop ? const .only(left: 12, right: 6) : null,
+-              child: Text.rich(
+-                textAlign: .center,
+-                style: TextStyle(
+-                  fontSize: 13,
+-                  color: theme.colorScheme.primary,
+-                ),
+-                TextSpan(
+-                  children: [
+-                    TextSpan(
+-                      text: 'Live(${upData.liveUsers?.count ?? 0})',
+-                    ),
+-                    if (!isTop) ...[
+-                      const TextSpan(text: '\n'),
+-                      WidgetSpan(
+-                        alignment: .middle,
+-                        child: Icon(
+-                          controller.showLiveUp
+-                              ? Icons.expand_less
+-                              : Icons.expand_more,
+-                          size: 12,
+-                          color: theme.colorScheme.primary,
+-                        ),
+-                      ),
+-                    ] else
+-                      WidgetSpan(
+-                        alignment: .middle,
+-                        child: Icon(
+-                          controller.showLiveUp
+-                              ? Icons.keyboard_arrow_right
+-                              : Icons.keyboard_arrow_left,
+-                          color: theme.colorScheme.primary,
+-                          size: 14,
+-                        ),
+-                      ),
+-                  ],
+-                ),
+-              ),
+-            ),
+-          ),
+-        ),
+-        if (controller.showLiveUp && liveList != null && liveList.isNotEmpty)
+-          SliverList.builder(
+-            itemCount: liveList.length,
+-            itemBuilder: (context, index) {
+-              return upItemBuild(theme, liveList[index]);
+-            },
+-          ),
+         SliverToBoxAdapter(
+           child: upItemBuild(theme, UpItem(face: '', uname: '全部动态', mid: -1)),
+         ),
+-        SliverToBoxAdapter(
+-          child: Obx(
+-            () => upItemBuild(
+-              theme,
+-              UpItem(
+-                uname: '我',
+-                face: controller.accountService.face.value,
+-                mid: Accounts.main.mid,
+-              ),
+-            ),
+-          ),
+-        ),
+         if (upList != null && upList.isNotEmpty)
+           SliverList.builder(
+             itemCount: upList.length,
+@@ -167,24 +97,7 @@ class _UpPanelState extends State<UpPanel> {
+           type: .avatar,
+         ),
+       );
+-      if (isLive) {
+-        avatar = Stack(
+-          clipBehavior: .none,
+-          children: [
+-            avatar,
+-            Positioned(
+-              top: isLive && !isTop ? -5 : 0,
+-              right: -6,
+-              child: Badge(
+-                label: const Text(' Live '),
+-                textColor: theme.colorScheme.onSecondaryContainer,
+-                backgroundColor: theme.colorScheme.secondaryContainer
+-                    .withValues(alpha: 0.75),
+-              ),
+-            ),
+-          ],
+-        );
+-      } else if (item.hasUpdate ?? false) {
++      if (item.hasUpdate ?? false) {
+         avatar = Stack(
+           clipBehavior: .none,
+           children: [
+@@ -202,9 +115,57 @@ class _UpPanelState extends State<UpPanel> {
+       }
+     }
+ 
++    if (isTop) {
++      // 顶部模式：图标在上、名字在下（不变）
++      return SizedBox(
++        height: 76,
++        width: 70,
++        child: InkWell(
++          onTap: () {
++            feedBack();
++            if (isLive) {
++              PageUtils.toLiveRoom(item.roomId);
++            } else {
++              _onSelect(item);
++            }
++          },
++          onLongPress: !isAll ? toMemberPage : null,
++          onSecondaryTap: !isAll && !PlatformUtils.isMobile
++              ? toMemberPage
++              : null,
++          child: Opacity(
++            opacity: isCurrent ? 1 : 0.6,
++            child: Column(
++              spacing: 4,
++              mainAxisSize: .min,
++              mainAxisAlignment: .center,
++              children: [
++                avatar,
++                Padding(
++                  padding: const .symmetric(horizontal: 4),
++                  child: Text(
++                    '${item.uname}\n',
++                    maxLines: 2,
++                    textAlign: .center,
++                    style: TextStyle(
++                      color: currentMid == item.mid
++                          ? theme.colorScheme.primary
++                          : theme.colorScheme.outline,
++                      height: 1.1,
++                      fontSize: 12.5,
++                    ),
++                  ),
++                ),
++              ],
++            ),
++          ),
++        ),
++      );
++    }
++    // 抽屉/侧边常驻：图标在左、名字在右
+     return SizedBox(
+-      height: 76,
+-      width: isTop ? 70 : null,
++      height: 56,
++      width: 210,
+       child: InkWell(
+         onTap: () {
+           feedBack();
+@@ -214,33 +175,33 @@ class _UpPanelState extends State<UpPanel> {
+             _onSelect(item);
+           }
+         },
+-        // onDoubleTap: isLive ? () => _onSelect(data) : null,
+         onLongPress: !isAll ? toMemberPage : null,
+-        onSecondaryTap: !isAll && !PlatformUtils.isMobile ? toMemberPage : null,
+-        child: Opacity(
+-          opacity: isCurrent ? 1 : 0.6,
+-          child: Column(
+-            spacing: 4,
+-            mainAxisSize: .min,
+-            mainAxisAlignment: .center,
+-            children: [
+-              avatar,
+-              Padding(
+-                padding: const .symmetric(horizontal: 4),
+-                child: Text(
+-                  isTop ? '${item.uname}\n' : item.uname!,
+-                  maxLines: 2,
+-                  textAlign: .center,
+-                  style: TextStyle(
+-                    color: currentMid == item.mid
+-                        ? theme.colorScheme.primary
+-                        : theme.colorScheme.outline,
+-                    height: 1.1,
+-                    fontSize: 12.5,
++        onSecondaryTap: !isAll && !PlatformUtils.isMobile
++            ? toMemberPage
++            : null,
++        child: Padding(
++          padding: const EdgeInsets.symmetric(horizontal: 12),
++          child: Opacity(
++            opacity: isCurrent ? 1 : 0.6,
++            child: Row(
++              spacing: 10,
++              children: [
++                avatar,
++                Flexible(
++                  child: Text(
++                    item.uname!,
++                    maxLines: 1,
++                    overflow: TextOverflow.ellipsis,
++                    style: TextStyle(
++                      color: currentMid == item.mid
++                          ? theme.colorScheme.primary
++                          : theme.colorScheme.outline,
++                      fontSize: 14,
++                    ),
+                   ),
+                 ),
+-              ),
+-            ],
++              ],
++            ),
+           ),
+         ),
+       ),
+diff --git a/lib/pages/dynamics/widgets/video_panel.dart b/lib/pages/dynamics/widgets/video_panel.dart
+index 18c4157d2..2fd622e54 100644
+--- a/lib/pages/dynamics/widgets/video_panel.dart
++++ b/lib/pages/dynamics/widgets/video_panel.dart
+@@ -2,9 +2,9 @@
+ import 'package:PiliPlus/common/style.dart';
+ import 'package:PiliPlus/common/widgets/badge.dart';
+ import 'package:PiliPlus/common/widgets/image/network_img_layer.dart';
+-import 'package:PiliPlus/common/widgets/svg/play_icon.dart';
+ import 'package:PiliPlus/models/common/badge_type.dart';
+ import 'package:PiliPlus/models/dynamics/result.dart';
++import 'package:PiliPlus/utils/global_data.dart';
+ import 'package:PiliPlus/utils/num_utils.dart';
+ import 'package:flutter/material.dart';
+ 
+@@ -33,93 +33,156 @@ Widget videoSeasonWidget(
+     return const SizedBox.shrink();
+   }
+ 
++  // 只有单列列表模式保持四角圆角，瀑布流和网格对齐使用上圆下方
++  final bool topOnlyRadius = GlobalData().dynamicLayoutMode != 2;
++
+   EdgeInsets padding;
+   if (floor == 1) {
+     padding = const EdgeInsets.symmetric(horizontal: 12);
+   } else {
+     padding = EdgeInsets.zero;
+   }
+-  return Padding(
+-    padding: padding,
+-    child: Column(
+-      spacing: 6,
+-      crossAxisAlignment: CrossAxisAlignment.start,
++
++  Widget? coverWidget;
++  if (video.cover case final cover?) {
++    final inner = Stack(
++      clipBehavior: Clip.none,
+       children: [
+-        if (video.cover case final cover?)
+-          Stack(
+-            clipBehavior: Clip.none,
+-            children: [
+-              LayoutBuilder(
+-                builder: (context, constraints) => NetworkImgLayer(
+-                  width: constraints.maxWidth,
+-                  height: constraints.maxWidth / Style.aspectRatio,
+-                  src: cover,
+-                  quality: 40,
+-                ),
++        LayoutBuilder(
++          builder: (context, constraints) => NetworkImgLayer(
++            width: constraints.maxWidth,
++            height: constraints.maxWidth / Style.aspectRatio,
++            src: cover,
++            quality: 40,
++            type: .emote,
++          ),
++        ),
++        if (video.badge?.text case final badge?)
++          PBadge(
++            text: badge,
++            top: 8.0,
++            right: 10.0,
++            bottom: null,
++            left: null,
++            type: switch (badge) {
++              '充电专属' => PBadgeType.error,
++              _ => PBadgeType.primary,
++            },
++          ),
++        Positioned(
++          left: 0,
++          right: 0,
++          bottom: 0,
++          child: Container(
++            height: 70,
++            alignment: Alignment.bottomLeft,
++            padding: const EdgeInsets.fromLTRB(10, 0, 8, 8),
++            decoration: const BoxDecoration(
++              gradient: LinearGradient(
++                begin: Alignment.topCenter,
++                end: Alignment.bottomCenter,
++                colors: [
++                  Colors.transparent,
++                  Colors.black54,
++                ],
+               ),
+-              if (video.badge?.text case final badge?)
+-                PBadge(
+-                  text: badge,
+-                  top: 8.0,
+-                  right: 10.0,
+-                  bottom: null,
+-                  left: null,
+-                  type: switch (badge) {
+-                    '充电专属' => PBadgeType.error,
+-                    _ => PBadgeType.primary,
+-                  },
+-                ),
+-              Positioned(
+-                left: 0,
+-                right: 0,
+-                bottom: 0,
+-                child: Container(
+-                  height: 70,
+-                  alignment: Alignment.bottomLeft,
+-                  padding: const EdgeInsets.fromLTRB(10, 0, 8, 8),
+-                  decoration: const BoxDecoration(
+-                    gradient: LinearGradient(
+-                      begin: Alignment.topCenter,
+-                      end: Alignment.bottomCenter,
+-                      colors: [
+-                        Colors.transparent,
+-                        Colors.black54,
+-                      ],
+-                    ),
+-                    borderRadius: .vertical(bottom: Style.imgRadius),
+-                  ),
+-                  child: DefaultTextStyle.merge(
+-                    style: TextStyle(
+-                      fontSize: theme.textTheme.labelMedium!.fontSize,
+-                      color: Colors.white,
+-                    ),
+-                    child: Row(
+-                      crossAxisAlignment: CrossAxisAlignment.end,
+-                      children: [
+-                        if (video.durationText case final durationText?) ...[
+-                          DecoratedBox(
+-                            decoration: const BoxDecoration(
+-                              color: Colors.black45,
+-                              borderRadius: .all(.circular(4)),
+-                            ),
+-                            child: Text(' $durationText '),
++            ),
++            child: DefaultTextStyle.merge(
++              style: TextStyle(
++                fontSize: theme.textTheme.labelMedium!.fontSize,
++                color: Colors.white,
++              ),
++              child: Row(
++                crossAxisAlignment: CrossAxisAlignment.end,
++                children: [
++                  if (video.stat case final stat?) ...[
++                    Container(
++                      padding: const EdgeInsets.symmetric(
++                        horizontal: 4,
++                        vertical: 1,
++                      ),
++                      decoration: BoxDecoration(
++                        color: Colors.black45,
++                        borderRadius: BorderRadius.circular(3),
++                      ),
++                      child: Row(
++                        mainAxisSize: MainAxisSize.min,
++                        children: [
++                          Icon(
++                            Icons.play_circle_outlined,
++                            size: 10,
++                            color: Colors.white,
+                           ),
+-                          const SizedBox(width: 6),
++                          const SizedBox(width: 2),
++                          Text(NumUtils.numFormat(stat.play)),
+                         ],
+-                        if (video.stat case final stat?) ...[
+-                          Text('${NumUtils.numFormat(stat.play)}播放'),
+-                          const SizedBox(width: 6),
+-                          Text('${NumUtils.numFormat(stat.danmu)}弹幕'),
++                      ),
++                    ),
++                    const SizedBox(width: 4),
++                    Container(
++                      padding: const EdgeInsets.symmetric(
++                        horizontal: 4,
++                        vertical: 1,
++                      ),
++                      decoration: BoxDecoration(
++                        color: Colors.black45,
++                        borderRadius: BorderRadius.circular(3),
++                      ),
++                      child: Row(
++                        mainAxisSize: MainAxisSize.min,
++                        children: [
++                          Icon(
++                            Icons.subtitles_outlined,
++                            size: 10,
++                            color: Colors.white,
++                          ),
++                          const SizedBox(width: 2),
++                          Text(NumUtils.numFormat(stat.danmu)),
+                         ],
+-                        const Spacer(),
+-                        const PlayIcon(size: 50),
+-                      ],
++                      ),
++                    ),
++                  ],
++                  const Spacer(),
++                  if (video.durationText case final durationText?)
++                    Container(
++                      padding: const EdgeInsets.symmetric(
++                        horizontal: 4,
++                        vertical: 1,
++                      ),
++                      decoration: BoxDecoration(
++                        color: Colors.black45,
++                        borderRadius: BorderRadius.circular(3),
++                      ),
++                      child: Text(
++                        durationText,
++                        style: const TextStyle(fontSize: 10),
++                      ),
+                     ),
+-                  ),
+-                ),
++                ],
+               ),
+-            ],
++            ),
+           ),
++        ),
++      ],
++    );
++    coverWidget = topOnlyRadius
++        ? ClipRRect(
++            borderRadius: const BorderRadius.vertical(top: Style.imgRadius),
++            child: inner,
++          )
++        : ClipRRect(
++            borderRadius: Style.mdRadius,
++            child: inner,
++          );
++  }
++
++  return Padding(
++    padding: padding,
++    child: Column(
++      spacing: 6,
++      crossAxisAlignment: CrossAxisAlignment.start,
++      children: [
++        if (coverWidget != null) coverWidget,
+         if (video.title case final title?)
+           Text(
+             title,
+diff --git a/lib/pages/dynamics_tab/controller.dart b/lib/pages/dynamics_tab/controller.dart
+index 14e21587a..cf6e839d7 100644
+--- a/lib/pages/dynamics_tab/controller.dart
++++ b/lib/pages/dynamics_tab/controller.dart
+@@ -30,7 +30,7 @@ class DynamicsTabController
+ 
+   @override
+   Future<void> onRefresh() {
+-    if (dynamicsType == .all) {
++    if (dynamicsType == .video) {
+       mainController.setDynCount();
+     }
+     offset = null;
+diff --git a/lib/pages/dynamics_tab/view.dart b/lib/pages/dynamics_tab/view.dart
+index 370407755..3d99ded66 100644
+--- a/lib/pages/dynamics_tab/view.dart
++++ b/lib/pages/dynamics_tab/view.dart
+@@ -6,10 +6,10 @@ import 'package:PiliPlus/http/loading_state.dart';
+ import 'package:PiliPlus/models/common/dynamic/dynamics_type.dart';
+ import 'package:PiliPlus/models/dynamics/result.dart';
+ import 'package:PiliPlus/pages/dynamics/controller.dart';
++import 'package:PiliPlus/pages/dynamics/widgets/dynamic_grid_card.dart';
+ import 'package:PiliPlus/pages/dynamics/widgets/dynamic_panel.dart';
+ import 'package:PiliPlus/pages/dynamics_tab/controller.dart';
+ import 'package:PiliPlus/utils/extension/get_ext.dart';
+-import 'package:PiliPlus/utils/global_data.dart';
+ import 'package:PiliPlus/utils/waterfall.dart';
+ import 'package:flutter/material.dart';
+ import 'package:get/get.dart';
+@@ -72,42 +72,23 @@ class _DynamicsTabPageState extends State<DynamicsTabPage>
+       Loading() => dynSkeleton,
+       Success(:final response) =>
+         response != null && response.isNotEmpty
+-            ? GlobalData().dynamicsWaterfallFlow
+-                  ? SliverWaterfallFlow(
+-                      gridDelegate: dynGridDelegate,
+-                      delegate: SliverChildBuilderDelegate(
+-                        (_, index) {
+-                          if (index == response.length - 1) {
+-                            controller.onLoadMore();
+-                          }
+-                          final item = response[index];
+-                          return DynamicPanel(
+-                            item: item,
+-                            onRemove: (idStr) =>
+-                                controller.onRemove(index, idStr),
+-                            onBlock: () => controller.onBlock(index),
+-                            onUnfold: () => controller.onUnfold(item, index),
+-                          );
+-                        },
+-                        childCount: response.length,
+-                      ),
+-                    )
+-                  : SliverList.builder(
+-                      itemBuilder: (context, index) {
+-                        if (index == response.length - 1) {
+-                          controller.onLoadMore();
+-                        }
+-                        final item = response[index];
+-                        return DynamicPanel(
+-                          item: item,
+-                          onRemove: (idStr) =>
+-                              controller.onRemove(index, idStr),
+-                          onBlock: () => controller.onBlock(index),
+-                          onUnfold: () => controller.onUnfold(item, index),
+-                        );
+-                      },
+-                      itemCount: response.length,
+-                    )
++            ? buildDynamicContent(
++                context: context,
++                itemCount: response.length,
++                itemBuilder: (context, index) {
++                  final item = response[index];
++                  return DynamicPanel(
++                    item: item,
++                    onRemove: (idStr) =>
++                        controller.onRemove(index, idStr),
++                    onBlock: () => controller.onBlock(index),
++                    onUnfold: () => controller.onUnfold(item, index),
++                  );
++                },
++                gridItemBuilder: (context, index) =>
++                    DynamicGridCard(item: response[index]),
++                onLoadMore: () => controller.onLoadMore(),
++              )
+             : HttpError(onReload: controller.onReload),
+       Error(:final errMsg) => HttpError(
+         errMsg: errMsg,
+diff --git a/lib/pages/dynamics_topic/view.dart b/lib/pages/dynamics_topic/view.dart
+index f292e74ae..ec5e0b004 100644
+--- a/lib/pages/dynamics_topic/view.dart
++++ b/lib/pages/dynamics_topic/view.dart
+@@ -12,12 +12,12 @@ import 'package:PiliPlus/models/common/image_type.dart';
+ import 'package:PiliPlus/models_new/dynamic/dyn_topic_feed/item.dart';
+ import 'package:PiliPlus/models_new/dynamic/dyn_topic_top/top_details.dart';
+ import 'package:PiliPlus/pages/common/fab_mixin.dart';
++import 'package:PiliPlus/pages/dynamics/widgets/dynamic_grid_card.dart';
+ import 'package:PiliPlus/pages/dynamics/widgets/dynamic_panel.dart';
+ import 'package:PiliPlus/pages/dynamics_create/view.dart';
+ import 'package:PiliPlus/pages/dynamics_topic/controller.dart';
+ import 'package:PiliPlus/utils/extension/num_ext.dart';
+ import 'package:PiliPlus/utils/extension/theme_ext.dart';
+-import 'package:PiliPlus/utils/global_data.dart';
+ import 'package:PiliPlus/utils/num_utils.dart';
+ import 'package:PiliPlus/utils/page_utils.dart';
+ import 'package:PiliPlus/utils/share_utils.dart';
+@@ -368,39 +368,25 @@ class _DynTopicPageState extends State<DynTopicPage>
+       Loading() => dynSkeleton,
+       Success(:final response) =>
+         response != null && response.isNotEmpty
+-            ? GlobalData().dynamicsWaterfallFlow
+-                  ? SliverWaterfallFlow(
+-                      gridDelegate: dynGridDelegate,
+-                      delegate: SliverChildBuilderDelegate(
+-                        (_, index) {
+-                          if (index == response.length - 1) {
+-                            _controller.onLoadMore();
+-                          }
+-
+-                          final item = response[index];
+-                          if (item.dynamicCardItem != null) {
+-                            return DynamicPanel(item: item.dynamicCardItem!);
+-                          }
+-
+-                          return Text(item.topicType ?? 'err');
+-                        },
+-                        childCount: response.length,
+-                      ),
+-                    )
+-                  : SliverList.builder(
+-                      itemBuilder: (context, index) {
+-                        if (index == response.length - 1) {
+-                          _controller.onLoadMore();
+-                        }
+-                        final item = response[index];
+-                        if (item.dynamicCardItem != null) {
+-                          return DynamicPanel(item: item.dynamicCardItem!);
+-                        } else {
+-                          return Text(item.topicType ?? 'err');
+-                        }
+-                      },
+-                      itemCount: response.length,
+-                    )
++            ? buildDynamicContent(
++                context: context,
++                itemCount: response.length,
++                itemBuilder: (context, index) {
++                  final item = response[index];
++                  if (item.dynamicCardItem != null) {
++                    return DynamicPanel(item: item.dynamicCardItem!);
++                  }
++                  return Text(item.topicType ?? 'err');
++                },
++                gridItemBuilder: (context, index) {
++                  final item = response[index];
++                  if (item.dynamicCardItem != null) {
++                    return DynamicGridCard(item: item.dynamicCardItem!);
++                  }
++                  return Text(item.topicType ?? 'err');
++                },
++                onLoadMore: () => _controller.onLoadMore(),
++              )
+             : HttpError(onReload: _controller.onReload),
+       Error(:final errMsg) => HttpError(
+         errMsg: errMsg,
+diff --git a/lib/pages/history/controller.dart b/lib/pages/history/controller.dart
+index e7e418c7b..affabd108 100644
+--- a/lib/pages/history/controller.dart
++++ b/lib/pages/history/controller.dart
+@@ -40,6 +40,7 @@ class HistoryController
+   @override
+   void onInit() {
+     super.onInit();
++    debugPrint('[HistoryController] onInit, type: $type');
+     historyStatus();
+     queryData();
+   }
+diff --git a/lib/pages/history/view.dart b/lib/pages/history/view.dart
+index d8ba6540c..c7bb91eb0 100644
+--- a/lib/pages/history/view.dart
++++ b/lib/pages/history/view.dart
+@@ -17,9 +17,10 @@ import 'package:flutter/material.dart' hide TabBarView;
+ import 'package:get/get.dart';
+ 
+ class HistoryPage extends StatefulWidget {
+-  const HistoryPage({super.key, this.type});
++  const HistoryPage({super.key, this.type, this.hideSubTabs = false});
+ 
+   final String? type;
++  final bool hideSubTabs;
+ 
+   @override
+   State<HistoryPage> createState() => _HistoryPageState();
+@@ -60,6 +61,26 @@ class _HistoryPageState extends State<HistoryPage>
+   Widget build(BuildContext context) {
+     super.build(context);
+     final padding = MediaQuery.viewPaddingOf(context);
++    
++    // hideSubTabs: 直接返回滚动内容，不走 Scaffold/AppBar
++    if (widget.hideSubTabs) {
++      return refreshIndicator(
++        onRefresh: _historyController.onRefresh,
++        child: CustomScrollView(
++          physics: const AlwaysScrollableScrollPhysics(),
++          controller: _historyController.scrollController,
++          slivers: [
++            SliverPadding(
++              padding: EdgeInsets.only(top: 7, bottom: padding.bottom + 100),
++              sliver: Obx(
++                () => _buildBody(_historyController.loadingState.value),
++              ),
++            ),
++          ],
++        ),
++      );
++    }
++    
+     Widget child = refreshIndicator(
+       onRefresh: _historyController.onRefresh,
+       child: CustomScrollView(
+@@ -206,6 +227,14 @@ class _HistoryPageState extends State<HistoryPage>
+   );
+ 
+   Widget _buildBody(LoadingState<List<HistoryItemModel>?> loadingState) {
++    // DEBUG: log loadingState
++    debugPrint('[HistoryPage] _buildBody loadingState: ${loadingState.runtimeType}');
++    if (loadingState is Success) {
++      final resp = (loadingState as Success).response;
++      debugPrint('[HistoryPage] Success response: ${resp?.length ?? 'null'} items');
++    } else if (loadingState is Error) {
++      debugPrint('[HistoryPage] Error: ${(loadingState as Error).errMsg}');
++    }
+     return switch (loadingState) {
+       Loading() => gridSkeleton,
+       Success(:final response) =>
+diff --git a/lib/pages/later/view.dart b/lib/pages/later/view.dart
+index db37be02a..3b910f6a7 100644
+--- a/lib/pages/later/view.dart
++++ b/lib/pages/later/view.dart
+@@ -191,119 +191,8 @@ class _LaterPageState extends State<LaterPage>
+         ),
+       ],
+       child: AppBar(
+-        title: const Text('稍后再看'),
+-        actions: [
+-          IconButton(
+-            tooltip: '搜索',
+-            onPressed: () {
+-              final mid = Accounts.main.mid;
+-              Get.toNamed(
+-                '/laterSearch',
+-                arguments: {
+-                  'type': 0,
+-                  'mediaId': mid,
+-                  'mid': mid,
+-                  'title': '稍后再看',
+-                  'count': _baseCtr.counts[LaterViewType.all.index],
+-                },
+-              );
+-            },
+-            icon: const Icon(Icons.search),
+-          ),
+-          Builder(
+-            key: _sortKey,
+-            builder: (context) {
+-              final value = currCtr().asc.value;
+-              return PopupMenuButton(
+-                initialValue: value,
+-                tooltip: '排序',
+-                onSelected: (value) => currCtr()
+-                  ..asc.value = value
+-                  ..onReload(),
+-                borderRadius: const .all(.circular(20)),
+-                child: Padding(
+-                  padding: const .symmetric(horizontal: 12, vertical: 6),
+-                  child: Text.rich(
+-                    style: TextStyle(fontSize: 14, height: 1, color: color),
+-                    strutStyle: const StrutStyle(
+-                      leading: 0,
+-                      height: 1,
+-                      fontSize: 14,
+-                    ),
+-                    TextSpan(
+-                      children: [
+-                        TextSpan(text: value ? '最早添加' : '最近添加'),
+-                        WidgetSpan(
+-                          alignment: .middle,
+-                          child: Icon(
+-                            size: 14,
+-                            MdiIcons.unfoldMoreHorizontal,
+-                            color: color,
+-                          ),
+-                        ),
+-                      ],
+-                      style: TextStyle(color: color),
+-                    ),
+-                  ),
+-                ),
+-                itemBuilder: (_) => [
+-                  const PopupMenuItem(
+-                    value: false,
+-                    child: Text('最近添加'),
+-                  ),
+-                  const PopupMenuItem(
+-                    value: true,
+-                    child: Text('最早添加'),
+-                  ),
+-                ],
+-              );
+-            },
+-          ),
+-          PopupMenuButton(
+-            tooltip: '清空',
+-            borderRadius: const .all(.circular(20)),
+-            child: Padding(
+-              padding: const .symmetric(horizontal: 12, vertical: 6),
+-              child: Text.rich(
+-                style: TextStyle(fontSize: 14, height: 1, color: color),
+-                strutStyle: const StrutStyle(
+-                  leading: 0,
+-                  height: 1,
+-                  fontSize: 14,
+-                ),
+-                TextSpan(
+-                  children: [
+-                    const TextSpan(text: '清空'),
+-                    WidgetSpan(
+-                      alignment: .middle,
+-                      child: Icon(
+-                        size: 14,
+-                        MdiIcons.unfoldMoreHorizontal,
+-                        color: color,
+-                      ),
+-                    ),
+-                  ],
+-                  style: TextStyle(color: color),
+-                ),
+-              ),
+-            ),
+-            itemBuilder: (_) => [
+-              PopupMenuItem(
+-                onTap: () => currCtr().toViewClear(context, 1),
+-                child: const Text('清空失效'),
+-              ),
+-              PopupMenuItem(
+-                onTap: () => currCtr().toViewClear(context, 2),
+-                child: const Text('清空看完'),
+-              ),
+-              PopupMenuItem(
+-                onTap: () => currCtr().toViewClear(context),
+-                child: const Text('清空全部'),
+-              ),
+-            ],
+-          ),
+-          const SizedBox(width: 8),
+-        ],
++        title: null,
++        toolbarHeight: 0,
+       ),
+     );
+   }
+diff --git a/lib/pages/live/view.dart b/lib/pages/live/view.dart
+index d72e725cf..5d34c2520 100644
+--- a/lib/pages/live/view.dart
++++ b/lib/pages/live/view.dart
+@@ -176,8 +176,8 @@ class _LivePageState extends State<LivePage>
+   }
+ 
+   late final gridDelegate = SliverGridDelegateWithExtentAndRatio(
+-    mainAxisSpacing: Style.cardSpace,
+-    crossAxisSpacing: Style.cardSpace,
++    mainAxisSpacing: 20.0,
++    crossAxisSpacing: 20.0,
+     maxCrossAxisExtent: Grid.smallCardWidth,
+     childAspectRatio: Style.aspectRatio,
+     mainAxisExtent: textScaler.scale(90),
+diff --git a/lib/pages/main/view.dart b/lib/pages/main/view.dart
+index 71e073fe2..0c2c04a1b 100644
+--- a/lib/pages/main/view.dart
++++ b/lib/pages/main/view.dart
+@@ -11,6 +11,8 @@ import 'package:PiliPlus/common/widgets/route_aware_mixin.dart';
+ import 'package:PiliPlus/models/common/nav_bar_config.dart';
+ import 'package:PiliPlus/pages/home/view.dart';
+ import 'package:PiliPlus/pages/main/controller.dart';
++import 'package:PiliPlus/pages/mine/controller.dart';
++import 'package:PiliPlus/utils/extension/get_ext.dart';
+ import 'package:PiliPlus/plugin/pl_player/controller.dart';
+ import 'package:PiliPlus/plugin/pl_player/models/play_status.dart';
+ import 'package:PiliPlus/utils/android/android_helper.dart';
+@@ -44,6 +46,7 @@ class _MainAppState extends PopScopeState<MainApp>
+         WindowListener,
+         TrayListener {
+   final _mainController = Get.put(MainController());
++  MineController get _mineCtr => Get.putOrFind(MineController.new);
+   late final _setting = GStorage.setting;
+   late EdgeInsets _padding;
+   late ThemeData theme;
+@@ -408,6 +411,29 @@ class _MainAppState extends PopScopeState<MainApp>
+                         ),
+                       ),
+                     ),
++                    Padding(
++                      padding: const EdgeInsets.only(bottom: 8),
++                      child: Column(
++                        mainAxisSize: MainAxisSize.min,
++                        children: [
++                          Obx(
++                            () => IconButton(
++                              iconSize: 22,
++                              icon: _mineCtr.themeType.value.icon,
++                              tooltip: '切换主题',
++                              onPressed: _mineCtr.onChangeTheme,
++                            ),
++                          ),
++                          IconButton(
++                            iconSize: 22,
++                            icon: const Icon(Icons.settings_outlined),
++                            tooltip: '设置',
++                            onPressed: () =>
++                                Get.toNamed('/setting', preventDuplicates: false),
++                          ),
++                        ],
++                      ),
++                    ),
+                   ],
+                 )
+               : Obx(
+@@ -426,6 +452,29 @@ class _MainAppState extends PopScopeState<MainApp>
+                           ),
+                         )
+                         .toList(),
++                    trailing: Padding(
++                      padding: EdgeInsets.only(bottom: _padding.bottom + 8),
++                      child: Column(
++                        mainAxisSize: MainAxisSize.min,
++                        children: [
++                          IconButton(
++                            iconSize: 22,
++                            icon: Obx(
++                              () => _mineCtr.themeType.value.icon,
++                            ),
++                            tooltip: '切换主题',
++                            onPressed: _mineCtr.onChangeTheme,
++                          ),
++                          IconButton(
++                            iconSize: 22,
++                            icon: const Icon(Icons.settings_outlined),
++                            tooltip: '设置',
++                            onPressed: () =>
++                                Get.toNamed('/setting', preventDuplicates: false),
++                          ),
++                        ],
++                      ),
++                    ),
+                   ),
+                 )
+         : Container(
+diff --git a/lib/pages/member/controller.dart b/lib/pages/member/controller.dart
+index 18d3c4b24..4ba3175bb 100644
+--- a/lib/pages/member/controller.dart
++++ b/lib/pages/member/controller.dart
+@@ -64,6 +64,7 @@ class MemberController extends CommonDataController<SpaceData, SpaceData?>
+   @override
+   void onInit() {
+     super.onInit();
++    if (mid < 0) mid = account.mid;
+     queryData();
+   }
+ 
+@@ -104,15 +105,26 @@ class MemberController extends CommonDataController<SpaceData, SpaceData?>
+       hasSeasonOrSeries = true;
+     }
+     tab2?.retainWhere((item) => MemberTabType.contains(item.param!));
++    // 自己的页面：固定 4 个标签页
++    if (mid == account.mid) {
++      tab2 = const [
++        SpaceTab2(title: '观看记录', param: 'history'),
++        SpaceTab2(title: '我的收藏', param: 'favorite'),
++        SpaceTab2(title: '我的订阅', param: 'subscribe'),
++        SpaceTab2(title: '稍后再看', param: 'later'),
++      ];
++    }
+     if (tab2?.isNotEmpty == true) {
+-      if (data.hasItem != true && tab2!.first.param == 'home') {
+-        // remove empty home tab
+-        tab2!.removeAt(0);
++      if (mid != account.mid) {
++        tab2!.retainWhere((item) => MemberTabType.contains(item.param!));
++        if (data.hasItem != true && tab2!.first.param == 'home') {
++          tab2!.removeAt(0);
++        }
+       }
+       if (tab2!.isNotEmpty) {
+         int initialIndex = -1;
+         MemberTabType memberTab = Pref.memberTab;
+-        if (memberTab != MemberTabType.def) {
++        if (mid != account.mid && memberTab != MemberTabType.def) {
+           initialIndex = tab2!.indexWhere((item) {
+             return item.param == memberTab.name;
+           });
+@@ -126,6 +138,10 @@ class MemberController extends CommonDataController<SpaceData, SpaceData?>
+           });
+         }
+         tabs = tab2!.map((item) => Tab(text: item.title ?? '')).toList();
++        // 自己的页面默认选中「观看记录」（index 0）
++        if (initialIndex == -1 && mid == account.mid) {
++          initialIndex = 0;
++        }
+         tabController?.dispose();
+         tabController = TabController(
+           vsync: this,
+@@ -144,6 +160,7 @@ class MemberController extends CommonDataController<SpaceData, SpaceData?>
+   @override
+   bool handleError(String? errMsg) {
+     tab2 = const [
++      SpaceTab2(title: '观看记录', param: 'history'),
+       SpaceTab2(title: '动态', param: 'dynamic'),
+       SpaceTab2(
+         title: '投稿',
+diff --git a/lib/pages/member/view.dart b/lib/pages/member/view.dart
+index 8627fda5e..341671aaf 100644
+--- a/lib/pages/member/view.dart
++++ b/lib/pages/member/view.dart
+@@ -32,6 +32,9 @@ import 'package:PiliPlus/pages/member_pgc/view.dart';
+ import 'package:PiliPlus/pages/member_shop/view.dart';
+ import 'package:PiliPlus/pages/member_video_web/archive/view.dart';
+ import 'package:PiliPlus/pages/member_video_web/season_series/view.dart';
++import 'package:PiliPlus/pages/history/view.dart';
++import 'package:PiliPlus/pages/later/view.dart';
++import 'package:PiliPlus/pages/subscription/view.dart';
+ import 'package:PiliPlus/utils/android/android_helper.dart';
+ import 'package:PiliPlus/utils/cache_manager.dart';
+ import 'package:PiliPlus/utils/date_utils.dart';
+@@ -41,7 +44,6 @@ import 'package:PiliPlus/utils/num_utils.dart';
+ import 'package:PiliPlus/utils/page_utils.dart';
+ import 'package:PiliPlus/utils/platform_utils.dart';
+ import 'package:PiliPlus/utils/utils.dart';
+-import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
+ import 'package:flutter/material.dart';
+ import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
+ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+@@ -71,6 +73,7 @@ class _MemberPageState extends State<MemberPage> {
+       MemberController(mid: _mid),
+       tag: _heroTag,
+     );
++    if (_mid < 0) _mid = _userController.mid;
+   }
+ 
+   @override
+@@ -91,72 +94,49 @@ class _MemberPageState extends State<MemberPage> {
+       child: Obx(
+         () => switch (_userController.loadingState.value) {
+           Loading() => m3eLoading,
+-          Success(:final response) => ExtendedNestedScrollView(
+-            key: _userController.key,
+-            onlyOneScrollInBody: true,
+-            pinnedHeaderSliverHeightBuilder: () =>
+-                kToolbarHeight + MediaQuery.viewPaddingOf(context).top,
+-            headerSliverBuilder: (context, innerBoxIsScrolled) {
+-              if (response != null) {
+-                return [
+-                  DynamicSliverAppBar.medium(
+-                    actions: _actions(theme),
+-                    title: Text(_userController.username ?? ''),
+-                    flexibleSpace: Obx(
+-                      () => UserInfoCard(
+-                        isOwner:
+-                            _userController.mid == _userController.account.mid,
+-                        relation: _userController.relation.value,
+-                        card: response.card!,
+-                        images: response.images!,
+-                        onFollow: () => _userController.onFollow(context),
+-                        live: _userController.live,
+-                        silence: _userController.silence,
+-                        headerControllerBuilder: getHeaderController,
+-                        showLiveMedalWall: _showLiveMedalWall,
+-                        charges: _userController.charges,
+-                        chargeCount: _userController.chargeCount,
+-                        guards: _userController.guards,
+-                        guardCount: _userController.guardCount,
+-                      ),
+-                    ),
++          Success(:final response) => Column(
++            children: [
++              // 用户信息精简行
++              if (response != null)
++                Padding(
++                  padding: .only(
++                    left: padding.left,
++                    right: padding.right,
++                    top: padding.top + 8,
+                   ),
+-                ];
+-              }
+-              return [
+-                SliverAppBar(
+-                  pinned: true,
+-                  actions: _actions(theme),
+-                  title: GestureDetector(
+-                    onTap: _userController.onReload,
+-                    behavior: HitTestBehavior.opaque,
+-                    child: Text(_userController.username ?? ''),
++                  child: UserInfoCard(
++                    isOwner:
++                        _userController.mid == _userController.account.mid,
++                    relation: _userController.relation.value,
++                    card: response.card!,
++                    images: response.images!,
++                    onFollow: () => _userController.onFollow(context),
++                    live: _userController.live,
++                    silence: _userController.silence,
++                    headerControllerBuilder: getHeaderController,
++                    showLiveMedalWall: _showLiveMedalWall,
++                    charges: _userController.charges,
++                    chargeCount: _userController.chargeCount,
++                    guards: _userController.guards,
++                    guardCount: _userController.guardCount,
+                   ),
+                 ),
+-              ];
+-            },
+-            body: _userController.tab2?.isNotEmpty == true
+-                ? Padding(
+-                    padding: .only(left: padding.left, right: padding.right),
+-                    child: Column(
+-                      children: [
+-                        if ((_userController.tab2?.length ?? 0) > 1)
+-                          SizedBox(
+-                            height: 45,
+-                            child: TabBar(
+-                              controller: _userController.tabController,
+-                              tabs: _userController.tabs,
+-                              onTap: _userController.onTapTab,
+-                              dividerColor: theme.outline.withValues(
+-                                alpha: 0.2,
+-                              ),
+-                            ),
+-                          ),
+-                        Expanded(child: _buildBody),
+-                      ],
+-                    ),
+-                  )
+-                : scrollableError,
++              // TabBar — 固定高度，不滚动
++              if (_userController.tab2?.isNotEmpty == true) ...[
++                const SizedBox(height: 4),
++                SizedBox(
++                  height: 45,
++                  child: TabBar(
++                    controller: _userController.tabController,
++                    tabs: _userController.tabs,
++                    onTap: _userController.onTapTab,
++                    dividerColor: theme.outline.withValues(alpha: 0.2),
++                  ),
++                ),
++                Expanded(child: _buildBody),
++              ] else
++                Expanded(child: scrollableError),
++            ],
+           ),
+           Error(:final errMsg) => scrollErrorWidget(
+             errMsg: errMsg,
+@@ -588,6 +568,9 @@ class _MemberPageState extends State<MemberPage> {
+           heroTag: _heroTag,
+           mid: _mid,
+         ),
++        'subscribe' => SubPage(),
++        'later' => LaterPage(),
++        'history' => HistoryPage(type: _userController.mid == _userController.account.mid ? null : 'all'),
+         'cheese' => MemberCheese(
+           heroTag: _heroTag,
+           mid: _mid,
+diff --git a/lib/pages/member/widget/user_info_card.dart b/lib/pages/member/widget/user_info_card.dart
+index 9a887b204..69f4ce27b 100644
+--- a/lib/pages/member/widget/user_info_card.dart
++++ b/lib/pages/member/widget/user_info_card.dart
+@@ -106,8 +106,8 @@ class UserInfoCard extends StatelessWidget {
+           mid: card.mid,
+           name: card.name,
+         );
+-      case UserInfoType.like:
+-        count = card.likes?.likeNum;
++      case UserInfoType.dyn:
++        count = card.article;
+     }
+     void onShowCount() => SmartDialog.showToast(
+       '${type.title}: $count',
+@@ -147,9 +147,10 @@ class UserInfoCard extends StatelessWidget {
+     ColorScheme colorScheme,
+     bool isLight,
+     bool isPortrait,
++    bool showName,
+   ) {
+     return [
+-      _buildName(context, colorScheme),
++      if (showName) _buildName(context, colorScheme),
+       if (card.officialVerify?.desc?.isNotEmpty ?? false)
+         _buildVerify(colorScheme),
+       if (card.sign?.isNotEmpty ?? false) _buildSign(),
+@@ -556,7 +557,18 @@ class UserInfoCard extends StatelessWidget {
+           actions: _buildRight(scheme),
+         ),
+         const SizedBox(height: 5),
+-        ..._buildLeft(context, scheme, isLight, true),
++        Padding(
++          padding: const EdgeInsets.symmetric(horizontal: 20),
++          child: Row(
++            crossAxisAlignment: .start,
++            children: [
++              Expanded(
++                child: _buildName(context, scheme),
++              ),
++            ],
++          ),
++        ),
++        ..._buildLeft(context, scheme, isLight, true, false),
+         if (card.prInfo?.content?.isNotEmpty ?? false)
+           buildPrInfo(context, scheme, isLight, card.prInfo!),
+         const SizedBox(height: 5),
+@@ -786,7 +798,7 @@ class UserInfoCard extends StatelessWidget {
+                   crossAxisAlignment: .start,
+                   children: [
+                     const SizedBox(height: 10),
+-                    ..._buildLeft(context, scheme, isLight, false),
++                    ..._buildLeft(context, scheme, isLight, false, true),
+                     const SizedBox(height: 5),
+                   ],
+                 ),
+diff --git a/lib/pages/member_dynamics/view.dart b/lib/pages/member_dynamics/view.dart
+index a24619ddd..0f9accef9 100644
+--- a/lib/pages/member_dynamics/view.dart
++++ b/lib/pages/member_dynamics/view.dart
+@@ -2,9 +2,9 @@ import 'package:PiliPlus/common/widgets/flutter/refresh_indicator.dart';
+ import 'package:PiliPlus/common/widgets/loading_widget/http_error.dart';
+ import 'package:PiliPlus/http/loading_state.dart';
+ import 'package:PiliPlus/models/dynamics/result.dart';
++import 'package:PiliPlus/pages/dynamics/widgets/dynamic_grid_card.dart';
+ import 'package:PiliPlus/pages/dynamics/widgets/dynamic_panel.dart';
+ import 'package:PiliPlus/pages/member_dynamics/controller.dart';
+-import 'package:PiliPlus/utils/global_data.dart';
+ import 'package:PiliPlus/utils/utils.dart';
+ import 'package:PiliPlus/utils/waterfall.dart';
+ import 'package:flutter/material.dart';
+@@ -81,36 +81,20 @@ class _MemberDynamicsPageState extends State<MemberDynamicsPage>
+       Loading() => dynSkeleton,
+       Success(:final response) =>
+         response != null && response.isNotEmpty
+-            ? GlobalData().dynamicsWaterfallFlow
+-                  ? SliverWaterfallFlow(
+-                      gridDelegate: dynGridDelegate,
+-                      delegate: SliverChildBuilderDelegate(
+-                        (_, index) {
+-                          if (index == response.length - 1) {
+-                            _memberDynamicController.onLoadMore();
+-                          }
+-                          return DynamicPanel(
+-                            item: response[index],
+-                            onRemove: _memberDynamicController.onRemove,
+-                            onSetTop: _memberDynamicController.onSetTop,
+-                          );
+-                        },
+-                        childCount: response.length,
+-                      ),
+-                    )
+-                  : SliverList.builder(
+-                      itemBuilder: (context, index) {
+-                        if (index == response.length - 1) {
+-                          _memberDynamicController.onLoadMore();
+-                        }
+-                        return DynamicPanel(
+-                          item: response[index],
+-                          onRemove: _memberDynamicController.onRemove,
+-                          onSetTop: _memberDynamicController.onSetTop,
+-                        );
+-                      },
+-                      itemCount: response.length,
+-                    )
++            ? buildDynamicContent(
++                context: context,
++                itemCount: response.length,
++                itemBuilder: (context, index) {
++                  return DynamicPanel(
++                    item: response[index],
++                    onRemove: _memberDynamicController.onRemove,
++                    onSetTop: _memberDynamicController.onSetTop,
++                  );
++                },
++                gridItemBuilder: (context, index) =>
++                    DynamicGridCard(item: response[index]),
++                onLoadMore: () => _memberDynamicController.onLoadMore(),
++              )
+             : HttpError(onReload: _memberDynamicController.onReload),
+       Error(:final errMsg) => HttpError(
+         errMsg: errMsg,
+diff --git a/lib/pages/member_favorite/view.dart b/lib/pages/member_favorite/view.dart
+index 1ad4b187a..e17ef0aab 100644
+--- a/lib/pages/member_favorite/view.dart
++++ b/lib/pages/member_favorite/view.dart
+@@ -77,22 +77,37 @@ class _MemberFavoriteState extends State<MemberFavorite>
+       ),
+       Success(:final response) =>
+         response != null && response.isNotEmpty
+-            ? SliverMainAxisGroup(
+-                slivers: [
+-                  _buildItem(
+-                    theme,
+-                    data: _controller.favState,
+-                    isEnd: _controller.favEnd,
+-                    isFav: true,
+-                  ),
+-                  _buildItem(
+-                    theme,
+-                    data: _controller.subState,
+-                    isEnd: _controller.subEnd,
+-                    isFav: false,
++            ? Obx(() {
++                final list = _controller.favState.value.mediaListResponse?.list;
++                if (list != null && list.isNotEmpty) {
++                  return SliverGrid.builder(
++                    gridDelegate: gridDelegate,
++                    itemCount: list.length,
++                    itemBuilder: (context, index) {
++                      final item = list[index];
++                      return SizedBox(
++                        height: 110,
++                        child: MemberFavItem(
++                          item: item,
++                          onDelete: (isDeleted) {
++                            if (isDeleted ?? false) {
++                              _controller.favState
++                                ..value.mediaListResponse?.list?.remove(item)
++                                ..refresh();
++                            }
++                          },
++                        ),
++                      );
++                    },
++                  );
++                }
++                return SliverToBoxAdapter(
++                  child: SizedBox(
++                    height: 200,
++                    child: Center(child: Text('暂无收藏夹')),
+                   ),
+-                ],
+-              )
++                );
++              })
+             : HttpError(onReload: _controller.onReload),
+       Error(:final errMsg) => HttpError(
+         errMsg: errMsg,
+diff --git a/lib/pages/member_search/child/view.dart b/lib/pages/member_search/child/view.dart
+index ec4259884..a7d536e96 100644
+--- a/lib/pages/member_search/child/view.dart
++++ b/lib/pages/member_search/child/view.dart
+@@ -2,16 +2,14 @@ import 'package:PiliPlus/common/widgets/flutter/refresh_indicator.dart';
+ import 'package:PiliPlus/common/widgets/loading_widget/http_error.dart';
+ import 'package:PiliPlus/http/loading_state.dart';
+ import 'package:PiliPlus/models/common/member/search_type.dart';
++import 'package:PiliPlus/pages/dynamics/widgets/dynamic_grid_card.dart';
+ import 'package:PiliPlus/pages/dynamics/widgets/dynamic_panel.dart';
+ import 'package:PiliPlus/pages/member_search/child/controller.dart';
+ import 'package:PiliPlus/pages/member_search/child/widgets/search_archive_grpc.dart';
+-import 'package:PiliPlus/utils/global_data.dart';
+ import 'package:PiliPlus/utils/grid.dart';
+ import 'package:PiliPlus/utils/waterfall.dart';
+ import 'package:flutter/material.dart';
+ import 'package:get/get.dart';
+-import 'package:waterfall_flow/waterfall_flow.dart'
+-    hide SliverWaterfallFlowDelegateWithMaxCrossAxisExtent;
+ 
+ class MemberSearchChildPage extends StatefulWidget {
+   const MemberSearchChildPage({
+@@ -83,28 +81,16 @@ class _MemberSearchChildPageState extends State<MemberSearchChildPage>
+                   itemCount: response.length,
+                 ),
+                 MemberSearchType.dynamic =>
+-                  GlobalData().dynamicsWaterfallFlow
+-                      ? SliverWaterfallFlow(
+-                          gridDelegate: dynGridDelegate,
+-                          delegate: SliverChildBuilderDelegate(
+-                            (_, index) {
+-                              if (index == response.length - 1) {
+-                                _controller.onLoadMore();
+-                              }
+-                              return DynamicPanel(item: response[index]);
+-                            },
+-                            childCount: response.length,
+-                          ),
+-                        )
+-                      : SliverList.builder(
+-                          itemBuilder: (context, index) {
+-                            if (index == response.length - 1) {
+-                              _controller.onLoadMore();
+-                            }
+-                            return DynamicPanel(item: response[index]);
+-                          },
+-                          itemCount: response.length,
+-                        ),
++                  buildDynamicContent(
++                    context: context,
++                    itemCount: response.length,
++                    itemBuilder: (context, index) {
++                      return DynamicPanel(item: response[index]);
++                    },
++                    gridItemBuilder: (context, index) =>
++                        DynamicGridCard(item: response[index]),
++                    onLoadMore: () => _controller.onLoadMore(),
++                  ),
+               }
+             : HttpError(onReload: _controller.onReload),
+       Error(:final errMsg) => HttpError(
+diff --git a/lib/pages/member_video/view.dart b/lib/pages/member_video/view.dart
+index d9185d8e2..ab99cb813 100644
+--- a/lib/pages/member_video/view.dart
++++ b/lib/pages/member_video/view.dart
+@@ -1,20 +1,14 @@
+ import 'package:PiliPlus/common/style.dart';
+ import 'package:PiliPlus/common/widgets/flutter/refresh_indicator.dart';
+ import 'package:PiliPlus/common/widgets/loading_widget/http_error.dart';
+-import 'package:PiliPlus/common/widgets/scroll_physics.dart';
+-import 'package:PiliPlus/common/widgets/sliver/sliver_floating_header.dart';
+ import 'package:PiliPlus/http/loading_state.dart';
+ import 'package:PiliPlus/models/common/member/contribute_type.dart';
+ import 'package:PiliPlus/models_new/space/space_archive/item.dart';
+-import 'package:PiliPlus/pages/common/fab_mixin.dart';
+ import 'package:PiliPlus/pages/member/controller.dart';
+ import 'package:PiliPlus/pages/member_video/controller.dart';
+ import 'package:PiliPlus/pages/member_video/widgets/video_card_h_member_video.dart';
+ import 'package:PiliPlus/utils/grid.dart';
+-import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
+-import 'package:flutter/foundation.dart' show kDebugMode;
+ import 'package:flutter/material.dart';
+-import 'package:flutter/scheduler.dart';
+ import 'package:get/get.dart';
+ 
+ class MemberVideo extends StatefulWidget {
+@@ -44,32 +38,12 @@ class MemberVideo extends StatefulWidget {
+ class _MemberVideoState extends State<MemberVideo>
+     with
+         AutomaticKeepAliveClientMixin,
+-        GridMixin,
+-        SingleTickerProviderStateMixin,
+-        BaseFabMixin,
+-        LazyFabMixin {
++        GridMixin {
+   @override
+   bool get wantKeepAlive => true;
+ 
+   late final MemberVideoCtr _controller;
+ 
+-  int? _index;
+-  late ExtendedNestedScrollController _scrollController;
+-
+-  void _jumpToIndex(int index) {
+-    final scrollOffset = gridDelegate.layoutCache!
+-        .getGeometryForChildIndex(index)
+-        .scrollOffset;
+-    try {
+-      _scrollController.nestedPositions
+-          .elementAt(_index!)
+-          .localJumpTo(scrollOffset);
+-    } catch (e) {
+-      _scrollController.jumpTo(scrollOffset);
+-      if (kDebugMode) debugPrint('jump error: $e');
+-    }
+-  }
+-
+   @override
+   void initState() {
+     super.initState();
+@@ -92,96 +66,25 @@ class _MemberVideoState extends State<MemberVideo>
+     super.build(context);
+     final theme = Theme.of(context);
+     final padding = MediaQuery.viewPaddingOf(context);
+-    final child = refreshIndicator(
+-      onRefresh: () async {
+-        final count = _controller.loadingState.value.dataOrNull?.length;
+-        await _controller.onRefresh();
+-        if (_controller.isLocating.value && mounted) {
+-          final newCount = _controller.loadingState.value.dataOrNull?.length;
+-          if (count != null && newCount != null && newCount > count) {
+-            SchedulerBinding.instance.addPostFrameCallback((_) {
+-              _jumpToIndex(newCount - count);
+-            });
+-          }
+-        }
+-      },
+-      child: CustomScrollView(
+-        physics: ReloadScrollPhysics(controller: _controller),
+-        slivers: [
+-          SliverPadding(
+-            padding: EdgeInsets.only(bottom: padding.bottom + 100),
+-            sliver: Obx(
+-              () => _buildBody(theme, _controller.loadingState.value),
++    return Container(
++      constraints: const BoxConstraints.expand(),
++      child: refreshIndicator(
++        onRefresh: () async {
++          await _controller.onRefresh();
++        },
++        child: CustomScrollView(
++          physics: const AlwaysScrollableScrollPhysics(),
++          slivers: [
++            SliverPadding(
++              padding: EdgeInsets.only(bottom: padding.bottom + 100),
++              sliver: Obx(
++                () => _buildBody(theme, _controller.loadingState.value),
++              ),
+             ),
+-          ),
+-        ],
++          ],
++        ),
+       ),
+     );
+-    if (_controller.isVideo && _controller.fromViewAid?.isNotEmpty == true) {
+-      if (_index == null) {
+-        _scrollController =
+-            PrimaryScrollController.of(this.context)
+-                as ExtendedNestedScrollController;
+-        _index = _scrollController.nestedPositions.length;
+-      }
+-      return Stack(
+-        clipBehavior: Clip.none,
+-        children: [
+-          NotificationListener<UserScrollNotification>(
+-            onNotification: (notification) {
+-              final direction = notification.direction;
+-              if (direction == .forward) {
+-                showFab();
+-              } else if (direction == .reverse) {
+-                hideFab();
+-              }
+-              return false;
+-            },
+-            child: child,
+-          ),
+-          Obx(
+-            () => !_controller.isLocating.value
+-                ? Positioned(
+-                    right: kFloatingActionButtonMargin,
+-                    bottom: 0,
+-                    child: SlideTransition(
+-                      position: fabAnimation,
+-                      child: Padding(
+-                        padding: .only(
+-                          bottom: padding.bottom + kFloatingActionButtonMargin,
+-                        ),
+-                        child: FloatingActionButton.extended(
+-                          onPressed: () {
+-                            final fromViewAid = _controller.fromViewAid;
+-                            _controller.isLocating.value = true;
+-                            final locatedIndex =
+-                                _controller.loadingState.value.dataOrNull
+-                                    ?.indexWhere(
+-                                      (i) => i.param == fromViewAid,
+-                                    ) ??
+-                                -1;
+-                            if (locatedIndex == -1) {
+-                              _controller
+-                                ..lastAid = fromViewAid
+-                                ..reload = true
+-                                ..page = 0
+-                                ..loadingState.value = LoadingState.loading()
+-                                ..queryData();
+-                            } else {
+-                              _jumpToIndex(locatedIndex);
+-                            }
+-                          },
+-                          label: const Text('定位至上次观看'),
+-                        ),
+-                      ),
+-                    ),
+-                  )
+-                : const SizedBox.shrink(),
+-          ),
+-        ],
+-      );
+-    }
+-    return child;
+   }
+ 
+   @override
+@@ -200,7 +103,19 @@ class _MemberVideoState extends State<MemberVideo>
+         response != null && response.isNotEmpty
+             ? SliverMainAxisGroup(
+                 slivers: [
+-                  _buildHeader(theme),
++                  SliverToBoxAdapter(
++                    child: Padding(
++                      padding: const EdgeInsets.fromLTRB(14, 2.5, 8, 2.5),
++                      child: Row(
++                        children: [
++                          ?_buildCount(),
++                          ?_buildEpisodeBtn(theme),
++                          const Spacer(),
++                          _buildSortBtn(theme),
++                        ],
++                      ),
++                    ),
++                  ),
+                   SliverGrid.builder(
+                     gridDelegate: gridDelegate,
+                     itemBuilder: (context, index) {
+@@ -217,29 +132,22 @@ class _MemberVideoState extends State<MemberVideo>
+                   ),
+                 ],
+               )
+-            : HttpError(onReload: _controller.onReload),
+-      Error(:final errMsg) => HttpError(
+-        errMsg: errMsg,
+-        onReload: _controller.onReload,
+-      ),
+-    };
+-  }
+-
+-  Widget _buildHeader(ThemeData theme) {
+-    return SliverFloatingHeaderWidget(
+-      backgroundColor: theme.colorScheme.surface,
+-      child: Padding(
+-        padding: const EdgeInsets.fromLTRB(14, 2.5, 8, 2.5),
+-        child: Row(
+-          children: [
+-            ?_buildCount(),
+-            ?_buildEpisodeBtn(theme),
+-            const Spacer(),
+-            _buildSortBtn(theme),
+-          ],
++            : SliverFillRemaining(
++                hasScrollBody: false,
++                child: HttpError(
++                  onReload: _controller.onReload,
++                  isSliver: false,
++                ),
++              ),
++      Error(:final errMsg) => SliverFillRemaining(
++        hasScrollBody: false,
++        child: HttpError(
++          errMsg: errMsg,
++          onReload: _controller.onReload,
++          isSliver: false,
+         ),
+       ),
+-    );
++    };
+   }
+ 
+   Widget? _buildCount() {
+@@ -299,4 +207,4 @@ class _MemberVideoState extends State<MemberVideo>
+       ),
+     );
+   }
+-}
++}
+\ No newline at end of file
+diff --git a/lib/pages/mine/view.dart b/lib/pages/mine/view.dart
+index 8f5c92b94..e9ce5b5d9 100644
+--- a/lib/pages/mine/view.dart
++++ b/lib/pages/mine/view.dart
+@@ -9,11 +9,17 @@ import 'package:PiliPlus/http/loading_state.dart';
+ import 'package:PiliPlus/models/common/nav_bar_config.dart';
+ import 'package:PiliPlus/models_new/fav/fav_folder/list.dart';
+ import 'package:PiliPlus/pages/common/common_page.dart';
++import 'package:PiliPlus/pages/history/view.dart';
+ import 'package:PiliPlus/pages/home/view.dart';
++import 'package:PiliPlus/pages/later/view.dart';
+ import 'package:PiliPlus/pages/login/controller.dart';
+ import 'package:PiliPlus/pages/main/controller.dart';
++import 'package:PiliPlus/pages/member_favorite/view.dart';
++import 'package:PiliPlus/pages/mine/controller.dart';
+ import 'package:PiliPlus/pages/mine/controller.dart';
+ import 'package:PiliPlus/pages/mine/widgets/item.dart';
++import 'package:PiliPlus/pages/subscription/view.dart';
++import 'package:PiliPlus/utils/accounts.dart';
+ import 'package:PiliPlus/utils/bili_utils.dart';
+ import 'package:PiliPlus/utils/extension/get_ext.dart';
+ import 'package:PiliPlus/utils/extension/num_ext.dart';
+@@ -36,7 +42,7 @@ class MinePage extends StatefulWidget {
+ }
+ 
+ class _MediaPageState extends CommonPageState<MinePage>
+-    with AutomaticKeepAliveClientMixin {
++    with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
+   final MineController controller = Get.putOrFind(MineController.new);
+   late final MainController _mainController = Get.find<MainController>();
+ 
+@@ -68,39 +74,76 @@ class _MediaPageState extends CommonPageState<MinePage>
+     super.build(context);
+     final theme = Theme.of(context);
+     final secondary = theme.colorScheme.secondary;
++    final padding = MediaQuery.viewPaddingOf(context);
+     return Column(
+       children: [
++        // 顶部操作栏（搜索、设置等）
+         Padding(
+-          padding: const .symmetric(vertical: 10),
++          padding: EdgeInsets.only(
++            top: padding.top + 8,
++            right: 8,
++          ),
+           child: _buildHeaderActions,
+         ),
++        // 用户信息精简行
++        _buildUserInfo(theme, secondary),
++        _buildTabBar(theme),
++        // TabBarView 内容
+         Expanded(
+-          child: Material(
+-            type: .transparency,
+-            child: refreshIndicator(
+-              onRefresh: controller.onRefresh,
+-              child: onBuild(
+-                ListView(
+-                  padding: const .only(bottom: 100),
+-                  physics: const AlwaysScrollableScrollPhysics(),
+-                  children: [
+-                    _buildUserInfo(theme, secondary),
+-                    _buildActions(secondary),
+-                    Obx(
+-                      () => controller.loadingState.value is Loading
+-                          ? const SizedBox.shrink()
+-                          : _buildFav(theme, secondary),
+-                    ),
+-                  ],
+-                ),
+-              ),
+-            ),
++          child: TabBarView(
++            controller: _tabController,
++            children: _tabPages,
+           ),
+         ),
+       ],
+     );
+   }
+ 
++  @override
++  void dispose() {
++    _tabController.dispose();
++    super.dispose();
++  }
++
++  late final TabController _tabController = TabController(
++    length: _tabPages.length,
++    vsync: this,
++  );
++
++  late final List<_TabItem> _tabItems = const [
++    _TabItem('观看记录', 'history'),
++    _TabItem('我的收藏', 'favorite'),
++    _TabItem('我的订阅', 'subscribe'),
++    _TabItem('稍后再看', 'later'),
++  ];
++
++  late final List<Widget> _tabPages = _tabItems.map((t) {
++    final heroTag = Utils.makeHeroTag(0);
++    return switch (t.param) {
++      'history' => const HistoryPage(hideSubTabs: true),
++      'favorite' => MemberFavorite(heroTag: heroTag, mid: _userMid),
++      'subscribe' => const SubPage(),
++      'later' => const LaterPage(),
++      _ => const SizedBox.shrink(),
++    };
++  }).toList();
++
++  int get _userMid => Accounts.main.mid;
++
++  Widget _buildTabBar(ThemeData theme) {
++    return SizedBox(
++      height: 44,
++      child: TabBar(
++        controller: _tabController,
++        tabs: _tabItems.map((t) => Tab(text: t.label)).toList(),
++        labelStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
++        unselectedLabelColor: theme.colorScheme.outline,
++        indicatorColor: theme.colorScheme.primary,
++        dividerColor: theme.dividerColor.withValues(alpha: 0.2),
++      ),
++    );
++  }
++
+   Widget _buildActions(Color primary) {
+     return Row(
+       mainAxisAlignment: .spaceEvenly,
+@@ -241,7 +284,6 @@ class _MediaPageState extends CommonPageState<MinePage>
+     return Obx(() {
+       final userInfo = controller.userInfo.value;
+       final levelInfo = userInfo.levelInfo;
+-      final hasLevel = levelInfo != null;
+       final isVip = userInfo.vipStatus != null && userInfo.vipStatus! > 0;
+       final userStat = controller.userStat.value;
+       return Column(
+@@ -349,55 +391,41 @@ class _MediaPageState extends CommonPageState<MinePage>
+                           ],
+                         ),
+                       ),
+-                      const SizedBox(height: 4),
+-                      ConstrainedBox(
+-                        constraints: const BoxConstraints(maxWidth: 225),
+-                        child: LinearProgressIndicator(
+-                          minHeight: 2.25,
+-                          value: hasLevel
+-                              ? levelInfo.currentExp! / levelInfo.nextExp!
+-                              : 0,
+-                          backgroundColor: theme.colorScheme.outline.withValues(
+-                            alpha: 0.4,
+-                          ),
+-                          valueColor: AlwaysStoppedAnimation<Color>(secondary),
+-                          stopIndicatorColor: Colors.transparent,
+-                        ),
+-                      ),
+                     ],
+                   ),
+                 ),
++                const SizedBox(width: 12),
++                // 动态 关注 粉丝 — 水平紧凑排列
++                Row(
++                  mainAxisSize: .min,
++                  children: [
++                    _btn(
++                      count: userStat.dynamicCount,
++                      countStyle: style,
++                      name: '动态',
++                      labelStyle: labelStyle,
++                      onTap: () => controller.push('memberDynamics'),
++                    ),
++                    _btn(
++                      count: userStat.following,
++                      countStyle: style,
++                      name: '关注',
++                      labelStyle: labelStyle,
++                      onTap: () => controller.push('follow'),
++                    ),
++                    _btn(
++                      count: userStat.follower,
++                      countStyle: style,
++                      name: '粉丝',
++                      labelStyle: labelStyle,
++                      onTap: () => controller.push('fan'),
++                    ),
++                  ],
++                ),
+                 const SizedBox(width: 20),
+               ],
+             ),
+           ),
+-          const SizedBox(height: 10),
+-          Row(
+-            mainAxisAlignment: .spaceEvenly,
+-            children: [
+-              _btn(
+-                count: userStat.dynamicCount,
+-                countStyle: style,
+-                name: '动态',
+-                labelStyle: labelStyle,
+-                onTap: () => controller.push('memberDynamics'),
+-              ),
+-              _btn(
+-                count: userStat.following,
+-                countStyle: style,
+-                name: '关注',
+-                labelStyle: labelStyle,
+-                onTap: () => controller.push('follow'),
+-              ),
+-              _btn(
+-                count: userStat.follower,
+-                countStyle: style,
+-                name: '粉丝',
+-                labelStyle: labelStyle,
+-                onTap: () => controller.push('fan'),
+-              ),
+-            ],
+-          ),
+         ],
+       );
+     });
+@@ -567,3 +595,9 @@ class _MediaPageState extends CommonPageState<MinePage>
+     };
+   }
+ }
++
++class _TabItem {
++  final String label;
++  final String param;
++  const _TabItem(this.label, this.param);
++}
+diff --git a/lib/pages/my_reply/view.dart b/lib/pages/my_reply/view.dart
+index 1136d8517..8e26e6b25 100644
+--- a/lib/pages/my_reply/view.dart
++++ b/lib/pages/my_reply/view.dart
+@@ -16,7 +16,6 @@ import 'package:PiliPlus/utils/waterfall.dart';
+ import 'package:flutter/foundation.dart' show kDebugMode;
+ import 'package:flutter/material.dart';
+ import 'package:get/get.dart';
+-import 'package:waterfall_flow/waterfall_flow.dart';
+ 
+ class MyReply extends StatefulWidget {
+   const MyReply({super.key});
+@@ -79,18 +78,16 @@ class _MyReplyState extends State<MyReply> with DynMixin {
+         slivers: [
+           _replies.isNotEmpty
+               ? ViewSliverSafeArea(
+-                  sliver: SliverWaterfallFlow(
+-                    gridDelegate: dynGridDelegate,
+-                    delegate: SliverChildBuilderDelegate(
+-                      childCount: _replies.length,
+-                      (context, index) => ReplyItemGrpc(
+-                        replyLevel: 0,
+-                        needDivider: false,
+-                        replyItem: _replies[index],
+-                        replyReply: _replyReply,
+-                        onDelete: (_, _) => _onDelete(index),
+-                        onCheckReply: _onCheckReply,
+-                      ),
++                  sliver: buildDynamicContent(
++                    context: context,
++                    itemCount: _replies.length,
++                    itemBuilder: (context, index) => ReplyItemGrpc(
++                      replyLevel: 0,
++                      needDivider: false,
++                      replyItem: _replies[index],
++                      replyReply: _replyReply,
++                      onDelete: (_, _) => _onDelete(index),
++                      onCheckReply: _onCheckReply,
+                     ),
+                   ),
+                 )
+diff --git a/lib/pages/rcmd/view.dart b/lib/pages/rcmd/view.dart
+index cae5cd4b1..939b7211a 100644
+--- a/lib/pages/rcmd/view.dart
++++ b/lib/pages/rcmd/view.dart
+@@ -30,7 +30,7 @@ class _RcmdPageState extends State<RcmdPage>
+     final colorScheme = ColorScheme.of(context);
+     return Container(
+       clipBehavior: .hardEdge,
+-      margin: const .symmetric(horizontal: Style.safeSpace),
++      margin: EdgeInsets.symmetric(horizontal: Pref.edgePadding),
+       decoration: const BoxDecoration(borderRadius: Style.mdRadius),
+       child: refreshIndicator(
+         onRefresh: controller.onRefresh,
+@@ -39,7 +39,7 @@ class _RcmdPageState extends State<RcmdPage>
+           physics: const AlwaysScrollableScrollPhysics(),
+           slivers: [
+             SliverPadding(
+-              padding: const .only(top: Style.cardSpace, bottom: 100),
++              padding: EdgeInsets.only(top: Pref.cardSpacing, bottom: 100),
+               sliver: Obx(
+                 () => _buildBody(colorScheme, controller.loadingState.value),
+               ),
+@@ -51,11 +51,11 @@ class _RcmdPageState extends State<RcmdPage>
+   }
+ 
+   late final gridDelegate = SliverGridDelegateWithExtentAndRatio(
+-    mainAxisSpacing: Style.cardSpace,
+-    crossAxisSpacing: Style.cardSpace,
++    mainAxisSpacing: Pref.cardSpacing,
++    crossAxisSpacing: Pref.cardSpacing,
+     maxCrossAxisExtent: Pref.recommendCardWidth,
+     childAspectRatio: Style.aspectRatio,
+-    mainAxisExtent: MediaQuery.textScalerOf(context).scale(90),
++    mainAxisExtent: MediaQuery.textScalerOf(context).scale(75),
+   );
+ 
+   Widget _buildBody(
+diff --git a/lib/pages/setting/models/extra_settings.dart b/lib/pages/setting/models/extra_settings.dart
+index 809c8bb59..b7cc4254e 100644
+--- a/lib/pages/setting/models/extra_settings.dart
++++ b/lib/pages/setting/models/extra_settings.dart
+@@ -1111,7 +1111,7 @@ Future<void> _showDefDynDialog(
+     builder: (context) => SelectDialog<DynamicsTabType>(
+       title: '动态展示',
+       value: Pref.defaultDynamicType,
+-      values: DynamicsTabType.values.take(4).map((e) => (e, e.label)).toList(),
++      values: DynamicsTabType.values.take(3).map((e) => (e, e.label)).toList(),
+     ),
+   );
+   if (res != null) {
+diff --git a/lib/pages/setting/models/style_settings.dart b/lib/pages/setting/models/style_settings.dart
+index 5be370a61..83babafe3 100644
+--- a/lib/pages/setting/models/style_settings.dart
++++ b/lib/pages/setting/models/style_settings.dart
+@@ -136,6 +136,18 @@ List<SettingsModel> get styleSettings => [
+         '当前: 主页${Pref.recommendCardWidth.toInt()}dp 其他${Pref.smallCardWidth.toInt()}dp，屏幕宽度:${MediaQuery.widthOf(Get.context!).toPrecision(2)}dp。宽度越小列数越多。',
+     onTap: _showCardWidthDialog,
+   ),
++  NormalModel(
++    leading: const Icon(Icons.space_bar_outlined),
++    title: '首页/动态页卡片间距',
++    getSubtitle: () => '当前：${Pref.cardSpacing.toInt()}px',
++    onTap: _showCardSpacingDialog,
++  ),
++  NormalModel(
++    leading: const Icon(Icons.straighten_outlined),
++    title: '首页/动态页卡片边缘距离',
++    getSubtitle: () => '当前：${Pref.edgePadding.toInt()}px',
++    onTap: _showEdgePaddingDialog,
++  ),
+   const SwitchModel(
+     title: '播放页移除安全边距',
+     leading: Icon(Icons.fit_screen_outlined),
+@@ -148,13 +160,21 @@ List<SettingsModel> get styleSettings => [
+     setKey: SettingBoxKey.darkVideoPage,
+     defaultVal: false,
+   ),
+-  SwitchModel(
+-    title: '动态页启用瀑布流',
+-    subtitle: '关闭会显示为单列',
++  NormalModel(
++    title: '动态页布局模式',
+     leading: const Icon(Icons.view_array_outlined),
+-    setKey: SettingBoxKey.dynamicsWaterfallFlow,
+-    defaultVal: Pref.horizontalScreen,
+-    needReboot: true,
++    getSubtitle: () {
++      final mode = Pref.dynamicLayoutMode;
++      final label = switch (mode) { 0 => '瀑布流', 1 => '网格对齐', _ => '单列列表' };
++      return '当前：$label';
++    },
++    onTap: _showDynLayoutDialog,
++  ),
++  NormalModel(
++    title: '动态页卡片宽度',
++    leading: const Icon(Icons.grid_view_outlined),
++    getSubtitle: () => '当前：${Pref.recommendCardWidth.toInt()}dp',
++    onTap: _showDynGridCardWidthDialog,
+   ),
+   NormalModel(
+     title: '动态页UP主显示位置',
+@@ -695,6 +715,50 @@ Future<void> _showCardWidthDialog(
+   }
+ }
+ 
++Future<void> _showCardSpacingDialog(
++  BuildContext context,
++  VoidCallback setState,
++) async {
++  final res = await showDialog<double>(
++    context: context,
++    builder: (context) => SliderDialog(
++      title: const Text('首页/动态页卡片间距'),
++      value: Pref.cardSpacing,
++      min: 0,
++      max: 30,
++      divisions: 30,
++      suffix: 'px',
++      precise: 0,
++    ),
++  );
++  if (res != null) {
++    await GStorage.setting.put(SettingBoxKey.cardSpacing, res.toDouble());
++    setState();
++  }
++}
++
++Future<void> _showEdgePaddingDialog(
++  BuildContext context,
++  VoidCallback setState,
++) async {
++  final res = await showDialog<double>(
++    context: context,
++    builder: (context) => SliderDialog(
++      title: const Text('首页/动态页卡片与边缘距离'),
++      value: Pref.edgePadding,
++      min: 0,
++      max: 30,
++      divisions: 30,
++      suffix: 'px',
++      precise: 0,
++    ),
++  );
++  if (res != null) {
++    await GStorage.setting.put(SettingBoxKey.edgePadding, res.toDouble());
++    setState();
++  }
++}
++
+ Future<void> _showUpPosDialog(
+   BuildContext context,
+   VoidCallback setState,
+@@ -926,6 +990,55 @@ Future<void> _showBarHideTypeDialog(
+   }
+ }
+ 
++Future<void> _showDynLayoutDialog(
++  BuildContext context,
++  VoidCallback setState,
++) async {
++  final res = await showDialog<int>(
++    context: context,
++    builder: (context) => SelectDialog<int>(
++      title: '动态页布局模式',
++      value: Pref.dynamicLayoutMode,
++      values: const [
++        (0, '瀑布流（不等高，自动列数）'),
++        (1, '网格对齐（等高，可调列数）'),
++        (2, '单列列表'),
++      ],
++    ),
++  );
++  if (res != null) {
++    await GStorage.setting.putAll({
++      SettingBoxKey.dynamicLayoutMode: res,
++      SettingBoxKey.dynamicsWaterfallFlow: res == 0,
++    });
++    SmartDialog.showToast('重启生效');
++    setState();
++  }
++}
++
++Future<void> _showDynGridCardWidthDialog(
++  BuildContext context,
++  VoidCallback setState,
++) async {
++  final res = await showDialog<double>(
++    context: context,
++    builder: (context) => SliderDialog(
++      title: const Text('动态页卡片宽度'),
++      value: Pref.recommendCardWidth,
++      min: 150,
++      max: 500,
++      divisions: 35,
++      suffix: 'dp',
++      precise: 0,
++    ),
++  );
++  if (res != null) {
++    await GStorage.setting.put(SettingBoxKey.recommendCardWidth, res.toDouble());
++    SmartDialog.showToast('重启生效');
++    setState();
++  }
++}
++
+ NormalModel _useSSDModel() {
+   final file = File(path.join(appSupportDirPath, 'use_ssd'));
+   void onChanged(BuildContext context, VoidCallback setState) {
+diff --git a/lib/pages/subscription/view.dart b/lib/pages/subscription/view.dart
+index 6d9ef4d63..65875df49 100644
+--- a/lib/pages/subscription/view.dart
++++ b/lib/pages/subscription/view.dart
+@@ -23,7 +23,10 @@ class _SubPageState extends State<SubPage> with GridMixin {
+   Widget build(BuildContext context) {
+     return Scaffold(
+       resizeToAvoidBottomInset: false,
+-      appBar: AppBar(title: const Text('我的订阅')),
++      appBar: const PreferredSize(
++        preferredSize: Size.zero,
++        child: SizedBox.shrink(),
++      ),
+       body: refreshIndicator(
+         onRefresh: _subController.onRefresh,
+         child: CustomScrollView(
+diff --git a/lib/pages/video/member/view.dart b/lib/pages/video/member/view.dart
+index 18cf3ccfd..ca9ac2e30 100644
+--- a/lib/pages/video/member/view.dart
++++ b/lib/pages/video/member/view.dart
+@@ -381,7 +381,7 @@ class _HorizontalMemberPageState extends State<HorizontalMemberPage> {
+           mid: widget.mid,
+           name: memberInfoModel.name,
+         );
+-      case UserInfoType.like:
++      case UserInfoType.dyn:
+         num = userStat['likes'] != null
+             ? NumUtils.numFormat(userStat['likes'])
+             : '';
+diff --git a/lib/plugin/pl_player/controller.dart b/lib/plugin/pl_player/controller.dart
+index b7efe4bcf..2c222dd64 100644
+--- a/lib/plugin/pl_player/controller.dart
++++ b/lib/plugin/pl_player/controller.dart
+@@ -866,6 +866,7 @@ class PlPlayerController with BlockConfigMixin {
+ 
+   // 开始播放
+   Future<void> _initializePlayer() async {
++    // PiP mode is queried via AndroidHelper.isPipMode native JNI field
+     if (_instance == null) return;
+     // 设置倍速
+     if (isLive) {
+@@ -1529,8 +1530,10 @@ class PlPlayerController with BlockConfigMixin {
+ 
+   void onCloseAll() {
+     _isCloseAll = true;
+-    dispose();
+-    Get.until((route) => route.isFirst);
++    triggerFullScreen(status: false).then((_) {
++      Get.until((route) => route.isFirst);
++      dispose();
++    });
+   }
+ 
+   void dispose() {
+diff --git a/lib/utils/global_data.dart b/lib/utils/global_data.dart
+index ff75d45c7..9c21d3a35 100644
+--- a/lib/utils/global_data.dart
++++ b/lib/utils/global_data.dart
+@@ -14,6 +14,8 @@ class GlobalData {
+   Set<int> blackMids = Pref.blackMids;
+ 
+   bool dynamicsWaterfallFlow = Pref.dynamicsWaterfallFlow;
++  int dynamicLayoutMode = Pref.dynamicLayoutMode;
++  int dynamicsGridColumns = Pref.dynamicsGridColumns;
+ 
+   bool showMedal = Pref.showMedal;
+ 
+diff --git a/lib/utils/storage_key.dart b/lib/utils/storage_key.dart
+index 752859b51..0d483a709 100644
+--- a/lib/utils/storage_key.dart
++++ b/lib/utils/storage_key.dart
+@@ -220,6 +220,8 @@ abstract final class SettingBoxKey {
+       smallCardWidth = 'smallCardWidth',
+       recommendCardWidth = 'recommendCardWidth',
+       dynamicsWaterfallFlow = 'dynamicsWaterfallFlow',
++      dynamicLayoutMode = 'dynamicLayoutMode',
++      dynamicsGridColumns = 'dynamicsGridColumns',
+       upPanelPosition = 'upPanelPosition',
+       dynamicsShowAllFollowedUp = 'dynamicsShowAllFollowedUp',
+       useSideBar = 'useSideBar',
+@@ -235,6 +237,8 @@ abstract final class SettingBoxKey {
+       tempPlayerConf = 'tempPlayerConf',
+       reduceLuxColor = 'reduceLuxColor',
+       liveCdnUrl = 'liveCdnUrl',
++      cardSpacing = 'cardSpacing',
++      edgePadding = 'edgePadding',
+       saveReply = 'saveReply';
+ }
+ 
+diff --git a/lib/utils/storage_pref.dart b/lib/utils/storage_pref.dart
+index 14cdff96a..918de6b90 100644
+--- a/lib/utils/storage_pref.dart
++++ b/lib/utils/storage_pref.dart
+@@ -318,8 +318,16 @@ abstract final class Pref {
+ 
+   static int get defaultDynamicTypeIndex => _setting.get(
+     SettingBoxKey.defaultDynamicType,
+-    defaultValue: DynamicsTabType.all.index,
++    defaultValue: DynamicsTabType.video.index,
+   );
++  // 迁移：旧枚举删了 all/article，所有索引左移并截断
++  static int get migratedDefaultDynamicTypeIndex {
++    final idx = defaultDynamicTypeIndex;
++    if (idx == 0) return 0; // all → video（不变）
++    // video(1)→video(0), pgc(2)→pgc(1), article/up(3+)→up(2)
++    final migrated = idx - 1;
++    return migrated.clamp(0, DynamicsTabType.values.length - 1);
++  }
+ 
+   static bool get showDynInteraction =>
+       _setting.get(SettingBoxKey.showDynInteraction, defaultValue: true);
+@@ -688,6 +696,31 @@ abstract final class Pref {
+     defaultValue: horizontalScreen,
+   );
+ 
++  /// 动态页布局模式: 0=瀑布流 1=网格对齐 2=单列列表
++  /// 默认值从 dynamicsWaterfallFlow 派生，保证旧版本迁移兼容
++  static int get dynamicLayoutMode => _setting.get(
++    SettingBoxKey.dynamicLayoutMode,
++    defaultValue: Pref.dynamicsWaterfallFlow ? 0 : 2,
++  );
++
++  /// 网格对齐模式列数
++  static int get dynamicsGridColumns => _setting.get(
++    SettingBoxKey.dynamicsGridColumns,
++    defaultValue: 4,
++  );
++
++  /// 卡片间距（首页和动态页的 mainAxisSpacing / crossAxisSpacing）
++  static double get cardSpacing => _setting.get(
++    SettingBoxKey.cardSpacing,
++    defaultValue: 20.0,
++  );
++
++  /// 卡片与边缘间距（首页和动态页的 horizontal padding）
++  static double get edgePadding => _setting.get(
++    SettingBoxKey.edgePadding,
++    defaultValue: 12.0,
++  );
++
+   static bool get hideTopBar => _setting.get(
+     SettingBoxKey.hideTopBar,
+     defaultValue: PlatformUtils.isMobile,
+diff --git a/lib/utils/waterfall.dart b/lib/utils/waterfall.dart
+index c19fc159b..e6c8b9a42 100644
+--- a/lib/utils/waterfall.dart
++++ b/lib/utils/waterfall.dart
+@@ -2,22 +2,35 @@ import 'package:PiliPlus/common/skeleton/dynamic_card.dart';
+ import 'package:PiliPlus/common/style.dart';
+ import 'package:PiliPlus/utils/global_data.dart';
+ import 'package:PiliPlus/utils/grid.dart';
++import 'package:PiliPlus/utils/storage_pref.dart';
+ import 'package:flutter/material.dart';
+ import 'package:flutter/rendering.dart' show SliverConstraints;
+ import 'package:waterfall_flow/waterfall_flow.dart'
+-    show SliverWaterfallFlowDelegate;
++    show SliverWaterfallFlowDelegate, SliverWaterfallFlow;
++
++/// 动态页布局模式
++/// 0 = 瀑布流（不等高，自动列数）
++/// 1 = 网格对齐（等高，可调列数）
++/// 2 = 单列列表
++int _layoutMode() => GlobalData().dynamicLayoutMode;
++bool _isGrid() => _layoutMode() == 1;
+ 
+ mixin DynMixin {
+   late final dynGridDelegate =
+       SliverWaterfallFlowDelegateWithMaxCrossAxisExtent(
+         maxCrossAxisExtent: Grid.smallCardWidth * 2,
+-        crossAxisSpacing: 4,
++        crossAxisSpacing: Pref.cardSpacing,
+       );
+ 
+   Widget buildPage(Widget child) {
+-    if (GlobalData().dynamicsWaterfallFlow) {
+-      return child;
++    // 瀑布流和网格模式：加左右 edgePadding 内边距
++    if (_layoutMode() != 2) {
++      return SliverPadding(
++        padding: EdgeInsets.symmetric(horizontal: Pref.edgePadding),
++        sliver: child,
++      );
+     }
++    // 单列列表模式：居中
+     return SliverLayoutBuilder(
+       builder: (context, constraints) {
+         final maxWidth = constraints.crossAxisExtent;
+@@ -25,7 +38,7 @@ mixin DynMixin {
+         final flag = cardWidth < maxWidth;
+         return SliverPadding(
+           padding: EdgeInsets.symmetric(
+-            horizontal: flag ? (maxWidth - cardWidth) / 2 : 0,
++            horizontal: flag ? (maxWidth - cardWidth) / 2 : Pref.edgePadding,
+           ),
+           sliver: child,
+         );
+@@ -34,14 +47,29 @@ mixin DynMixin {
+   }
+ 
+   late final skeDelegate = SliverGridDelegateWithExtentAndRatio(
+-    crossAxisSpacing: 4,
+-    mainAxisSpacing: 4,
++        crossAxisSpacing: Pref.cardSpacing,
++    mainAxisSpacing: Pref.cardSpacing,
+     maxCrossAxisExtent: Grid.smallCardWidth * 2,
+     childAspectRatio: Style.aspectRatio,
+     mainAxisExtent: 50,
+   );
+ 
+   Widget get dynSkeleton {
++    if (_isGrid()) {
++      return SliverGrid(
++        gridDelegate: SliverGridDelegateWithExtentAndRatio(
++          maxCrossAxisExtent: Pref.recommendCardWidth,
++          mainAxisSpacing: Pref.cardSpacing,
++          crossAxisSpacing: Pref.cardSpacing,
++          childAspectRatio: Style.aspectRatio,
++          mainAxisExtent: 78,
++        ),
++        delegate: SliverChildBuilderDelegate(
++          (_, _) => const DynamicCardSkeleton(),
++          childCount: 10,
++        ),
++      );
++    }
+     if (GlobalData().dynamicsWaterfallFlow) {
+       return SliverGrid.builder(
+         gridDelegate: skeDelegate,
+@@ -55,6 +83,60 @@ mixin DynMixin {
+       itemCount: 10,
+     );
+   }
++
++  /// 统一构建动态列表内容（瀑布流 / 网格对齐 / 单列）
++  Widget buildDynamicContent({
++    required BuildContext context,
++    required int itemCount,
++    required NullableIndexedWidgetBuilder itemBuilder,
++    NullableIndexedWidgetBuilder? gridItemBuilder,
++    VoidCallback? onLoadMore,
++  }) {
++    final g = GlobalData();
++    switch (g.dynamicLayoutMode) {
++      case 0: // 瀑布流
++        return SliverWaterfallFlow(
++          gridDelegate: dynGridDelegate,
++          delegate: SliverChildBuilderDelegate(
++            (context, index) {
++              if (index == itemCount - 1) onLoadMore?.call();
++              return itemBuilder(context, index);
++            },
++            childCount: itemCount,
++          ),
++        );
++      case 1: // 网格对齐
++        // 高度 = 16:10 封面 + 文字信息区
++        final spacing = Pref.cardSpacing;
++        final textAreaHeight = MediaQuery.textScalerOf(context).scale(78.0);
++        return SliverGrid(
++          gridDelegate: SliverGridDelegateWithExtentAndRatio(
++            maxCrossAxisExtent: Pref.recommendCardWidth,
++            mainAxisSpacing: spacing,
++            crossAxisSpacing: spacing,
++            childAspectRatio: Style.aspectRatio,
++            mainAxisExtent: textAreaHeight,
++          ),
++          delegate: SliverChildBuilderDelegate(
++            (context, index) {
++              if (index == itemCount - 1) onLoadMore?.call();
++              // 网格模式使用专用紧凑卡片
++              return (gridItemBuilder ?? itemBuilder)(context, index);
++            },
++            childCount: itemCount,
++          ),
++        );
++      case 2: // 单列列表
++      default:
++        return SliverList.builder(
++          itemBuilder: (context, index) {
++            if (index == itemCount - 1) onLoadMore?.call();
++            return itemBuilder(context, index);
++          },
++          itemCount: itemCount,
++        );
++    }
++  }
+ }
+ 
+ class SliverWaterfallFlowDelegateWithMaxCrossAxisExtent
+diff --git a/pubspec.lock b/pubspec.lock
+index e53656aac..06065b024 100644
+--- a/pubspec.lock
++++ b/pubspec.lock
+@@ -524,11 +524,10 @@ packages:
+   file_picker:
+     dependency: "direct main"
+     description:
+-      path: "."
+-      ref: dev
+-      resolved-ref: "02eb0aede6ca2278bea54eb5cc9ec520bf8165fc"
+-      url: "https://github.com/bggRGjQaUbCoE/flutter_file_picker.git"
+-    source: git
++      name: file_picker
++      sha256: fdc6a37f715d19f35b131decf1ce39242eeed5ddae18c0818c3eccb731ab76be
++      url: "https://pub.dev"
++    source: hosted
+     version: "12.0.0-beta.7"
+   file_selector_linux:
+     dependency: transitive
+diff --git a/pubspec.yaml b/pubspec.yaml
+index d00e14256..9a018239e 100644
+--- a/pubspec.yaml
++++ b/pubspec.yaml
+@@ -84,10 +84,7 @@ dependencies:
+     git:
+       url: https://github.com/bggRGjQaUbCoE/extended_nested_scroll_view.git
+       ref: mod
+-  file_picker:
+-    git:
+-      url: https://github.com/bggRGjQaUbCoE/flutter_file_picker.git
+-      ref: dev
++  file_picker: ^12.0.0-beta.7
+   fixnum: ^1.1.1
+   fl_chart: ^1.0.0
+   flex_seed_scheme: ^4.0.1
