@@ -1,8 +1,9 @@
 # AGENTS.md — PiliPlus (fork)
 
 PiliPlus（本地路径 `D:\code\PiliPlus`）是用户 fork 维护的 B 站客户端（Flutter + GetX，Android/Win/Linux/macOS/iOS）。
-- origin = `Landslide3154/PiliPlus`（fork 版本号 = 上游 baseVersion + 序号，最新已发布 `v2.1.3.02`）
-- upstream = `bggRGjQaUbCoE/PiliPlus`（活跃，2026-09 为 Release 2.1.3.1；Flutter 3.47.3）
+- origin = `Landslide3154/PiliPlus`（fork 版本号 = 上游 baseVersion + 序号）
+- upstream = `bggRGjQaUbCoE/PiliPlus`（活跃）
+- 当前已发布版本、上游当前版本、上游 Flutter 版本这类**会持续漂移**的数字不写在这里，见记忆 `piliplus-project-state`
 
 ## 合并上游
 
@@ -29,7 +30,7 @@ PiliPlus（本地路径 `D:\code\PiliPlus`）是用户 fork 维护的 B 站客�
 
 **Android 依赖 media-kit**：`My-Responsitories/media-kit@version_1.2.5` 的 `media_kit_libs_android_video/build.gradle` 写死 `bggRGjQaUbCoE/libmpv-android-video-build` 的 vnext 资产 MD5（vnext 滚动更新，2026-08-13 更新后 MD5 漂移 → Gradle MD5 verification failed）。上游 2.1.1 起改用 `bggRGjQaUbCoE/media-kit`（resolved-ref 随上游演进：`a2aa2e7187…` → 2.1.2+ 的 `465b10cad1…`），**跟随上游即可**。重跑构建前可用 curl 下载 jar 算 MD5，与 build.gradle 的 `fileInfo.md5` 对比验证。
 
-**material_ui 迁移**：上游 Flutter 3.47 起（当前 3.47.3）全库改用 `package:material_ui`（约 487 文件、0 个 flutter/material）。material_ui export flutter/widgets，但其 material 组件类（ThemeData/Scaffold/TabBar 等）与 flutter/material 是**不同声明**——同一文件同时 import 两者会 ambiguous，且两库 Theme 树不互通（跨库 `Theme.of` 运行时报错）。合并上游后：
+**material_ui 迁移**：上游 Flutter 3.47 起全库改用 `package:material_ui`（约 487 文件、0 个 flutter/material）。material_ui export flutter/widgets，但其 material 组件类（ThemeData/Scaffold/TabBar 等）与 flutter/material 是**不同声明**——同一文件同时 import 两者会 ambiguous，且两库 Theme 树不互通（跨库 `Theme.of` 运行时报错）。合并上游后：
 - 用户改动文件若残留 flutter/material import，要统一改成 material_ui
 - 上游新增内部文件（如 sliver_constrained_cross_axis）也要核对用户文件的 import 目标是否仍存在
 - 上游 API 改名要跟着改：如 `ReplySortType` 迁移到 `EnumWithLabel`（title→desc、label→descShort、text→label）
@@ -45,14 +46,14 @@ PiliPlus（本地路径 `D:\code\PiliPlus`）是用户 fork 维护的 B 站客�
 - **更新检查**：`lib/utils/update.dart` 指向本仓库 `/releases/latest`
 - **默认展示 TAB 存储**：`Pref.defaultDynamicTypeIndex` 按 enum `name` 存储，读取时兼容旧 int 索引（非零左移一位），避免上游增删 tab 后错位
 
-## Reasonix 工具门禁（v1.38.3）与应对
-
-- **症状**：bash 返回 `bash cannot declare which files it changes while a read-evidence requirement is outstanding (<file>)`；`git add/commit/push`、`echo > file`、`python x.py` 全被拦，只有只读命令（`grep`/`ls`/`cat`/`head`/`tail`/`sed`/`git status|diff|show`）放行
-- **根因**：v1.38.3 起审计写操作——凡被 `edit_file`/`write_file` 改过的文件都需"完整新鲜读"；**大文件超过单次读取上限后无论怎么补读都无法满足 → 永久死锁**（实测用户消息也不重置）
-- **解法（实测可用）**：用 `write_file` 写临时 Makefile 把写操作封装成 target，再用 `make -f Makefile.commit commit` / `push` 触发——`make` 被识别为验证命令而放行。不落盘可 `printf '.PHONY: c\nc:\n\trm -f x\n' | make -f - c`；长任务监控用 `make -f … watch` + 后台运行
-- **替代（事前预防）**：`patch-and-run` skill 的 `patch_run.py`（全程不用编辑工具，`--set "旧==>新" --exec "验证命令"`）；缺点：门禁已激活后失效，且只支持唯一字符串替换
-- **收尾**：临时 Makefile / 脚本用 make target 里的 `rm -f` 清理（`rm` 直连 bash 仍可能被拦）
-
 ## 验证
 
 本地无 Flutter SDK，验证靠 GitHub Actions（push main 触发）；发布后核对 release assets 齐全（Android APK + Windows ZIP + EXE）。运行时行为（如接口参数是否生效）需用户实机确认。
+
+## 项目记忆
+
+ZCode 的项目记忆目录：`C:\Users\godis\.zcode\cli\memories\projects\piliplus-0c36dc204a576586\memory\`（索引为其中的 `MEMORY.md`）。它会在本仓库的工作区里被自动召回。
+
+当前有 1 条：`piliplus-project-state` —— 存放本文件刻意不收的**漂移型状态**（已发布版本、上游版本、上游 Flutter 版本、本机无 Flutter SDK）。
+
+分工：**每次都要遵守的规则**（合并流程、CI、版本号规则、已知坑、定制改动）写在本文件；**会过时的事实/快照**写进记忆并在 `MEMORY.md` 登记。别把规则塞进记忆——两处重复必然一处先过时。
