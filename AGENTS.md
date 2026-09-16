@@ -35,6 +35,8 @@ PiliPlus（本地路径 `D:\code\PiliPlus`）是用户 fork 维护的 B 站客�
 - 上游新增内部文件（如 sliver_constrained_cross_axis）也要核对用户文件的 import 目标是否仍存在
 - 上游 API 改名要跟着改：如 `ReplySortType` 迁移到 `EnumWithLabel`（title→desc、label→descShort、text→label）
 
+**历史上的「假合并」提交把文件整体换成了上游旧版**：`e1f53db0a` 等提交 message 写着「merge: 合并上游 …」但**只有一个父提交**，实际是手动改文件而非真合并，结果把某些文件整体替换成了落后的上游版本，且此后每次合并都被当成「本 fork 定制」保留下来。识别方法：某文件用着上游早已删除的 API（如 `isLocating.value` 这种已改成 bool 的 Rx 写法）、或 `git log -S"<某符号>"` 显示差异全部来自某个单父的「merge」提交——**那是遗留失误，不是定制，直接取上游版本**。2026-09 合并 2.1.4 时 `lib/pages/member_video/view.dart` 就是这种（缺悬浮头与「定位至上次观看」FAB），已取上游版本恢复。
+
 ## 本 fork 的定制改动（合并上游后需复查）
 
 - **动态页只看视频**：`DynamicsTabType` 已移除 `all`（tab = 视频/番剧/UP，默认「视频」）；`DynamicsHttp.followDynamic` 的 UP 标签附加 `type: 'video'`；`up_panel.dart` 首项为「全部视频」，点击切到「视频」标签并刷新其内容
