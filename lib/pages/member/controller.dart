@@ -146,7 +146,17 @@ class MemberController extends CommonDataController<SpaceData, SpaceData?>
             return item.param == data.defaultTab;
           });
         }
-        tabs = tab2!.map((item) => Tab(text: item.title ?? '')).toList();
+        tabs = tab2!
+            .map(
+              (item) => Tab(
+                child: Text(
+                  item.title ?? '',
+                  softWrap: false,
+                  overflow: .fade,
+                ),
+              ),
+            )
+            .toList();
         // 自己的页面默认选中「观看记录」（index 0）
         if (initialIndex == -1 && mid == account.mid) {
           initialIndex = 0;

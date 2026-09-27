@@ -22,8 +22,10 @@ class RcmdVideoItemAppModel extends BaseRcmdVideoItemModel {
     //duration = json['cover_right_text'];
     title = json['title'];
     pubdate = json['pubdate'];
-    owner = RcmdOwner.fromJson(json);
+    goto = json['card_goto'];
+    owner = RcmdOwner.fromJson(json, goto);
     rcmdReason = json['rcmd_reason'];
+    if (rcmdReason == '竖屏') rcmdReason = null;
     //     json['bottom_rcmd_reason'] ??
     //     json['top_rcmd_reason'];
     if (rcmdReason != null && rcmdReason!.contains('赞')) {
@@ -36,12 +38,11 @@ class RcmdVideoItemAppModel extends BaseRcmdVideoItemModel {
     // 如果是，就无需再显示推荐原因，交由view统一处理即可
     if (isFollowed) rcmdReason = null;
 
-    goto = json['goto'];
     param = int.parse(json['param']);
     uri = json['uri'];
     talkBack = json['talk_back'];
 
-    if (json['goto'] == 'bangumi') {
+    if (goto == 'bangumi') {
       pgcBadge = json['cover_right_text'];
     }
 
@@ -61,10 +62,11 @@ class RcmdStat extends BaseStat {
 }
 
 class RcmdOwner extends BaseOwner {
-  RcmdOwner.fromJson(Map<String, dynamic> json) {
-    // 竖屏视频的 goto 是 vertical_av，字段与 av 一致，同样取 args.up_name；
-    // 否则会落到 desc_button.text——那是「竖屏」角标文案，会被当成 UP 主名字
-    name = json['goto'] == 'av' || json['goto'] == 'vertical_av'
+  RcmdOwner.fromJson(Map<String, dynamic> json, String? goto) {
+    // 上游改用 card_goto 取名字（竖屏视频的 goto 是 vertical_av，card_goto 为 av），
+    // 这里额外接受 vertical_av 兜底；否则会落到 desc_button.text——那是「竖屏」
+    // 角标文案，会被当成 UP 主名字
+    name = goto == 'av' || goto == 'vertical_av'
         ? (json['args']?['up_name'] ?? '')
         : (json['desc_button']?['text'] ?? '');
     mid = json['args']?['up_id'] ?? 0;
