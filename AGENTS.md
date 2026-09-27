@@ -28,7 +28,7 @@ PiliPlus（本地路径 `D:\code\PiliPlus`）是用户 fork 维护的 B 站客�
 
 ## 已知坑
 
-**Android 依赖 media-kit**：`My-Responsitories/media-kit@version_1.2.5` 的 `media_kit_libs_android_video/build.gradle` 写死 `bggRGjQaUbCoE/libmpv-android-video-build` 的 vnext 资产 MD5（vnext 滚动更新，2026-08-13 更新后 MD5 漂移 → Gradle MD5 verification failed）。上游 2.1.1 起改用 `bggRGjQaUbCoE/media-kit`（resolved-ref 随上游演进：`a2aa2e7187…` → 2.1.2+ 的 `465b10cad1…`），**跟随上游即可**。重跑构建前可用 curl 下载 jar 算 MD5，与 build.gradle 的 `fileInfo.md5` 对比验证。
+**Android 依赖 media-kit**：`My-Responsitories/media-kit@version_1.2.5` 的 `media_kit_libs_android_video/build.gradle` 写死 `bggRGjQaUbCoE/libmpv-android-video-build` 的 vnext 资产 MD5（vnext 滚动更新，2026-08-13 更新后 MD5 漂移 → Gradle MD5 verification failed）。重跑构建前可用 curl 下载 jar 算 MD5，与 build.gradle 的 `fileInfo.md5` 对比验证。**ref 的来回变动史（跟随上游即可，但别用错分支）**：2.1.1–2.1.4 用 `bggRGjQaUbCoE/media-kit`（resolved-ref 随上游演进）；2.1.4 tip（`00cb572cc`）升到 `ref: upstream` 的 media_kit_video **2.0.1**；2.1.5 的 `ee148aa64` 部分回退该升级，改回 `My-Responsitories/media-kit@native`（media_kit_video 1.2.5，`media_kit_video` 的 resolved-ref `73771ec3`）——原因是 2.0.1 重写的 `android_video_controller/real.dart` 导致 #2994（暂停→切后台→回前台黑屏）。当前应与上游一致为 `ref: native`。
 
 **material_ui 迁移**：上游 Flutter 3.47 起全库改用 `package:material_ui`（约 487 文件、0 个 flutter/material）。material_ui export flutter/widgets，但其 material 组件类（ThemeData/Scaffold/TabBar 等）与 flutter/material 是**不同声明**——同一文件同时 import 两者会 ambiguous，且两库 Theme 树不互通（跨库 `Theme.of` 运行时报错）。合并上游后：
 - 用户改动文件若残留 flutter/material import，要统一改成 material_ui
@@ -47,7 +47,8 @@ PiliPlus（本地路径 `D:\code\PiliPlus`）是用户 fork 维护的 B 站客�
 - **卡片间距 / 边缘距离**设置项：`SettingBoxKey.cardSpacing` / `edgePadding`（`Pref.cardSpacing`、`Pref.edgePadding`）
 - **更新检查**：`lib/utils/update.dart` 指向本仓库 `/releases/latest`
 - **默认展示 TAB 存储**：`Pref.defaultDynamicTypeIndex` 按 enum `name` 存储，读取时兼容旧 int 索引（非零左移一位），避免上游增删 tab 后错位
-- **竖屏视频 `vertical_av`（上游未修，合并时易被覆盖）**：app 端推荐接口对竖屏视频返回 `goto: 'vertical_av'`（不是 `'av'`），`uri` 为 `bilibili://story/{aid}?cid=…&player_width=…&player_height=…`，其余字段与 `av` 一致。本 fork 在识别 `av` 处一并识别 `vertical_av`（`video_card_v.dart` 的 switch 与 `_isVideo`、`member_home/widgets/video_card_v_member_home.dart`、`rcmd/result.dart` 的 `RcmdOwner` 取 `args.up_name`），并给 `app_scheme.dart` 的 `case 'video'` 加了 `|| 'story'`。**故意不把 goto 改写成 `av`**——不感兴趣接口（`feedDislike`）要把 goto 原样回传；上游 issue #2996 的补丁是改写 goto，别照抄。web 端推荐接口不会碰到（`http/video.dart` 只放行 `goto == 'av'`），所以现象只在「首页使用app端推荐」开启时出现
+- **竖屏视频 `vertical_av`（2.1.5 起上游已从字段层面修掉，本 fork 只留兜底）**：app 端推荐接口对竖屏视频返回 `goto: 'vertical_av'`（不是 `'av'`），`uri` 为 `bilibili://story/{aid}?cid=…&player_width=…&player_height=…`，其余字段与 `av` 一致。上游 2.1.5 的 `08a9f5509` 改为读 **`card_goto`**（竖屏视频的 card_goto 是 `av`），关掉了 #2996。本 fork 另留两处兜底 + 一处上游没有的能力：`rcmd/result.dart` 的 `RcmdOwner` 除上游的 `card_goto` 外仍接受 `vertical_av`（防 card_goto 也返回 vertical_av 时作者名退化成 `desc_button.text`——那是「竖屏」角标文案）；`video_card_v.dart` 与 `member_home/widgets/video_card_v_member_home.dart` 用 `case 'av' || 'vertical_av'`；`app_scheme.dart` 的 `case 'video' || 'story'` 让 story 深链本身可用（**上游不处理，是本 fork 独有**，合并时别丢）。故意不把 `goto` 改写成 `av`——不感兴趣接口（`feedDislike`）要把 goto 原样回传
+- **成员页 TabBar 固定高度不滚动**：`member/view.dart` 把 TabBar 固定 45 高、不随内容滚动（上游是 `DynamicSliverAppBar` + body 内 TabBar 且 `labelPadding: .zero`），`member/controller.dart` 额外「自己的主页默认选中观看记录」。**注意**：该文件也源自 `e1f53db0a` 的手工合并，但这是**刻意的定制**（「固定高度，不滚动」这条注释在上游全库都没出现过），别按「遗留失误」处理成上游版本；上游的 `labelPadding: .zero` 已一并采用
 
 ## 验证
 
