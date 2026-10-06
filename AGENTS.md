@@ -3,7 +3,7 @@
 PiliPlus（本地路径 `D:\code\PiliPlus`）是用户 fork 维护的 B 站客户端（Flutter + GetX，Android/Win/Linux/macOS/iOS）。
 - origin = `Landslide3154/PiliPlus`（fork 版本号 = 上游 baseVersion + 序号）
 - upstream = `bggRGjQaUbCoE/PiliPlus`（活跃）
-- 当前已发布版本、上游当前版本、上游 Flutter 版本这类**会持续漂移**的数字不写在这里，见记忆 `piliplus-project-state`
+- 当前已发布版本、上游当前版本、上游 Flutter 版本这类**会持续漂移**的数字不写在这里，见 DSH 记忆空间「PiliPlus」（`mnemon_recall` 检索）
 
 ## 合并上游
 
@@ -54,10 +54,10 @@ PiliPlus（本地路径 `D:\code\PiliPlus`）是用户 fork 维护的 B 站客�
 
 本地无 Flutter SDK，验证靠 GitHub Actions（push main 触发）；发布后核对 release assets 齐全（Android APK + Windows ZIP + EXE）。运行时行为（如接口参数是否生效）需用户实机确认。
 
-## 项目记忆
+## 项目记忆（DSH 记忆空间「PiliPlus」）
 
-ZCode 的项目记忆目录：`C:\Users\godis\.zcode\cli\memories\projects\piliplus-0c36dc204a576586\memory\`（索引为其中的 `MEMORY.md`）。它会在本仓库的工作区里被自动召回。
+漂移型状态（已发布版本、上游版本、上游 Flutter 版本、CI 状态、本机有无 Flutter SDK）存在 **DSH 记忆空间「PiliPlus」**，用 `mnemon_recall` 按需召回；每次合并上游或发布后回来更新它。
 
-当前有 1 条：`piliplus-project-state` —— 存放本文件刻意不收的**漂移型状态**（已发布版本、上游版本、上游 Flutter 版本、本机无 Flutter SDK）。
+分工：**每次都要遵守的规则**（合并流程、CI、版本号规则、已知坑、定制改动）写在本文件；**会过时的事实/快照**写进记忆空间。别把规则塞进记忆——两处重复必然一处先过时。
 
-分工：**每次都要遵守的规则**（合并流程、CI、版本号规则、已知坑、定制改动）写在本文件；**会过时的事实/快照**写进记忆并在 `MEMORY.md` 登记。别把规则塞进记忆——两处重复必然一处先过时。
+> 历史：本项目早期用 ZCode 记忆库（`C:\Users\godis\.zcode\cli\memories\projects\piliplus-…`），该库已**冻结、不再更新**，不要再往里写。
