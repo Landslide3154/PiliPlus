@@ -59,5 +59,3 @@ PiliPlus（本地路径 `D:\code\PiliPlus`）是用户 fork 维护的 B 站客�
 漂移型状态（已发布版本、上游版本、上游 Flutter 版本、CI 状态、本机有无 Flutter SDK）存在 **DSH 记忆空间「PiliPlus」**，用 `mnemon_recall` 按需召回；每次合并上游或发布后回来更新它。
 
 分工：**每次都要遵守的规则**（合并流程、CI、版本号规则、已知坑、定制改动）写在本文件；**会过时的事实/快照**写进记忆空间。别把规则塞进记忆——两处重复必然一处先过时。
-
-> 历史：本项目早期用 ZCode 记忆库（`C:\Users\godis\.zcode\cli\memories\projects\piliplus-…`），该库已**冻结、不再更新**，不要再往里写。
