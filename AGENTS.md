@@ -8,7 +8,7 @@ PiliPlus（本地路径 `D:\code\PiliPlus`）是用户 fork 维护的 B 站客�
 ## 合并上游
 
 - `git fetch upstream` 后**先检查 upstream/main 是否又前进**（曾出现 fetch 后上游已发新 release 的情况），直接合并到最新而不是旧 head
-- 本地未提交工作区（.vscode/.reasonix 删除、.reasonix/、tmp/ 未跟踪）先 stash 再合并（push 只推提交，最后 pop 恢复）
+- 本地工作区若出现未提交的改动（如 `.vscode/`、`tmp/` 等未跟踪内容）属正常，合并前先 stash 再合并（push 只推提交，最后 pop 恢复），提交前清理
 - 合并后必查：CI 冲突、`material_ui` import 一致性、`flutter/material` 残留、上游删除/改名文件导致的悬空 import
 - 合并后**要复查本 fork 的定制改动是否被上游覆盖**（上游常把 `all` tab 之类的行为加回来）
 
@@ -17,7 +17,7 @@ PiliPlus（本地路径 `D:\code\PiliPlus`）是用户 fork 维护的 B 站客�
 - push 到 main 触发 Build workflow（Android arm64-v8a-only + Win-x64），成功即用 `softprops/action-gh-release` 自动发布 `v{version}` release
 - 上游新 CI 已改为 workflow_dispatch 手动 + 多平台
 - **合并上游时 `.github/workflows/build.yml` / `win_x64.yml` 冲突一律保留本地版本**
-- `win_x64.yml` 关键步骤：Setup flutter → Apply Patch（patch.ps1 windows，打 Flutter 内部补丁；**缺失会导致 Windows 编译约 85 个 error**，合并冲突时极易丢失，务必核对）→ build.ps1 版本号 → `flutter build windows --pub` → fastforge 打包 → Release
+- `win_x64.yml` 关键步骤：Setup flutter → Apply Patch（lib/scripts/patch.ps1 windows，打 Flutter 内部补丁；**缺失会导致 Windows 编译约 85 个 error**，合并冲突时极易丢失，务必核对）→ build.ps1 版本号 → `flutter build windows --pub` → fastforge 打包 → Release
 
 ## 版本号规则（`lib/scripts/build.ps1`）
 
@@ -30,7 +30,7 @@ PiliPlus（本地路径 `D:\code\PiliPlus`）是用户 fork 维护的 B 站客�
 
 **Android 依赖 media-kit**：`My-Responsitories/media-kit@version_1.2.5` 的 `media_kit_libs_android_video/build.gradle` 写死 `bggRGjQaUbCoE/libmpv-android-video-build` 的 vnext 资产 MD5（vnext 滚动更新，2026-08-13 更新后 MD5 漂移 → Gradle MD5 verification failed）。重跑构建前可用 curl 下载 jar 算 MD5，与 build.gradle 的 `fileInfo.md5` 对比验证。**ref 的来回变动史（跟随上游即可，但别用错分支）**：2.1.1–2.1.4 用 `bggRGjQaUbCoE/media-kit`（resolved-ref 随上游演进）；2.1.4 tip（`00cb572cc`）升到 `ref: upstream` 的 media_kit_video **2.0.1**；2.1.5 的 `ee148aa64` 部分回退该升级，改回 `My-Responsitories/media-kit@native`（media_kit_video 1.2.5，`media_kit_video` 的 resolved-ref `73771ec3`）——原因是 2.0.1 重写的 `android_video_controller/real.dart` 导致 #2994（暂停→切后台→回前台黑屏）。当前应与上游一致为 `ref: native`。
 
-**material_ui 迁移**：上游 Flutter 3.47 起全库改用 `package:material_ui`（约 487 文件、0 个 flutter/material）。material_ui export flutter/widgets，但其 material 组件类（ThemeData/Scaffold/TabBar 等）与 flutter/material 是**不同声明**——同一文件同时 import 两者会 ambiguous，且两库 Theme 树不互通（跨库 `Theme.of` 运行时报错）。合并上游后：
+**material_ui 迁移**：上游 Flutter 3.47 起全库改用 `package:material_ui`（迁移覆盖面以 `grep -r "package:flutter/material.dart" lib` 为准；`lib/common/widgets/flutter/**` 里 vendored 的文件属例外）。material_ui export flutter/widgets，但其 material 组件类（ThemeData/Scaffold/TabBar 等）与 flutter/material 是**不同声明**——同一文件同时 import 两者会 ambiguous，且两库 Theme 树不互通（跨库 `Theme.of` 运行时报错）。合并上游后：
 - 用户改动文件若残留 flutter/material import，要统一改成 material_ui
 - 上游新增内部文件（如 sliver_constrained_cross_axis）也要核对用户文件的 import 目标是否仍存在
 - 上游 API 改名要跟着改：如 `ReplySortType` 迁移到 `EnumWithLabel`（title→desc、label→descShort、text→label）
