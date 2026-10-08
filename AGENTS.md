@@ -1,61 +1,65 @@
-# AGENTS.md — PiliPlus (fork)
+# PiliPlus — 开发约定
 
-PiliPlus（本地路径 `D:\code\PiliPlus`）是用户 fork 维护的 B 站客户端（Flutter + GetX，Android/Win/Linux/macOS/iOS）。
-- origin = `Landslide3154/PiliPlus`（fork 版本号 = 上游 baseVersion + 序号）
-- upstream = `bggRGjQaUbCoE/PiliPlus`（活跃）
-- 当前已发布版本、上游当前版本、上游 Flutter 版本这类**会持续漂移**的数字不写在这里，见 DSH 记忆空间「PiliPlus」（`mnemon_recall` 检索）
+> 通用规则见全局 `C:\Users\godis\.dsh\AGENTS.md`，本文件只写本 fork 独有的东西。
 
-## 合并上游
+## 1. 这个项目是什么
 
-- `git fetch upstream` 后**先检查 upstream/main 是否又前进**（曾出现 fetch 后上游已发新 release 的情况），直接合并到最新而不是旧 head
-- 本地工作区若出现未提交的改动（如 `.vscode/`、`tmp/` 等未跟踪内容）属正常，合并前先 stash 再合并（push 只推提交，最后 pop 恢复），提交前清理
-- 合并后必查：CI 冲突、`material_ui` import 一致性、`flutter/material` 残留、上游删除/改名文件导致的悬空 import
-- 合并后**要复查本 fork 的定制改动是否被上游覆盖**（上游常把 `all` tab 之类的行为加回来）
+B 站第三方客户端 PiliPlus 的个人 fork（Flutter + GetX，多平台）；origin `Landslide3154/PiliPlus`，upstream `bggRGjQaUbCoE/PiliPlus`，fork 版本号 = 上游 baseVersion + 序号。
 
-## CI 与发布（本地自定义规则，与上游不同）
+关键位置：`lib/scripts/{build,patch}.ps1`（版本号 / Flutter 补丁）、`.github/workflows/{build,win_x64}.yml`（CI 与发布）、`lib/`（定制改动集中处）。
 
-- push 到 main 触发 Build workflow（Android arm64-v8a-only + Win-x64），成功即用 `softprops/action-gh-release` 自动发布 `v{version}` release
-- 上游新 CI 已改为 workflow_dispatch 手动 + 多平台
-- **合并上游时 `.github/workflows/build.yml` / `win_x64.yml` 冲突一律保留本地版本**
-- `win_x64.yml` 关键步骤：Setup flutter → Apply Patch（lib/scripts/patch.ps1 windows，打 Flutter 内部补丁；**缺失会导致 Windows 编译约 85 个 error**，合并冲突时极易丢失，务必核对）→ build.ps1 版本号 → `flutter build windows --pub` → fastforge 打包 → Release
+## 2. 常用命令（可直接复制执行）
 
-## 版本号规则（`lib/scripts/build.ps1`）
+| 目的 | 命令 |
+| --- | --- |
+| 取/查上游 | `git -C D:\code\PiliPlus fetch upstream; git -C D:\code\PiliPlus log --oneline -5 upstream/main` |
+| 本地算版本号（会改写 `pubspec.yaml`） | 在 `D:\code\PiliPlus` 下跑 `pwsh -File lib\scripts\build.ps1`，需已设 `$env:GITHUB_ENV` |
+| 打 Flutter 补丁 | `pwsh -File D:\code\PiliPlus\lib\scripts\patch.ps1 windows`（或 `android`） |
+| 构建 / 打包 / 发布 | 不在本地做，push main 触发 GitHub Actions（见 §5） |
 
-- baseVersion 读 pubspec.yaml 的 version（如 2.1.3），读已有 tag `v{base}.{seq}` 取 max+1 递增（v2.1.3.01 / .02 …）
-- CI 需 `fetch-depth: 0` 才能看到 tag
-- 失败构建残留的残缺 release 会占号：删除 release 后要**同时删 git refs/tags** 才能恢复序列（2026-08 用户选择删除残缺 release + tag）
-- 只改文档/CI 的提交不想触发发布时，可在 commit message 里加 `[skip ci]`
+## 3. 硬约束（必须 / 禁止）
 
-## 已知坑
+- **必须**：合并上游前先 `git fetch upstream` 并确认 `upstream/main` 是否又前进（曾出现 fetch 后上游已发新 release），直接合到最新 head。
+- **必须**：合并冲突时 `.github/workflows/build.yml`、`win_x64.yml` **一律保留本地版本**。
+- **必须**：`win_x64.yml` 里 `patch.ps1 windows` 步骤不能丢（缺失会导致 Windows 编译报大量 error）。
+- **必须**：合并后逐条复查「本 fork 定制改动」是否被上游覆盖，并检查 CI 冲突、`material_ui` import 一致性、`flutter/material` 残留。
+- **禁止**：未复查完就 push main（push 会自动触发发布）。
+- 只想改文档/CI 而不发版：commit message 加 `[skip ci]`。
 
-**Android 依赖 media-kit**：`My-Responsitories/media-kit@version_1.2.5` 的 `media_kit_libs_android_video/build.gradle` 写死 `bggRGjQaUbCoE/libmpv-android-video-build` 的 vnext 资产 MD5（vnext 滚动更新，2026-08-13 更新后 MD5 漂移 → Gradle MD5 verification failed）。重跑构建前可用 curl 下载 jar 算 MD5，与 build.gradle 的 `fileInfo.md5` 对比验证。**ref 的来回变动史（跟随上游即可，但别用错分支）**：2.1.1–2.1.4 用 `bggRGjQaUbCoE/media-kit`（resolved-ref 随上游演进）；2.1.4 tip（`00cb572cc`）升到 `ref: upstream` 的 media_kit_video **2.0.1**；2.1.5 的 `ee148aa64` 部分回退该升级，改回 `My-Responsitories/media-kit@native`（media_kit_video 1.2.5，`media_kit_video` 的 resolved-ref `73771ec3`）——原因是 2.0.1 重写的 `android_video_controller/real.dart` 导致 #2994（暂停→切后台→回前台黑屏）。当前应与上游一致为 `ref: native`。
+**本 fork 定制改动（合并上游后逐条复查，别被上游改回去）**
 
-**material_ui 迁移**：上游 Flutter 3.47 起全库改用 `package:material_ui`（迁移覆盖面以 `grep -r "package:flutter/material.dart" lib` 为准；`lib/common/widgets/flutter/**` 里 vendored 的文件属例外）。material_ui export flutter/widgets，但其 material 组件类（ThemeData/Scaffold/TabBar 等）与 flutter/material 是**不同声明**——同一文件同时 import 两者会 ambiguous，且两库 Theme 树不互通（跨库 `Theme.of` 运行时报错）。合并上游后：
-- 用户改动文件若残留 flutter/material import，要统一改成 material_ui
-- 上游新增内部文件（如 sliver_constrained_cross_axis）也要核对用户文件的 import 目标是否仍存在
-- 上游 API 改名要跟着改：如 `ReplySortType` 迁移到 `EnumWithLabel`（title→desc、label→descShort、text→label）
+- 动态页只看视频：`DynamicsTabType` 无 `all`（视频/番剧/UP，默认视频）；`followDynamic` 的 UP 标签附 `type:'video'`；`up_panel.dart` 首项「全部视频」点击即切到视频标签。
+- `up_panel.dart` 末项触发 `controller.onLoadMore()`，否则第一页 UP 主不续载。
+- `dynamics/view.dart` 三种停靠模式自绘 Divider（`outlineVariant` α0.1）；布局模式 0/1/2 = 瀑布流 / 网格对齐 / 单列居中（`GlobalData.dynamicLayoutMode`，`lib/utils/waterfall.dart`）。
+- 推荐页卡片显示发布时间（`RcmdVideoItemAppModel.pubdate`）。
+- 设置项 `cardSpacing` / `edgePadding`（`SettingBoxKey`）。
+- `lib/utils/update.dart` 指向本仓库 `/releases/latest`。
+- `Pref.defaultDynamicTypeIndex` 按 enum `name` 存储、兼容旧 int 索引，防上游增删 tab 后错位。
+- 竖屏视频：上游改读 `card_goto` 后本 fork 仍接受 `vertical_av`——`RcmdOwner`（`rcmd/result.dart`，否则作者名退化成「竖屏」角标文案）、`video_card_v.dart` 与 `video_card_v_member_home.dart` 认 `'av'||'vertical_av'`、`app_scheme.dart` 认 `'video'||'story'` 使 story 深链可用（**本 fork 独有，别丢**）；不把 `goto` 改成 `av`，`feedDislike` 要原样回传。
+- 成员页 `member/view.dart` TabBar 固定 45 高不滚动、`member/controller.dart` 默认选中观看记录；属**刻意定制**，别当遗留失误回退。
 
-**历史上的「假合并」提交把文件整体换成了上游旧版**：`e1f53db0a` 等提交 message 写着「merge: 合并上游 …」但**只有一个父提交**，实际是手动改文件而非真合并，结果把某些文件整体替换成了落后的上游版本，且此后每次合并都被当成「本 fork 定制」保留下来。识别方法：某文件用着上游早已删除的 API（如 `isLocating.value` 这种已改成 bool 的 Rx 写法）、或 `git log -S"<某符号>"` 显示差异全部来自某个单父的「merge」提交——**那是遗留失误，不是定制，直接取上游版本**。2026-09 合并 2.1.4 时 `lib/pages/member_video/view.dart` 就是这种（缺悬浮头与「定位至上次观看」FAB），已取上游版本恢复。
+## 4. 架构边界与因果
 
-## 本 fork 的定制改动（合并上游后需复查）
+- **Android 锁 media-kit**：`My-Responsitories/media-kit` 的 `media_kit_libs_android_video/build.gradle` 写死 `bggRGjQaUbCoE/libmpv-android-video-build` vnext 资产的 MD5；vnext 滚动更新致 MD5 漂移 → `Gradle MD5 verification failed`（可下载 jar 对比 `fileInfo.md5` 验证）。ref 跟随上游别自己挑（曾升 media_kit_video 2.0.1 →「暂停→切后台→回前台黑屏」而回退）。
+- **material_ui 迁移**：上游 Flutter 3.47 起全库改用 `package:material_ui`（`lib/common/widgets/flutter/**` 下 vendored 文件例外）。它 export flutter/widgets，但 material 组件类与 flutter/material 是**不同声明**：同文件同时 import 会 ambiguous，两库 Theme 树不互通（跨库 `Theme.of` 报错）。合并后把残留 flutter/material 改为 material_ui；API 改名要跟（`ReplySortType`→`EnumWithLabel`）。
+- **「假合并」遗留**：曾有 message 写「merge: 合并上游…」但只有一个父提交的手工提交，把文件整体换成落后上游版本，此后每次合并都被当「定制」保留。识别：文件用着上游早删的 API，或 `git log -S"<符号>"` 显示差异全来自某个单父「merge」提交 → 那是失误不是定制，直接取上游版本。
 
-- **动态页只看视频**：`DynamicsTabType` 已移除 `all`（tab = 视频/番剧/UP，默认「视频」）；`DynamicsHttp.followDynamic` 的 UP 标签附加 `type: 'video'`；`up_panel.dart` 首项为「全部视频」，点击切到「视频」标签并刷新其内容
-- **UP 面板自动加载**：`up_panel.dart` 的 `SliverList` 末项触发 `controller.onLoadMore()`（与 `waterfall.dart` 同一模式），否则第一页约 9 个 UP 主会卡住不续载
-- **UP 面板分割线**：`dynamics/view.dart` 在 top/leftFixed/rightFixed 三种停靠模式自绘 Divider（色 `colorScheme.outlineVariant` α0.1）
-- **动态页布局模式**：`lib/utils/waterfall.dart` 支持 0 瀑布流 / 1 网格对齐 / 2 单列居中（`GlobalData.dynamicLayoutMode`）
-- **推荐页发布时间**：`RcmdVideoItemAppModel` 解析 `pubdate`，卡片右下角显示（`video_card_v.dart` 用 `DateFormat('M-d')`）
-- **卡片间距 / 边缘距离**设置项：`SettingBoxKey.cardSpacing` / `edgePadding`（`Pref.cardSpacing`、`Pref.edgePadding`）
-- **更新检查**：`lib/utils/update.dart` 指向本仓库 `/releases/latest`
-- **默认展示 TAB 存储**：`Pref.defaultDynamicTypeIndex` 按 enum `name` 存储，读取时兼容旧 int 索引（非零左移一位），避免上游增删 tab 后错位
-- **竖屏视频 `vertical_av`（2.1.5 起上游已从字段层面修掉，本 fork 只留兜底）**：app 端推荐接口对竖屏视频返回 `goto: 'vertical_av'`（不是 `'av'`），`uri` 为 `bilibili://story/{aid}?cid=…&player_width=…&player_height=…`，其余字段与 `av` 一致。上游 2.1.5 的 `08a9f5509` 改为读 **`card_goto`**（竖屏视频的 card_goto 是 `av`），关掉了 #2996。本 fork 另留两处兜底 + 一处上游没有的能力：`rcmd/result.dart` 的 `RcmdOwner` 除上游的 `card_goto` 外仍接受 `vertical_av`（防 card_goto 也返回 vertical_av 时作者名退化成 `desc_button.text`——那是「竖屏」角标文案）；`video_card_v.dart` 与 `member_home/widgets/video_card_v_member_home.dart` 用 `case 'av' || 'vertical_av'`；`app_scheme.dart` 的 `case 'video' || 'story'` 让 story 深链本身可用（**上游不处理，是本 fork 独有**，合并时别丢）。故意不把 `goto` 改写成 `av`——不感兴趣接口（`feedDislike`）要把 goto 原样回传
-- **成员页 TabBar 固定高度不滚动**：`member/view.dart` 把 TabBar 固定 45 高、不随内容滚动（上游是 `DynamicSliverAppBar` + body 内 TabBar 且 `labelPadding: .zero`），`member/controller.dart` 额外「自己的主页默认选中观看记录」。**注意**：该文件也源自 `e1f53db0a` 的手工合并，但这是**刻意的定制**（「固定高度，不滚动」这条注释在上游全库都没出现过），别按「遗留失误」处理成上游版本；上游的 `labelPadding: .zero` 已一并采用
+## 5. 版本与发布
 
-## 验证
+- 版本号唯一来源：`pubspec.yaml` 的 `version` + `lib/scripts/build.ps1` 按 tag 递增出 `{base}.{seq}`；CI 必须 `fetch-depth: 0`，残留 release 会占号，删 release 要同时删 tag。
+- 发布：push main 触发 Build workflow（Android arm64-v8a + Win-x64），成功即由 `softprops/action-gh-release` 发 `v{version}`；产物 = APK、Windows portable ZIP、EXE 安装包（上游已改为手动多平台，本 fork 保持 push 自动发）。
+- Win 流程：`build.ps1` → `patch.ps1 windows` → `flutter build windows --release --pub` → fastforge 打包 → Release。
+- 发布后核对 release assets 齐全；运行时行为需实机确认。
 
-本地无 Flutter SDK，验证靠 GitHub Actions（push main 触发）；发布后核对 release assets 齐全（Android APK + Windows ZIP + EXE）。运行时行为（如接口参数是否生效）需用户实机确认。
+## 6. 已知坑
 
-## 项目记忆（DSH 记忆空间「PiliPlus」）
+- 合并前工作区若有未提交改动（`.vscode/` 等未跟踪内容）属正常：先 stash 再合并，push 只推提交，最后 pop 恢复。
+- `patch.ps1` 会 `git config --global` 覆写提交身份为 `ci`/`example@example.com`，本机跑完必须改回。
+- 上游删/改名文件后易留悬空 import；`flutter/material` 残留常只在编译期暴露。
 
-漂移型状态（已发布版本、上游版本、上游 Flutter 版本、CI 状态、本机有无 Flutter SDK）存在 **DSH 记忆空间「PiliPlus」**，用 `mnemon_recall` 按需召回；每次合并上游或发布后回来更新它。
+## 7. 指针
 
-分工：**每次都要遵守的规则**（合并流程、CI、版本号规则、已知坑、定制改动）写在本文件；**会过时的事实/快照**写进记忆空间。别把规则塞进记忆——两处重复必然一处先过时。
+- 全局规则：`C:\Users\godis\.dsh\AGENTS.md`
+- 记忆空间：PiliPlus（当前已发布版本、上游版本、上游 Flutter 版本、CI 状态）——合并或发布后回来更新。
+- 分工：规则写本文件，会过时的事实/快照写记忆空间，别两处重复。
+
