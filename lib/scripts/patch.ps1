@@ -1,9 +1,10 @@
-param(
+﻿param(
     [string]$platform = ""
 )
 
-git config --global user.name "ci"
-git config --global user.email "example@example.com"
+# 不要在这里改 git 身份。曾用 `git config --global user.name/email` 把**全局**身份
+# 覆写成 ci <example@example.com>，污染了本机所有仓库的提交署名（2026-10-09 已统一修正）。
+# 确需指定身份时用仓库级配置，或 `git -c user.name=... -c user.email=... commit`。
 
 # TODO: remove
 # https://github.com/flutter/flutter/issues/182281
