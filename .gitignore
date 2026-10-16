@@ -158,3 +158,6 @@ dist
 .env
 .env.*
 !.env.example
+
+# 本机专属指令文件（每台机器各写各的，不提交）
+AGENTS.local.md
