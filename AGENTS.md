@@ -24,7 +24,7 @@ B 站第三方客户端 PiliPlus 的个人 fork（Flutter + GetX，多平台）�
   - 成员页 TabBar 固定 45 高、默认选中观看记录：属**刻意定制**，别当遗留失误回退。
   - 动态页只看视频：`DynamicsTabType` 无 `all`；`up_panel.dart` 首项「全部视频」点击即切视频标签、末项触发 `onLoadMore()`。
 - **push main = 发版**：只有用户明确要求才 push。
-- **禁止**改回上游 `.gitignore` 的 `test*`：fork 用显式 `.reasonix/`、`.codegraph/`、`/tmp/` 替代；恢复 `test*` 会连真测试 `test/utils/accounts/deleted_account_test.dart` 一起忽略（取证见 `docs/`）。
+- **禁止**改回上游 `.gitignore` 的 `test*`：fork 用显式 `.reasonix/`、`.codegraph/`、`/tmp/` 替代；恢复 `test*` 会连真测试 `test/utils/accounts/deleted_account_test.dart` 一起忽略（取证：`docs/gitignore-fork-differences.md`）。
 - 只想改文档/CI 不发版：commit message 加 `[skip ci]`。
 
 ## 4. 架构边界与因果
