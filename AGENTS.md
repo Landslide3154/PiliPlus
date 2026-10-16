@@ -1,10 +1,10 @@
 # PiliPlus — 开发约定
 
-> 跨机器通用规则（git 推送、shell 编码、MCP、归位判据）见全局 `~/.dsh/AGENTS.md`，**本文件不重复**；本机路径与现状快照见 `AGENTS.local.md`（不提交）。
+> 通用规则（git 推送、shell 编码、MCP、归位判据）见全局 `~/.dsh/AGENTS.md`，**本文件不重复**；本机专属见 `AGENTS.local.md`（不提交）。
 
 ## 1. 这个项目是什么
 
-B 站第三方客户端 PiliPlus 的个人 fork（Flutter + GetX，多平台）。origin `Landslide3154/PiliPlus`，upstream `bggRGjQaUbCoE/PiliPlus`。fork 版本号 = 上游 `pubspec.yaml` 三段版本 + 两位序号：`2.1.5` → tag `v2.1.5.01`、`v2.1.5.02`…（`build.ps1` 扫已有 tag 递增）。
+B 站第三方客户端 PiliPlus 的个人 fork（Flutter + GetX，多平台）。origin `Landslide3154/PiliPlus`，upstream `bggRGjQaUbCoE/PiliPlus`。fork 版本号口径见 §5。
 
 ## 2. 常用命令（在仓库根执行）
 
@@ -19,21 +19,13 @@ B 站第三方客户端 PiliPlus 的个人 fork（Flutter + GetX，多平台）�
 
 - **必须**：合并前先 `git fetch upstream`，确认 `upstream/main` 是否又前进（曾 fetch 后上游已发新 release），合到最新 head。
 - **必须**：冲突时 `.github/workflows/build.yml`、`win_x64.yml` **一律保留本地版本**；`win_x64.yml` 里 `patch.ps1 windows` 那步不能丢（丢了 Windows 编译报大量 error）。
-- **必须**：合并后逐条复查下方定制清单是否被上游覆盖，并检查 CI 冲突、`material_ui` import 一致性、`flutter/material` 残留。
+- **必须**：合并后逐条复查 fork 定制清单——下列三条最易被上游覆盖，**全量 8 条及原因见 `docs/fork-customizations.md`**：
+  - 竖屏视频仍认 `vertical_av`：`rcmd/result.dart`、`video_card_v*.dart`、`app_scheme.dart`（**本 fork 独有，别丢**）。
+  - 成员页 TabBar 固定 45 高、默认选中观看记录：属**刻意定制**，别当遗留失误回退。
+  - 动态页只看视频：`DynamicsTabType` 无 `all`；`up_panel.dart` 首项「全部视频」点击即切视频标签、末项触发 `onLoadMore()`。
 - **push main = 发版**：只有用户明确要求才 push。
 - **禁止**改回上游 `.gitignore` 的 `test*`：fork 用显式 `.reasonix/`、`.codegraph/`、`/tmp/` 替代；恢复 `test*` 会连真测试 `test/utils/accounts/deleted_account_test.dart` 一起忽略（取证见 `docs/`）。
 - 只想改文档/CI 不发版：commit message 加 `[skip ci]`。
-
-**本 fork 定制改动（复查清单；每条完整说明与原因见 `docs/fork-customizations.md`）**
-
-- 动态页只看视频：`DynamicsTabType` 无 `all`；`up_panel.dart` 首项「全部视频」点击即切视频标签。
-- `up_panel.dart` 末项触发 `onLoadMore()`，否则第一页 UP 主不续载。
-- `dynamics/view.dart` 三种停靠模式自绘 Divider；布局模式 0/1/2 实现在 `lib/utils/waterfall.dart`。
-- 推荐页卡片显示发布时间；设置项 `cardSpacing` / `edgePadding`。
-- `lib/utils/update.dart` 指向本仓库 `/releases/latest`。
-- `Pref.defaultDynamicTypeIndex` 按 enum `name` 存储并兼容旧 int 索引。
-- 竖屏视频仍认 `vertical_av`：`rcmd/result.dart`、`video_card_v*.dart`、`app_scheme.dart`（**本 fork 独有，别丢**）。
-- 成员页 TabBar 固定 45 高、默认选中观看记录：属**刻意定制**，别当遗留失误回退。
 
 ## 4. 架构边界与因果
 
@@ -50,12 +42,11 @@ B 站第三方客户端 PiliPlus 的个人 fork（Flutter + GetX，多平台）�
 
 ## 6. 已知坑
 
-- **在真仓库根跑 `build.ps1` 会改写工作区**：它先回写 `pubspec.yaml`、再落 `pili_release.json`，最后才写 `$env:GITHUB_ENV`；没设该变量时以 `Prebuild Error: 无法将参数绑定到参数"Path"…` 失败退出，**但 `pubspec.yaml` 已被改**。只检验命令时先备份，跑完还原。
-- `lib/scripts/build.ps1` 在 pwsh 里按路径执行即可，无需 `-File`；`$env:GITHUB_ENV` 指向一个可写文件（CI 自动有）。
+- **在真仓库根跑 `build.ps1` 会改写工作区**（先回写 `pubspec.yaml`、再落 `pili_release.json`，最后才碰 `$env:GITHUB_ENV`；失败也不回滚）→ 只检验命令时先备份 `pubspec.yaml`，跑完还原；跑法与报错原文见 `AGENTS.local.md` §2 / §6。
 - 合并前工作区有未提交改动（本机文档、未跟踪草稿）属正常：先 stash 再合并，push 只推提交，最后 pop 恢复。
 - 上游删/改名文件后易留悬空 import；`flutter/material` 残留常只在编译期暴露。
 
 ## 7. 指针
 
 - 全局通用规则与归位判据：`~/.dsh/AGENTS.md`。
-- 取证文档（不注入）：`docs/fork-customizations.md`（定制改动全量说明）、`docs/gitignore-fork-differences.md`（`.gitignore` 差异与事故）。
+- 取证文档（不注入）：`docs/fork-customizations.md`（**fork 定制改动全量 8 条**，合并后逐条复查）、`docs/gitignore-fork-differences.md`（`.gitignore` 差异与事故）。
