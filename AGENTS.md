@@ -20,10 +20,10 @@ B 站第三方客户端 PiliPlus 的个人 fork（Flutter + GetX，多平台）�
 - **必须**：合并前先 `git fetch upstream`，确认 `upstream/main` 是否又前进（曾 fetch 后上游已发新 release），合到最新 head。
 - **必须**：冲突时 `.github/workflows/build.yml`、`win_x64.yml` **一律保留本地版本**；`win_x64.yml` 里 `patch.ps1 windows` 那步不能丢（丢了 Windows 编译报大量 error）。
 - **必须**：合并后逐条复查 fork 定制清单——下列三条最易被上游覆盖，**全量 8 条及原因见 `docs/fork-customizations.md`**：
-  - 竖屏视频仍认 `vertical_av`：`rcmd/result.dart`、`video_card_v*.dart`、`app_scheme.dart`（**本 fork 独有，别丢**）。
+  - 竖屏视频仍认 `vertical_av`：`lib/models/home/rcmd/result.dart`、`video_card_v*.dart`、`app_scheme.dart`（**本 fork 独有，别丢**）。
   - 成员页 TabBar 固定 45 高、默认选中观看记录：属**刻意定制**，别当遗留失误回退。
   - 动态页只看视频：`DynamicsTabType` 无 `all`；`up_panel.dart` 首项「全部视频」点击即切视频标签、末项触发 `onLoadMore()`。
-- **push main = 发版**：只有用户明确要求才 push。
+- **push main = 发版**（推送时机见全局 `AGENTS.md` 的「Git 与 GitHub」节）。
 - **禁止**改回上游 `.gitignore` 的 `test*`：fork 用显式 `.reasonix/`、`.codegraph/`、`/tmp/` 替代；恢复 `test*` 会连真测试 `test/utils/accounts/deleted_account_test.dart` 一起忽略（取证：`docs/gitignore-fork-differences.md`）。
 - 只想改文档/CI 不发版：commit message 加 `[skip ci]`。
 
