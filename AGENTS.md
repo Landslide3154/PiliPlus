@@ -35,7 +35,8 @@ B 站第三方客户端 PiliPlus 的个人 fork（Flutter + GetX，多平台）�
 
 ## 5. 版本与发布
 
-- 版本号：`build.ps1` 从 `pubspec.yaml` 读三段 baseVersion，扫 tag 算下一个两位序号，回写 `version: {base}+{commitCount}`；只落 tag 不够，残留 release 会占号 → CI 必须 `fetch-depth: 0`，删 release 要同时删 tag。
+- 版本号 = 上游同主版本最新 tag + 构建序号（上游 `2.1.6.2` → 本 fork `2.1.6.2.1`）：`build.ps1` 从 `pubspec.yaml` 读三段基础版本，用 `git ls-remote` 取上游同主版本最大 tag，扫本仓库 `v{base}.*` 取下一个序号，回写 `version: {三段}+{commitCount}`（pubspec 必须保持三段）；取不到上游 tag 会直接失败，可用 `-UpstreamBase` 覆盖。只落 tag 不够，残留 release 会占号 → CI 必须 `fetch-depth: 0`，删 release 要同时删 tag。
+- 更新日志：发布前在 `CHANGELOG.md` 新增 `## v{版本}` 小节（上一次发布 → 本次的用户可见改动）；CI 用 `lib/scripts/changelog.ps1` 把它写进 Release 说明，应用内「检查更新」直接展示这份说明。
 - 发布：push main 触发 Build workflow（Android arm64-v8a + Win-x64；`build.yml` 调 `win_x64.yml`），成功即由 `softprops/action-gh-release` 按 `v{version}` 发 Release；产物 = APK、Windows portable ZIP、EXE 安装包（本 fork 保持 push 自动发，上游已改手动多平台）。
 - Win 流程：`build.ps1` → `patch.ps1 windows` → `flutter build windows --release --pub --dart-define-from-file=pili_release.json` → fastforge 打包 exe → Release。
 - 发布后核对 release assets 齐全；运行时行为需实机确认。

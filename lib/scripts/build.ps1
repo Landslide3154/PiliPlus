@@ -1,5 +1,6 @@
 param(
-    [string]$Arg = ''
+    [string]$Arg = '',
+    [string]$UpstreamBase = ''
 )
 
 try {
@@ -7,7 +8,7 @@ try {
 
     $commitHash = (git rev-parse HEAD).Trim()
 
-    # 从 pubspec 读取上游基础版本号（如 2.1.0）
+    # 从 pubspec 读取主版本号（如 2.1.6）
     $baseVersion = $null
     foreach ($line in (Get-Content -Path 'pubspec.yaml' -Encoding UTF8)) {
         if ($line -match '^\s*version:\s*([\d\.]+)') {
@@ -19,17 +20,44 @@ try {
         throw 'version not found'
     }
 
-    # 本软件版本号 = 上游版本 + 两位序号（2.1.0.01 → 2.1.0.02 → ... → 2.1.0.99 → 2.1.0.100）
-    # 根据已有 tag 计算下一个序号，保证单调递增且语义有序
+    # 上游补丁版：上游用四段 tag 发补丁（2.1.6 → 2.1.6.1 → 2.1.6.2），
+    # 本 fork 版本 = 上游同主版本的最新 tag + 一个构建序号（2.1.6.2 → 2.1.6.2.1 → 2.1.6.2.2）。
+    $upstreamRepo = 'https://github.com/bggRGjQaUbCoE/PiliPlus.git'
+    $versionBase = $baseVersion
+    if ([string]::IsNullOrWhiteSpace($UpstreamBase)) {
+        $refs = git ls-remote --tags --refs $upstreamRepo 2>$null
+        if ($LASTEXITCODE -ne 0) {
+            throw "cannot read upstream tags ($upstreamRepo); pass -UpstreamBase to override"
+        }
+        $basePattern = '^' + [regex]::Escape($baseVersion) + '(\.\d+)*$'
+        $maxUpstream = $null
+        foreach ($ref in $refs) {
+            if ($ref -match '^[0-9a-f]+\s+refs/tags/(.+)$') {
+                $tag = $matches[1]
+                if ($tag -match $basePattern) {
+                    try { $v = [version]$tag } catch { continue }
+                    if ($null -eq $maxUpstream -or $v -gt $maxUpstream) { $maxUpstream = $v }
+                }
+            }
+        }
+        if ($null -eq $maxUpstream) {
+            throw "upstream has no tag for $baseVersion"
+        }
+        $versionBase = $maxUpstream.ToString()
+    } else {
+        $versionBase = $UpstreamBase
+    }
+
+    # 本软件版本号 = 上游 tag + 构建序号（2.1.6.2.1 → 2.1.6.2.2 → ...），按已有 tag 取下一个号
     $maxSeq = 0
-    $tagPattern = '^v' + [regex]::Escape($baseVersion) + '\.(\d+)$'
+    $tagPattern = '^v' + [regex]::Escape($versionBase) + '\.(\d+)$'
     foreach ($t in (git tag)) {
         if ($t -match $tagPattern) {
             $seq = [int]$matches[1]
             if ($seq -gt $maxSeq) { $maxSeq = $seq }
         }
     }
-    $versionName = "$baseVersion.$('{0:D2}' -f ($maxSeq + 1))"
+    $versionName = "$versionBase.$($maxSeq + 1)"
 
     # pubspec version 保持三段（Dart 不支持 2.1.0.01 四段格式），
     # 完整版本号仅用于产物命名 / pili.name / 更新判断

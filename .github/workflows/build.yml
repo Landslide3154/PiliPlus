@@ -77,6 +77,11 @@ jobs:
               shell: pwsh
               run: lib/scripts/build.ps1 android
 
+            - name: 生成更新日志
+              if: ${{ github.event_name != 'pull_request' }}
+              shell: pwsh
+              run: lib/scripts/changelog.ps1 -Version "${{ env.version }}"
+
             - name: Flutter Build Release Apk
               if: ${{ github.event_name != 'pull_request' }}
               run: flutter build apk --release --split-per-abi --target-platform android-arm64 --dart-define-from-file=pili_release.json --pub
@@ -100,9 +105,7 @@ jobs:
               with:
                   tag_name: v${{ env.version }}
                   name: v${{ env.version }}
-                  body: |
-                      自动构建版本 v${{ env.version }}
-                      提交: ${{ github.sha }}
+                  body_path: changelog_body.md
                   files: PiliPlus_android_*.apk
 
             - name: 上传
